@@ -1,0 +1,229 @@
+% 2014.07.30 dph
+%
+% update draft ewout user function interface specifications.
+%   rename "wadb" for "warmabs database"
+%
+%
+%  some prototype functions can be found in scripts/ewout_util.sl
+%    ( rooted at ~dph/h3/Analysis/ADP_2010_atomic_data/ )
+
+% NOTE: there is no explicit atomic database access, but only implicit
+% 	access to atomic data after a model evaluation.  Hence it is
+% 	not clear whether particular feature values will be available
+% 	after any individual model evaluation.
+
+
+----------------------------------------------------------------------
+
+Background:
+
+The xspec library models implementing the xstar model suites can
+optionally write their atomic and model data to a FITS table.  Reading
+this table will allow searching for model features by type, strength,
+wavelength, or element/ion, for example.
+
+The atomic database can be written during model evaluation by setting
+appropriate parameters in the xstar model suite through the xspec
+models' parameter interfaces.  These models are called:
+
+  warmabs
+  photemis
+  hotabs
+  hotems
+  multabs
+  windabs
+
+The first two are the most important, and the most commonly used.
+
+The model parameters are:
+
+   write_outfile   if 1, write the FITS table of model and atomic data.
+   outfile_idx     append this integer to the default file.
+
+   The default filename is warmabs_1.fits, in the working
+   directory. This can be changed to any arbitrary file by setting an
+   environment variable, WARMABS_OUTFILE.
+
+--------------------------------------------------------------------
+
+
+Function requirements:
+
+
+Define new functions with an auto-naming feature:
+
+  warmabs2
+  photemis2
+  hotabs2
+  hotemis2
+  multabs2
+  windabs2
+
+  Introduce a parameter, autoname_outfile, which if it has the value
+  1, will use the model name and instance to name the output FITS
+  table.  E.g.,
+
+    fit_fun( "Powerlaw(1) * warmabs2(1) + photemis(123)"  );
+    set_par( "warmabs2(1).write_outfile",  1 );
+    set_par( "photemis2(1).write_outfile",  1 );
+    set_par( "*.autoname_outfile, 1 );
+
+  will produce output files called:
+
+    warmabs_1.fits
+    photemis_123.fits
+
+  [implemented in warmabs_utils.sl]
+
+
+
+s = rd_xstar_lines_output( wadb_filename )
+
+  Read the warmabs output table;
+
+  Returns a structure, containing fields... TBS
+
+   wavelength sorted in ascending order
+
+   fields added to the basic output:
+   
+     model_name  e.g., "warmabs", "photemis"
+     params      a sub-structure holding model parameters)
+     Z           atomic number; e.g., Ne = 10
+     q           ion state (arabic; e.g., 9 for IX)
+     transition_name   string form of other fields:
+                      "<Element> <ion>f <upper_level> <lower_level> <type>"
+
+
+indices = warmabs_wl( s, wlo, whi )
+
+   Return the indices in s for features having wavelengths
+   defined by
+
+         wlo < s.wavelength <= whi
+
+
+indices = warmabs_strong( n, s [; qualifiers] )
+
+  Return the indices in warmabs_db structure s for the n strongest
+  features.  Depending on the feature type, "strongest" can mean the
+  most negative (e.g., emission equivalent widths) or the most positive
+  (e.g., line luminosity or optical depth).
+
+  The features may be specified by qualifiers.  Defaults are
+  determined from the model type (defined by s.lmodtyp) as:
+
+    ew:     equivalent width, if model_type == T_HOTABS, or T_WARMABS
+
+    luminosity:  line luminosity, if model_type == T_HOTEMIS or T_PHOTEMIS
+
+
+  Qualifiers:
+
+     type:    "line" | "edge" | "rrc" | "edge/rrc" | "any"
+              ("edge" , "rrc", and "edge/rrc" are equivalent")
+	      "any" will match both types.
+
+	      A type "line" has upper and lower level designations
+	      the transition. A type "edge" has an upper level of
+	      "continuum".
+	      
+     emis:    if present, the feature is defined to be in emission and
+     	      "strong" means larger (more positive) value for
+     	      luminosity or more negative value for equivalent widths.
+     	      Otherwise, the feature is assumed to be in absorption
+     	      and "strong" means greater absorption, a more positive value.
+
+     wmin:    minimum wavelength [A] for selection.
+
+     wmax:    maximum wavelength [A] for selection
+
+     field:   arbitrary field name of the input structure field
+     	      defining the feature for the selection of the strongest
+     	      elements. 
+
+     elem:    Element atomic number (integer); output will be limited to this element.
+
+     ion:     Ion state (integer); output will be limited to this ion.
+
+
+
+  Examples:
+
+      fit_fun( "warmabs(1)" );
+      set_par( "warmabs(1).rlogxi", 1 );
+      (w1, w2) = linear_grid( 1.0, 40.0, 8192 );
+      y = eval_fun( w1, w2);
+      s = rd_xstar_lines_output( "warmabs_1.fits" ) ;
+
+      l = warmabs_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge", field="tau0ewo" ) ; 
+      
+      warmabs_page_group( s, l );
+      #      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label
+          3307   O  VIII   14.247  0.000e+00  0.000e+00   2   0  2.064e-01  0.000e+00    0.000e+00   edge/rrc       1s1.2S -     continuu
+          3187   O   VII   16.771  0.000e+00  0.000e+00   1   0  9.808e-01  0.000e+00    0.000e+00   edge/rrc       1s2.1S -    continuum
+
+
+****** WORKING HERE *** xxx -----------------------
+
+
+index = ewout_trans( s, el, ion[, upper, lower] ) 
+
+   return indices in the ewout structure, s, corresponding the the
+   feature selected by element, ion, upper, and lower levels.
+
+     s:  ewout structure (as obtained by ewout_common2())
+
+     el: element atomic number (integer)
+
+     ion: ion state (integer; 1 => neutral)
+
+     upper: upper level designation (string);
+
+     lower: lower level designation (string);
+
+   Note: the level designation strings are best obtained via the
+   ewout_page_ids and ewout_strong functions.
+
+
+ewout_page_ids( s, l )
+
+    print a table of features of s selected by indices l.
+
+
+ewout_plot_ids( s, l[, style[, redshift]] )
+
+   mark features in s selected by l on the current plot.
+
+   style: optional structure giving labeling attributes.
+
+   redshift: redshift for marker placement
+
+
+s = ewout_label_style;
+
+   returns a structure of attributes for labeling the features with ewout_plot_ids
+
+
+s = ewout_feature_strength( el, ion, lower, upper, model_name, params, pgrid )
+
+    For the feature indexed by el, ion, lower, upper,  evaluate the
+    model given by model_name with parameter array, params,  on the
+    grid, x, and return the feature strength vs x.  Interpretation of
+    x depends on the model, and is logxi for models photemis and
+    warmabs, and is logt4 for hotabs and hotemis.
+
+    The returned structure holds the relevant feature strength values
+    from the ewout stucture (tau0ewo, ewout, elout).
+
+    params is a parameter array for the desired model.  E.g.,
+
+       fit_fun( "warmabs(999)" );
+       params = get_par( "warmabs(999).*" );
+
+    param[1] corresponds to the variable parameter. .
+
+    Note: this can be time-consuming because it requires a model
+    	  evaluation for each xi point, rather than a database lookup.
+	  
+
