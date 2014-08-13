@@ -59,3 +59,29 @@ plot_bin_density;
 xlabel( latex2pg( "Wavelength [\\A]" ) ) ; 
 ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
 hplot( x1, x2, y1, 1 );
+
+define do_plt_01()
+{
+    xrange(1.5,5.5);
+    ylog;
+    hplot( x1, x2, y1, 1 );
+}
+
+%% Task 1 : Identify strongest lines from a mixture of warmabs models
+%% Suggested syntax : warmabs_strong( n, dblist[; qualifiers] );
+
+variable l1 = warmabs_strong(3, db1; wmin=1.5, wmax=5.5);
+warmabs_page_group(db1, l1);
+
+variable l2 = warmabs_strong(3, db2; wmin=1.5, wmax=5.5);
+warmabs_page_group(db2, l2);
+
+variable l3 = warmabs_strong(3, db3; wmin=1.5, wmax=5.5);
+warmabs_page_group(db3, l3);
+
+do_plt_01;
+warmabs_plot_group(db1, l1, 1100; yfrac=0.8, col=2);
+warmabs_plot_group(db2, l2, 1100; yfrac=0.8, col=3);
+warmabs_plot_group(db3, l3, 1100; yfrac=0.8, col=4);
+% ^ I still don't understand these qualifiers, what they mean
+
