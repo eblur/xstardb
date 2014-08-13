@@ -443,7 +443,8 @@ define rd_photemis_output(s) { return( rd_xstar_output( s ) );}
 %
 define warmabs_wl( s, wlo, whi )
 {
-    return( s.wavelength > wlo and s.wavelength <= whi ) ; 
+    return where( s.wavelength > wlo and s.wavelength <= whi );
+    #return( s.wavelength > wlo and s.wavelength <= whi ) ; 
 }
 
 
