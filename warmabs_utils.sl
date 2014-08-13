@@ -423,22 +423,6 @@ model_map[ "scatemis" ] = T_SCATEMIS ;
 % sorting on wavelength:
 %
 
-#iffalse
-define rd_warmabs_output( s )
-{
-    variable t = load_warmabs_file( s );
-    T_Model = T_WARMABS ; 
-    return( t ) ; 
-}
-
-define rd_photemis_output( s )
-{
-    variable t = load_warmabs_file( s ) ; 
-    T_Model = T_PHOTEMIS ; 
-    return( t ) ; 
-}
-#endif
-
 define rd_xstar_lines_output( s )
 {
     variable t = load_warmabs_file( s );
