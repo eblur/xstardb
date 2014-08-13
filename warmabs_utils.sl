@@ -441,11 +441,14 @@ define rd_photemis_output(s) { return( rd_xstar_output( s ) );}
 %
 % find indices within a wavelength range:
 %
-define warmabs_wl( s, wlo, whi )
+define xstar_wl( s, wlo, whi )
 {
     return where( s.wavelength > wlo and s.wavelength <= whi );
-    #return( s.wavelength > wlo and s.wavelength <= whi ) ; 
+    %return( s.wavelength > wlo and s.wavelength <= whi ) ; 
 }
+
+define warmabs_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
+define photemis_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
