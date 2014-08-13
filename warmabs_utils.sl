@@ -423,19 +423,19 @@ model_map[ "scatemis" ] = T_SCATEMIS ;
 % sorting on wavelength:
 %
 
-define rd_xstar_lines_output( s )
+define rd_xstar_output( s )
 {
     variable t = load_warmabs_file( s );
     T_Model = model_map[ t.model_name ] ;
     return( t ) ;
 }
 
-define rd_warmabs_output(s) { return( rd_xstar_lines_output( s ) );}
-define rd_photemis_output(s) { return( rd_xstar_lines_output( s ) );}
+define rd_warmabs_output(s) { return( rd_xstar_output( s ) );}
+define rd_photemis_output(s) { return( rd_xstar_output( s ) );}
 
 %%% [x] *** TODO: add other types of output here:
 %%%    hotabs, hotemis, multabs, windabs, scatemis 
-%%% 2014.07.14 - should be handled by  rd_xstar_lines_output().
+%%% 2014.07.14 - should be handled by  rd_xstar_output().
 
 
 %
