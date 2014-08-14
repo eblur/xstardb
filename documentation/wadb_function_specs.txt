@@ -118,6 +118,7 @@ The following are wrappers for xstar_wl
 ii = warmabs_wl(s, wlo, whi)
 ii = photemis_wl(s, wlo, whi)
 
+** Note from lia: Right now warmabs_wl and photemis_wl don't work with the qualifiers
 ---
 
 indices = xstar_strong( n, s [; qualifiers] )
@@ -130,10 +131,23 @@ indices = xstar_strong( n, s [; qualifiers] )
   The features may be specified by qualifiers.  Defaults are
   determined from the model type (defined by s.lmodtyp) as:
 
-    ew:     equivalent width, if model_type == T_HOTABS, or T_WARMABS
+    field:   arbitrary field name of the input structure field
+     	     defining the feature for the selection of the strongest
+     	     elements. 
+	     
+	     ="ew" (equivalent width) if model_type == T_HOTABS or T_WARMABS
+	     ="luminosity" (line luminosity) if model_type == T_HOTEMIS or T_PHOTEMIS
 
-    luminosity:  line luminosity, if model_type == T_HOTEMIS or T_PHOTEMIS
+    emis:     if present, the feature is defined to be in emission and
+    	      "strong" means larger (more positive) value for
+     	      luminosity or more negative value for equivalent widths.
+     	      Otherwise, the feature is assumed to be in absorption
+     	      and "strong" means greater absorption, a more positive value.
 
+	      =1 if model_type == T_HOTEMIS or T_PHOTEMIS
+	      =0 if model_type == T_HOTABS or T_WARMABS
+
+    If model_type is not found, field="ew" and emis=0 are the defaults.
 
   Qualifiers:
 
@@ -145,19 +159,9 @@ indices = xstar_strong( n, s [; qualifiers] )
 	      the transition. A type "edge" has an upper level of
 	      "continuum".
 	      
-     emis:    if present, the feature is defined to be in emission and
-     	      "strong" means larger (more positive) value for
-     	      luminosity or more negative value for equivalent widths.
-     	      Otherwise, the feature is assumed to be in absorption
-     	      and "strong" means greater absorption, a more positive value.
-
      wmin:    minimum wavelength [A] for selection.
 
      wmax:    maximum wavelength [A] for selection
-
-     field:   arbitrary field name of the input structure field
-     	      defining the feature for the selection of the strongest
-     	      elements. 
 
      elem:    Element atomic number (integer); output will be limited to this element.
 
@@ -181,6 +185,21 @@ indices = xstar_strong( n, s [; qualifiers] )
           3187   O   VII   16.771  0.000e+00  0.000e+00   1   0  9.808e-01  0.000e+00    0.000e+00   edge/rrc       1s2.1S -    continuum
 
 
+---
+
+warmabs_page_group( s, l[; qualifiers] )
+    print a table of features of s selected by indices l
+
+    Qualifiers:
+	sort:	"wavelength" | "ew" | "luminosity" | "tau0" | "none"
+
+		Will sort the list in descending order based on the
+		values in these fields.  The default is to sort by
+		wavelength.  Note that xstar_strong does this
+		anyways. Using sort="none" will print the data in the
+		order that it is listed.
+
+
 ****** WORKING HERE *** xxx -----------------------
 
 
@@ -201,11 +220,6 @@ index = ewout_trans( s, el, ion[, upper, lower] )
 
    Note: the level designation strings are best obtained via the
    ewout_page_ids and ewout_strong functions.
-
-
-ewout_page_ids( s, l )
-
-    print a table of features of s selected by indices l.
 
 
 ewout_plot_ids( s, l[, style[, redshift]] )

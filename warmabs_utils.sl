@@ -625,11 +625,22 @@ define warmabs_page_group( s, l )
 
     () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
 
+    %% Sort by field (descending order, except lambda)
+    variable sorted_l;
+    variable fsort = qualifier( "sort", "wavelength" );
+    switch( fsort )
+    { case "wavelength": sorted_l = l[ array_sort(s.wavelength[l]) ]; }
+    { case "ew":         sorted_l = reverse( l[ array_sort(s.ew[l]) ] ); }
+    { case "luminosity": sorted_l = reverse( l[ array_sort(s.luminosity[l]) ] ); }
+    { case "tau0":       sorted_l = reverse( l[ array_sort(s.tau0grid[l]) ] );}
+    { case "none":       sorted_l = l; }
+
     variable i, n = length( l );
 
     for (i=0; i<n; i++)
     {
-	variable k = l[ i ] ; 
+	%variable k = l[ i ] ; 
+	variable k = sorted_l[ i ] ; 
 	() = fprintf( fp, strjoin( dfmt, " "),
 	     s.transition[k],
 	     Upcase_Elements[ s.Z[k]-1 ], Roman_Numerals[ s.q[k]-1 ],
