@@ -443,8 +443,12 @@ define rd_photemis_output(s) { return( rd_xstar_output( s ) );}
 %
 define xstar_wl( s, wlo, whi )
 {
-    return where( s.wavelength > wlo and s.wavelength <= whi );
-    %return( s.wavelength > wlo and s.wavelength <= whi ) ; 
+    variable lw =  s.wavelength > wlo and s.wavelength <= whi;
+
+    if ( qualifier_exists("elem") ) lw = lw and s.Z == qualifier( "elem" ) ;
+    if ( qualifier_exists("ion" ) ) lw = lw and s.q  == qualifier( "ion" ) ;
+
+    return where(lw == 1);
 }
 
 define warmabs_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
