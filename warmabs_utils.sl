@@ -540,6 +540,7 @@ define xstar_strong( n, s )
     variable l  = NULL ;
     variable r  = NULL ;
 
+    % Pick out features from element, ion, and wavelength range of interest
     lw =  s.wavelength > wmin and s.wavelength <= wmax  ;
 
     if ( qualifier_exists( "elem" ) ) lw = lw and s.Z == qualifier( "elem" ) ;
@@ -548,10 +549,12 @@ define xstar_strong( n, s )
     lw = where( lw  and  ltype ) ;
     if ( length( lw ) == 0 )  return( NULL );   % NO MATCH
 
-    l  = array_sort(  v[ lw ] ) ; 
-    n = min( [length( lw ), n ] );
-    r  = lw[ l[ [-n:] ] ];
-
+    % Sort features by field of interest (contained in v)
+    l  = array_sort(  v[ lw ] ) ;
+    n  = min( [length( lw ), n ] );
+    r  = lw[ l[ [-n:] ] ]; % grab the tail end of the sorted array
+    
+    % EXCEPT in the case of emission features, where ew is a negative value
     if ( emis and field == "ew" )  % want smallest (most negative)
     {
 	r = lw[ l[ [0:n-1] ] ] ;

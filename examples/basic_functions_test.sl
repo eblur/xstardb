@@ -5,6 +5,7 @@
 
 require("warmabs_db");
 
+%%---------------------------------------%%
 %% Test of autoname outfile
 
 fit_fun( "Powerlaw(1) * warmabs2(1) + photemis2(123)"  );
@@ -17,6 +18,7 @@ variable x1, x2 ;
 
 variable y = eval_fun(x1, x2);
 
+%%---------------------------------------%%
 %% Test of read db functions
 
 variable wa = rd_warmabs_output("warmabs_1.fits");
@@ -38,3 +40,16 @@ warmabs_page_group(wa, iwa2);
 % So this returns nothing / null
 variable ii = xstar_wl(pe, 2.0, 3.0);
 
+%%---------------------------------------%%
+%% Test xstar_strong and qualifiers
+
+% warmabs default: field="ew" and emis=0
+variable iwa_strong = xstar_strong(3, wa; wmin=3.0, wmax=3.5);
+
+variable wa_ew = get_struct_field(wa,"ew")[iwa];
+variable isort = array_sort(wa_ew);
+
+print(wa_ew[isort]);
+warmabs_page_group(wa, iwa_strong);
+
+%% Okay, this is not correct. EWs should match last three items on printed array.
