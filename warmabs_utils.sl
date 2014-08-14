@@ -479,7 +479,7 @@ define photemis_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
 %             ion  = n     ion state ( 1 => neutral )
 %             type = "line" | edge" | "rrc" 
 %
-define warmabs_strong( n, s )
+define xstar_strong( n, s )
 {
     % n = number of strongest features
     % s = structure returned by reading FITS table
