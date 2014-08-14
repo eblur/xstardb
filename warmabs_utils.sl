@@ -407,8 +407,6 @@ private variable T_HOTABS   = 1,
 		 T_WINDABS  = 6,
 		 T_SCATEMIS = 7; 
 
-private variable T_Model ; 
-
 private variable model_map = Assoc_Type[ Integer_Type ] ;
 model_map[ "hotabs"   ] = T_HOTABS ; 
 model_map[ "hotemis"  ] = T_HOTEMIS  ; 
@@ -426,7 +424,6 @@ model_map[ "scatemis" ] = T_SCATEMIS ;
 define rd_xstar_output( s )
 {
     variable t = load_warmabs_file( s );
-    T_Model = model_map[ t.model_name ] ;
     return( t ) ;
 }
 
@@ -486,7 +483,9 @@ define xstar_strong( n, s )
 
     variable field, emis ; 
 
-    switch( T_Model )    % use model type to guess defaults:
+    %% Read from structure, not global variable
+
+    switch( s.model_name )    % use model type to guess defaults:
     {
 	case T_HOTABS or case T_WARMABS:  
 	field = "ew" ;  % equivalent width
@@ -511,19 +510,19 @@ define xstar_strong( n, s )
     switch( ftype )
     {
 	case "line":
-	ltype = s.type == LINE_FEATURE_TYPE ;
+	ltype = (s.type == LINE_FEATURE_TYPE);
     }
     {
 	case "edge" or case "rrc" or case "edge/rrc":
-	ltype = s.type == EDGE_FEATURE_TYPE ;
+	ltype = (s.type == EDGE_FEATURE_TYPE);
     }
     {
 	case "any":
-	ltype = s.type == LINE_FEATURE_TYPE or s.type == EDGE_FEATURE_TYPE ;
+	ltype = (s.type == LINE_FEATURE_TYPE or s.type == EDGE_FEATURE_TYPE);
     }
     {
 	message("%% type of $ftype unknown; using any"$);
-	ltype = s.type == LINE_FEATURE_TYPE or s.type == EDGE_FEATURE_TYPE ;
+	ltype = (s.type == LINE_FEATURE_TYPE or s.type == EDGE_FEATURE_TYPE);
     }
 
     variable wmin = min( s.wavelength ); 

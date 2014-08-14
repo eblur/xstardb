@@ -49,7 +49,7 @@ variable iwa_strong = xstar_strong(3, wa; wmin=3.0, wmax=3.5);
 variable wa_ew = get_struct_field(wa,"ew")[iwa];
 variable isort = array_sort(wa_ew);
 
-print(wa_ew[isort]);
+print(wa_ew[isort[[-3:]]]);
 warmabs_page_group(wa, iwa_strong);
 
-%% Okay, this is not correct. EWs should match last three items on printed array.
+%% Okay, this is correct (note difference in format)
