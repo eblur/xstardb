@@ -24,6 +24,10 @@ variable pe = rd_photemis_output("photemis_123.fits");
 
 %% Test of wavelength selection from db
 
-variable iwa = warmabs_wl(wa, 2.0, 3.0);
-variable ipe = photemis_wl(pe, 2.0, 3.0);
+variable iwa = warmabs_wl(wa, 3.0, 3.5);
+variable ipe = photemis_wl(pe, 3.0, 3.5);
+
+% There are no lines found in this model between 2 and 3, by the way
+% So this returns nothing / null
+variable ii = xstar_wl(pe, 2.0, 3.0);
 
