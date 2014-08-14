@@ -12,6 +12,7 @@
 % 	not clear whether particular feature values will be available
 % 	after any individual model evaluation.
 
+% 2014.08.13 lia -- Updated function names, some documentation
 
 ----------------------------------------------------------------------
 
@@ -63,10 +64,10 @@ Define new functions with an auto-naming feature:
   1, will use the model name and instance to name the output FITS
   table.  E.g.,
 
-    fit_fun( "Powerlaw(1) * warmabs2(1) + photemis(123)"  );
+    fit_fun( "Powerlaw(1) * warmabs2(1) + photemis2(123)"  );
     set_par( "warmabs2(1).write_outfile",  1 );
-    set_par( "photemis2(1).write_outfile",  1 );
-    set_par( "*.autoname_outfile, 1 );
+    set_par( "photemis2(123).write_outfile",  1 );
+    set_par( "*.autoname_outfile", 1 );
 
   will produce output files called:
 
@@ -75,9 +76,9 @@ Define new functions with an auto-naming feature:
 
   [implemented in warmabs_utils.sl]
 
+---
 
-
-s = rd_xstar_lines_output( wadb_filename )
+s = rd_xstar_output( db_filename )
 
   Read the warmabs output table;
 
@@ -95,15 +96,31 @@ s = rd_xstar_lines_output( wadb_filename )
                       "<Element> <ion>f <upper_level> <lower_level> <type>"
 
 
-indices = warmabs_wl( s, wlo, whi )
+The following are wrappers for rd_xstar_output
+
+s = rd_warmabs_output( db_filename );
+s = rd_photemis_output( db_filename );
+
+---
+
+indices = xstar_wl( s, wlo, whi[; qualifiers] )
 
    Return the indices in s for features having wavelengths
    defined by
 
          wlo < s.wavelength <= whi
 
+   Qualifiers;
+	elem:	Element atomic number(intenger); output will be limited to this element.
+	ion:	Ion state (integer); output will be limited to this ion.
 
-indices = warmabs_strong( n, s [; qualifiers] )
+The following are wrappers for xstar_wl
+ii = warmabs_wl(s, wlo, whi)
+ii = photemis_wl(s, wlo, whi)
+
+---
+
+indices = xstar_strong( n, s [; qualifiers] )
 
   Return the indices in warmabs_db structure s for the n strongest
   features.  Depending on the feature type, "strongest" can mean the
