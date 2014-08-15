@@ -1,11 +1,16 @@
 % -*- mode: SLang; mode: fold -*-
-%; Time-stamp: <2014-07-23 17:36:24 dph>
+%; Time-stamp: <2014-08-15 13:05:04 dph>
 %; Directory:  ~dph/h3/Analysis/ADP_2010_atomic_data/packages/warmabs_db-0.3/
 %; File:       warmabs_utils-0.2.sl
 %; Author:     David P. Huenemoerder <dph@space.mit.edu>
 %; Orig. version: 2015.05.06
 %;========================================
 %
+
+% 0.3.3 dph added units to the warmabs2 wrappers - copied over from 
+%           the xstar models (even though the units of column is [cm^-2] 
+%           when it is really dex([cm^-2])).
+
 
 % 0.3.2 - revise reading of warmabs output - generalize function, 
 %         and save model name in the structure.
@@ -121,10 +126,13 @@ private define init_warmabs_params()
 	if (check_for_warmabs_io_par(s) ) set_par( "$s(9999).write_outfile"$, 0, 1 );
 	warmabs_mdl_par[ s ]       = get_params ; 
 	warmabs_mdl_par_names[ s ] = array_struct_field( get_params, "name" ) ;
+	variable units = array_struct_field( get_params, "units" );
+	units[where(strlen(units)==0)] = " ";
 	for (i=0; i<length( warmabs_mdl_par_names[ s ] ); i++ )
 	{
 	    warmabs_mdl_par_names[s][i] = strchop( warmabs_mdl_par_names[s][i], '.', 0)[1];
 	}
+	warmabs_mdl_par_names[s] += "[" + units + "]" ; 
     }
 }
 
