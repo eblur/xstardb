@@ -699,6 +699,26 @@ define warmabs_plot_group( s, l, y )
                           90, 1 );
 }
 
+
+% Usage: xstar_plot_group( xstardb_file, line_list[, color_index[, line_style]] );
+define xstar_plot_group()
+{
+    variable s, l, ci=2, style = line_label_default_style(), z = 0;
+
+    switch(_NARGS)
+    { _NARGS <= 1: message("ERROR: Requires two arguments"); return; }
+    { case 2: l = (); s = (); }
+    { case 3: ci = (); l = (); s = (); }
+    { case 4: style = (); ci = (); l = (); s = (); }
+    { case 5: z = (); style = (); ci = (); l = (); s = (); }
+    { _NARGS > 5: message("ERROR: Too many arguments"); return; }
+
+    variable wl = s.wavelength[l];
+    variable labels = Upcase_Elements[ s.Z[l]-1 ] + " " + Roman_Numerals[ s.q[l]-1 ];
+
+    plot_linelist(wl, labels, ci, style, z);
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 
