@@ -4,7 +4,7 @@
 % Test to be sure that basic functions work
 %
 %% NOTE: On first run, be sure to uncomment test_autoname_outfile
-%% All of the test function calls are list at the end
+%% All of the test function calls are listed at the end
 
 require("warmabs_db");
 
@@ -52,9 +52,9 @@ variable ipe = photemis_wl(pe, MIN, MAX);
 define test_xstar_wl()
 {
     print("Features selected from warmabs model:");
-    warmabs_page_group(wa, iwa);
+    xstar_page_group(wa, iwa);
     print("Features selected from photemis model:");
-    warmabs_page_group(wa, ipe);
+    xstar_page_group(wa, ipe);
 }
 
 % Right now the qualifiers only work for xstar_wl
@@ -62,12 +62,12 @@ define test_xstar_wl_qualifiers()
 {
     print("Testing xstar_wl qualifiers, return Ca V lines only");
     variable iwa2 = xstar_wl(wa, 3.0, 3.5; elem=Ca, ion=5);
-    warmabs_page_group(wa, iwa2);
+    xstar_page_group(wa, iwa2);
 }
 
 %%---------------------------------------%%
 %% Test xstar_strong and qualifiers
-%% This also tests the warmabs_page_group sorting qualifiers
+%% This also tests the xstar_page_group sorting qualifiers
 
 variable nstrong = 10;
 variable iwa_strong = xstar_strong(nstrong, wa; wmin=MIN, wmax=MAX);
@@ -81,24 +81,24 @@ define test_warmabs_strong()
     print("The largest equiv widths:");
     print(wa_ew[isort[[-nstrong:]]]);
 
-    print("The list returned from xstar_strong");
-    warmabs_page_group(wa, iwa_strong; sort="ew");
+    print("The list returned from xstar_strong, sorted by EW");
+    xstar_page_group(wa, iwa_strong; sort="ew");
 }
 %% Okay, this is correct (note difference in format)
 
 %%---------------------------------------%%
-%% Test sorting cases for warmabs_page_group
+%% Test sorting cases for xstar_page_group
 
-define test_warmabs_page_group_sorting()
+define test_xstar_page_group_sorting()
 {
     print("Sorting photoemis by luminosity");
-    warmabs_page_group(pe, ipe; sort="luminosity");
+    xstar_page_group(pe, ipe; sort="luminosity");
     
     print("Sorting photoemis by nothing");
-    warmabs_page_group(pe, ipe; sort="none");
+    xstar_page_group(pe, ipe; sort="none");
 
     print("Sorting warmabs by tau0");
-    warmabs_page_group(wa, iwa[[0:10]]; sort="tau0");
+    xstar_page_group(wa, iwa[[0:10]]; sort="tau0");
 }
 
 
@@ -110,4 +110,4 @@ define test_warmabs_page_group_sorting()
 
 test_warmabs_strong;
 
-test_warmabs_page_group_sorting;
+test_xstar_page_group_sorting;
