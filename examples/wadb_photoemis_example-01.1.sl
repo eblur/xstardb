@@ -4,7 +4,7 @@
 % copied from warmabs_example-02.sl, modified for photemis case.
 %
 % 2014.08.07 lia - updated to v1.1 for testing on vex
-%
+%      08.22 lia - updated for warmabs -> xstar function name change
 require( "warmabs_db");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -59,23 +59,23 @@ plot_pause;
 define do_plt_02()
 {
     plot_bin_density;
-    variable la = warmabs_strong(  1, c1; wmin = 13, wmax = 15, type="edge" );
-    variable lb = warmabs_strong( 10, c1; wmin = 13, wmax = 15, emis );
+    variable la = xstar_strong(  1, c1; wmin = 13, wmax = 15, type="edge" );
+    variable lb = xstar_strong( 10, c1; wmin = 13, wmax = 15, emis );
     xrange( 13, 15 ) ; yrange( 0 ) ;
     variable lx = where( x1 >= 13 and x2 <= 15 );
     variable ymax = max( y1[lx] / (x2[lx]-x1[lx])) ;
     cp1;pst; hplot( x1, x2, y1, 1 ) ; 
-    warmabs_plot_group( c1, lb, ymax*0.8; yfrac=0.8, col=4 );
-    warmabs_plot_group( c1, la, ymax*0.8; yfrac=0.8, col=2 );
+    xstar_plot_group( c1, lb );
+    xstar_plot_group( c1, la );
 }
 
 do_plt_02;
 s = "Strongest features in 13--15A region:";
 message(s); pltid(s ; size=1.4, color=4);
-warmabs_page_group( c1, warmabs_strong( 10, c1; wmin = 13, wmax = 15 ) );
+xstar_page_group( c1, xstar_strong( 10, c1; wmin = 13, wmax = 15 ) );
 % Test for difference between emis qualifier and normal - lia
 %
-warmabs_page_group( c1, warmabs_strong( 10, c1; wmin = 13, wmax = 15, emis ) );
+xstar_page_group( c1, xstar_strong( 10, c1; wmin = 13, wmax = 15, emis ) );
 plot_pause; 
 
 
@@ -84,10 +84,10 @@ plot_pause;
 
 define do_plt_03()
 {
-    variable lne = warmabs_strong( 10, c1; elem = Ne, wmin=10, wmax=14 );
+    variable lne = xstar_strong( 10, c1; elem = Ne, wmin=10, wmax=14 );
     xrange(10,14);;
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, lne, 8e-5; yfrac=1.2, col=2 );
+    xstar_plot_group( c1, lne );
 }
 
 do_plt_03;
@@ -98,13 +98,13 @@ plot_pause;
 
 define do_plt_04()
 {
-    variable l  = warmabs_strong( 20, c1; wmin=18.2, wmax=19.5);
-    variable lo = warmabs_strong( 10, c1; elem=O, wmin=18.2, wmax=19.5 );
+    variable l  = xstar_strong( 20, c1; wmin=18.2, wmax=19.5);
+    variable lo = xstar_strong( 10, c1; elem=O, wmin=18.2, wmax=19.5 );
     xrange( 18.2, 19.5);
     ylog;
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, l,  1.5e-5; yfrac=0.2, col=1 );
-    warmabs_plot_group( c1, lo, 1.5e-5; yfrac=0.2, col=2 );
+    xstar_plot_group( c1, l );
+    xstar_plot_group( c1, lo );
     ylin;
 }
 
@@ -117,13 +117,13 @@ plot_pause;
 % look for edges:
 define do_plt_05()
 {
-    variable l1 = warmabs_strong( 5, c1; wmin=10, wmax=85, type="edge",  field="luminosity");
-    variable l2= warmabs_strong(  5, c1; wmin=18, wmax=20, type="edge", field="luminosity");
+    variable l1 = xstar_strong( 5, c1; wmin=10, wmax=85, type="edge",  field="luminosity");
+    variable l2= xstar_strong(  5, c1; wmin=18, wmax=20, type="edge", field="luminosity");
     xrange( 10, 20);
     ylog;
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, l1,  1.0e-5; yfrac=0.1, col=2 );
-    warmabs_plot_group( c1, l2,  1.0e-5; yfrac=0.1, col=2 );
+    xstar_plot_group( c1, l1 );
+    xstar_plot_group( c1, l2 );
     ylin;
 }
 
@@ -131,24 +131,24 @@ do_plt_05;
 s="Look for edge features:";
 message(s); pltid(s ; size=1.4, color=4);
 plot_pause;
-warmabs_page_group( c1, warmabs_strong( 10, c1; wmin=10, wmax=20, type="edge", field="luminosity") );
+xstar_page_group( c1, xstar_strong( 10, c1; wmin=10, wmax=20, type="edge", field="luminosity") );
 
 define do_plt_06()
 {
-    variable l  = warmabs_strong( 1, c1; wmin=13, wmax=15, type="edge", field="luminosity");
-    variable l2 = warmabs_strong( 10, c1; wmin=13, wmax=15, type="line", field="luminosity");
+    variable l  = xstar_strong( 1, c1; wmin=13, wmax=15, type="edge", field="luminosity");
+    variable l2 = xstar_strong( 10, c1; wmin=13, wmax=15, type="line", field="luminosity");
     xrange( 13, 15 );
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, l,   1.5e-5; yfrac=1.5, col=2 );
-    warmabs_plot_group( c1, l2,  1.5e-5; yfrac=1.5, col=4 );
+    xstar_plot_group( c1, l );
+    xstar_plot_group( c1, l2 );
 }
 
 do_plt_06;
 s="Strongest features in 13--16A region:";
 message(s); pltid(s ; size=1.4, color=4);
 plot_pause;
-warmabs_page_group( c1, warmabs_strong( 1, c1; wmin=13, wmax=15, type="edge", field="luminosity") );
-warmabs_page_group( c1, warmabs_strong( 10, c1; wmin=13, wmax=15, type="line", field="luminosity") );
+xstar_page_group( c1, xstar_strong( 1, c1; wmin=13, wmax=15, type="edge", field="luminosity") );
+xstar_page_group( c1, xstar_strong( 10, c1; wmin=13, wmax=15, type="line", field="luminosity") );
 
 
 variable pid; 
@@ -179,6 +179,6 @@ pid = open_plot("ph_example_06.ps/vcps"); stdpltsetup; _pgscf(1); resize(16,0.6)
 do_plt_06;
 close_plot(pid); window(1);
 
-warmabs_page_group( c1, warmabs_strong( 20, c1; wmin=18, wmax=23) );
-warmabs_page_group( c1, warmabs_strong( 20, c1; wmin=18, wmax=23); file="wa_list_01.tbl" );
-warmabs_page_group( c1, warmabs_strong(  5, c1; wmin=5, wmax=10, type="edge", field="tau0"); file="ph_edge_list_01.tbl" );
+xstar_page_group( c1, xstar_strong( 20, c1; wmin=18, wmax=23) );
+xstar_page_group( c1, xstar_strong( 20, c1; wmin=18, wmax=23); file="wa_list_01.tbl" );
+xstar_page_group( c1, xstar_strong(  5, c1; wmin=5, wmax=10, type="edge", field="tau0"); file="ph_edge_list_01.tbl" );

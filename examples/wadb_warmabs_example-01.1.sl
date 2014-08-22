@@ -68,7 +68,7 @@ define do_plt_02()
     variable l = xstar_strong( 50, c1; wmin = 13, wmax = 15 );
     xrange( 13, 15 ) ; yrange( 0 ) ; 
     cp1;pst; hplot( x1, x2, y1, 1 ) ; 
-    warmabs_plot_group( c1, l, 0.8; yfrac=1.2, col=2 );
+    xstar_plot_group( c1, l );
 }
 
 do_plt_02;
@@ -86,7 +86,7 @@ define do_plt_03()
     variable lne = xstar_strong( 5, c1; elem = Ne );
     xrange(10,14);
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, lne, 1.0; yfrac=1.2, col=2 );
+    xstar_plot_group( c1, lne );
 }
 
 do_plt_03;
@@ -100,8 +100,8 @@ define do_plt_04()
     variable lo = xstar_strong( 10, c1; elem=O, wmin=18, wmax=23 );
     xrange(18, 23);
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, l,  0.5; yfrac=1.2, col=1 );
-    warmabs_plot_group( c1, lo, 0.5; yfrac=1.2, col=2 );
+    xstar_plot_group( c1, l );
+    xstar_plot_group( c1, lo );
 }
 
 do_plt_04;
@@ -116,7 +116,7 @@ define do_plt_05()
     variable l = xstar_strong( 10, c1; wmin=1, wmax=40, type="edge", field="tau0");
     xrange(3, 26);
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    warmabs_plot_group( c1, l, 0.9; yfrac=1.8, col=2 );
+    xstar_plot_group( c1, l );
 }
 
 do_plt_05;
@@ -131,7 +131,6 @@ define do_plt_06()
     variable l = xstar_strong( 5, c1; wmin=13, wmax=16, type="edge", field="tau0");
     xrange( 13, 15 );
     cp1;pst; hplot( x1, x2, y1,1 ) ; 
-    %warmabs_plot_group( c1, l,   0.9; yfrac=1.5, col=2 );
     xstar_plot_group(c1, l);
 }
 
@@ -141,7 +140,8 @@ message(s); pltid(s ; size=1.4, color=4);
 plot_pause;
 xstar_page_group( c1, xstar_strong( 5, c1; wmin=13, wmax=16, type="edge", field="tau0") );
 
-%% 2014.08.22 - lia - Try a new plotting function (plot_linelist or plot_group)
+%------------------------------
+% 2014.08.22 - lia - Try a new plotting function (plot_linelist or plot_group)
 %
 variable l = xstar_strong( 5, c1; wmin=13, wmax=16, type="edge", field="tau0");
 xrange( 13, 15 );
@@ -156,6 +156,8 @@ xstar_plot_group(c1, l, 3);
 xstar_plot_group(c1, l, 4, test_ls);
 xstar_plot_group(c1, l, 2, test_ls, 0.005);
 xstar_plot_group(c1, l, 4, test_ls, 0.05, 500); % Returns an error message, as it should
+
+%------------------------------
 
 variable pid; 
 
