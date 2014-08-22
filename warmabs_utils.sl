@@ -581,7 +581,7 @@ private variable warmabs_db_model_type =
 % s is the structure from reading output FITS files;
 % l is an index array (filter)
 %
-define warmabs_page_group( s, l )
+define xstar_page_group( s, l )
 {
     variable hdr =    [
     "id",      % transition
