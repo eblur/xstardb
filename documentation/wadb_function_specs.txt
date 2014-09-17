@@ -105,22 +105,24 @@ s = rd_photemis_output( db_filename );
 
 ---
 
-indices = xstar_wl( s, wlo, whi[; qualifiers] )
+bool_array = xstar_wl( s, wlo, whi[; qualifiers] )
 
-   Return the indices in s for features having wavelengths
-   defined by
+   Return the array of characters expressing boolean results from s
+   for features having wavelengths defined by
 
          wlo < s.wavelength <= whi
 
-   Qualifiers;
-	elem:	Element atomic number(intenger); output will be limited to this element.
-	ion:	Ion state (integer); output will be limited to this ion.
-
 The following are wrappers for xstar_wl
-ii = warmabs_wl(s, wlo, whi)
-ii = photemis_wl(s, wlo, whi)
+ba = warmabs_wl(s, wlo, whi)
+ba = photemis_wl(s, wlo, whi)
 
-** Note from lia: Right now warmabs_wl and photemis_wl don't work with the qualifiers
+bool_array = xstar_el_ion( s, el_list[, ion_list] )
+
+    Return the array of characters expressing boolean results from s
+    for features having wavelengths defined by
+
+    	s.Z == el_list and s.q == ion_list
+
 ---
 
 indices = xstar_strong( n, s [; qualifiers] )

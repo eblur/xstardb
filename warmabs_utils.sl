@@ -450,14 +450,37 @@ define xstar_wl( s, wlo, whi )
 {
     variable lw =  s.wavelength > wlo and s.wavelength <= whi;
 
-    if ( qualifier_exists("elem") ) lw = lw and s.Z == qualifier( "elem" ) ;
-    if ( qualifier_exists("ion" ) ) lw = lw and s.q  == qualifier( "ion" ) ;
-
-    return where(lw == 1);
+    return lw;
 }
 
 define warmabs_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
 define photemis_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
+
+%
+% find indices from a particular element or ion
+%
+define xstar_el_ion()
+{
+    variable s, el_list, ion_list="None";
+    variable el, el_result = 0;
+    variable ion, ion_result = 0;
+
+    switch(_NARGS)
+    { _NARGS <= 1: message("ERROR: Requires at least two arguments, database structure and element"); return; }
+
+    { case 2: el_list = (); s = (); 
+    foreach el (el_list) el_result = el_result or (s.Z == el);; 
+    return el_result; }
+
+    { case 3: ion_list = (); el_list = (); s = (); 
+    foreach el (el_list) el_result = el_result or (s.Z == el);; 
+    foreach ion (ion_list) ion_result = ion_result or (s.q == ion);;
+    return el_result and ion_result; }
+
+    { _NARGS > 3: message("ERROR: Too many arguments, see help page"); return; 
+}
+
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

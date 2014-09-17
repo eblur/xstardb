@@ -46,8 +46,8 @@ test_read_db;
 %% And qualifiers "elem" and "ion"
 
 variable MIN = 3.0, MAX = 3.5;
-variable iwa = warmabs_wl(wa, MIN, MAX);
-variable ipe = photemis_wl(pe, MIN, MAX);
+variable iwa = where(warmabs_wl(wa, MIN, MAX));
+variable ipe = where(photemis_wl(pe, MIN, MAX));
 
 define test_xstar_wl()
 {
@@ -57,12 +57,21 @@ define test_xstar_wl()
     xstar_page_group(wa, ipe);
 }
 
-% Right now the qualifiers only work for xstar_wl
-define test_xstar_wl_qualifiers()
+% Test boolean stringing together of xstar_wl with others
+
+define test_xstar_el_ion()
 {
-    print("Testing xstar_wl qualifiers, return Ca V lines only");
-    variable iwa2 = xstar_wl(wa, 3.0, 3.5; elem=Ca, ion=5);
+    print("Testing xstar_el_ion function, return Ca and Fe lines only");
+    variable iwa2 = where( xstar_el_ion(wa, [Ca,Fe]) );
     xstar_page_group(wa, iwa2);
+
+    print("Testing xstar_el_ion function, return Fe I and III lines only");
+    variable iwa3 = where( xstar_el_ion(wa, Fe, [1,3]));
+    xstar_page_group(wa, iwa3);
+
+    print("Testing xstar_el_ion function, return Ca V only");
+    variable iwa4 = where( xstar_el_ion(wa, Ca, 5));
+    xstar_page_group(wa, iwa4);
 }
 
 %%---------------------------------------%%
@@ -101,13 +110,18 @@ define test_xstar_page_group_sorting()
     xstar_page_group(wa, iwa[[0:10]]; sort="tau0");
 }
 
+%%---------------------------------------%%
+%% Test plotting with xstar_plot_group
+
+
+
 
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
 %test_xstar_wl;
-%test_xstar_wl_qualifiers;
+test_xstar_el_ion;
 
-test_warmabs_strong;
+%test_warmabs_strong;
 
-test_xstar_page_group_sorting;
+%test_xstar_page_group_sorting;
