@@ -113,15 +113,39 @@ define test_xstar_page_group_sorting()
 %%---------------------------------------%%
 %% Test plotting with xstar_plot_group
 
+%% Using range 3.0 - 3.1 Angs, plot iwa_strong lines
 
+define test_xstar_plot_group()
+{
+    plot_bin_density;
+    xlabel( latex2pg( "Wavelength [\\A]" ) ) ; 
+    ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
+    xrange(3.0,3.1);
+    hplot(x1, x2, y, 1);
+    xstar_plot_group(wa, iwa_strong, 3);
+    
+    variable style = line_label_default_style();
+    style.offset = -2.0;
+    style.label_type = 1; % Should not do anything, one line label only
+    xstar_plot_group(wa, iwa_strong, 5, style);
+}
+
+%% Another range that shows a multitude of blended lines: 
+%%    18-20 (Includes an edge)
+%%    19-20 (Close up of many blended features)
 
 
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
+test_autoname_outfile();
+test_xstar_plot_group();
+
 %test_xstar_wl;
-test_xstar_el_ion;
+%test_xstar_el_ion;
 
 %test_warmabs_strong;
 
 %test_xstar_page_group_sorting;
+
+

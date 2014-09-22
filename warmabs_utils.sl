@@ -724,9 +724,10 @@ define warmabs_plot_group( s, l, y )
 
 
 % Usage: xstar_plot_group( xstardb_file, line_list[, color_index[, line_style]] );
+%% NOTE: Does not support long labels (style.label_type=1) and will ignore
 define xstar_plot_group()
 {
-    variable s, l, ci=2, style = line_label_default_style(), z = 0;
+    variable s, l, ci=2, style = line_label_default_style(), z = 0.0;
 
     switch(_NARGS)
     { _NARGS <= 1: message("ERROR: Requires two arguments"); return; }
