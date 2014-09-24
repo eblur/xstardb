@@ -544,10 +544,10 @@ define xstar_strong( n, s )
 	ltype = (s.type == LINE_FEATURE_TYPE);
     }
     {
-	% Strong absorption edges should filter on tau0
+	% Strong absorption edges should filter on tau0grid
 	case "edge":
 	ltype = (s.type == EDGE_FEATURE_TYPE);
-	field = "tau0";
+	field = "tau0grid";
     }
     {
 	% Radiative recombination edges should filter on luminosity
