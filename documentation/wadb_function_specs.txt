@@ -137,10 +137,14 @@ indices = xstar_strong( n, s [; qualifiers] )
 
     field:   arbitrary field name of the input structure field
      	     defining the feature for the selection of the strongest
-     	     elements. 
+     	     elements. The user can define this.
 	     
 	     ="ew" (equivalent width) if model_type == T_HOTABS or T_WARMABS
 	     ="luminosity" (line luminosity) if model_type == T_HOTEMIS or T_PHOTEMIS
+
+	     Values change according to type qualifier:
+	     = "luminosity" if type == "rrc"
+	     = "tau0" if type == "edge"
 
     emis:     if present, the feature is defined to be in emission and
     	      "strong" means larger (more positive) value for
@@ -155,9 +159,9 @@ indices = xstar_strong( n, s [; qualifiers] )
 
   Qualifiers:
 
-     type:    "line" | "edge" | "rrc" | "edge/rrc" | "any"
-              ("edge" , "rrc", and "edge/rrc" are equivalent")
-	      "any" will match both types.
+     type:    "line" | "edge" | "rrc" | "any"
+	      "any" will match all types with default field as described above.
+	      "edge" and "rrc" change the field parameter
 
 	      A type "line" has upper and lower level designations
 	      the transition. A type "edge" has an upper level of
@@ -171,6 +175,7 @@ indices = xstar_strong( n, s [; qualifiers] )
 
      ion:     Ion state (integer); output will be limited to this ion.
 
+     field:   Set automatically (see above), but can also be specified by the user.
 
 
   Examples:
@@ -181,7 +186,7 @@ indices = xstar_strong( n, s [; qualifiers] )
       y = eval_fun( w1, w2);
       s = rd_xstar_lines_output( "warmabs_1.fits" ) ;
 
-      l = xstar_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge", field="tau0ewo" ) ; 
+      l = xstar_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge", field="tau0" ) ; 
       
       xstar_page_group( s, l );
       #      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label

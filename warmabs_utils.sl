@@ -544,8 +544,16 @@ define xstar_strong( n, s )
 	ltype = (s.type == LINE_FEATURE_TYPE);
     }
     {
-	case "edge" or case "rrc" or case "edge/rrc":
+	% Strong absorption edges should filter on tau0
+	case "edge":
 	ltype = (s.type == EDGE_FEATURE_TYPE);
+	field = "tau0";
+    }
+    {
+	% Radiative recombination edges should filter on luminosity
+	case "rrc":
+	ltype = (s.type == EDGE_FEATURE_TYPE);
+	field = "luminosity";
     }
     {
 	case "any":
