@@ -68,15 +68,15 @@ define do_plt_01()
 }
 
 %% Task 1 : Identify strongest lines from a mixture of warmabs models
-%% Suggested syntax : warmabs_strong( n, dblist[; qualifiers] );
+%% Suggested syntax : xstar_strong( n, dblist[; qualifiers] );
 
-variable l1 = warmabs_strong(3, db1; wmin=1.5, wmax=5.5);
+variable l1 = xstar_strong(3, db1; wmin=1.5, wmax=5.5);
 warmabs_page_group(db1, l1);
 
-variable l2 = warmabs_strong(3, db2; wmin=1.5, wmax=5.5);
+variable l2 = xstar_strong(3, db2; wmin=1.5, wmax=5.5);
 warmabs_page_group(db2, l2);
 
-variable l3 = warmabs_strong(3, db3; wmin=1.5, wmax=5.5);
+variable l3 = xstar_strong(3, db3; wmin=1.5, wmax=5.5);
 warmabs_page_group(db3, l3);
 
 do_plt_01;
