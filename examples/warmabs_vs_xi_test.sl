@@ -25,10 +25,10 @@ require( "warmabs_db" );
 private variable _model_info = struct{ mname, pname, min, max, step };
 
 variable warmabs_inf = @_model_info ;
-set_struct_fields( warmabs_inf, "warmabs", "rlogxi", -4.0, 4.0, 0.5 );
+set_struct_fields( warmabs_inf, "warmabs", "rlogxi", -4.0, 4.0, 0.1 );
 
 variable photemis_inf = @_model_info ;
-set_struct_fields( photemis_inf, "photemis", "rlogxi", -4.0, 4.0, 0.5 );
+set_struct_fields( photemis_inf, "photemis", "rlogxi", -4.0, 4.0, 0.1 );
 
 
 % Use eval_fun2() to evaluate each model.  This means that the
@@ -224,17 +224,17 @@ define xstar_collect_params( t, s )
     return( r );
 }
 
-% We need to collect "transposed" indices, for each transition (ids[i]==1), we
+% We need to collect "transposed" indices, for each transition (uid_flags[i]==1), we
 % want an array which gives its index into each table (db[i]).  Many
 % will have no values,  so we'll need to use a null index, such as -1.
 %
-% Brute force is to loop over each ids[j], and where ==1, find where it
+% Brute force is to loop over each uid_flags[j], and where ==1, find where it
 % is in db[j].transition[], and append to an array.
 %
 define xstar_collate_trans_pointers( t )
 {
-    variable Ndb    = length( t.ids )  ;    % number or databases (model runs)
-    variable Ntrans = length( t.ids[0] ) ; % number of trans + 1
+    variable Ndb    = length( t.uid_flags )  ;    % number or databases (model runs)
+    variable Ntrans = length( t.uid_flags[0] ) ; % number of trans + 1
     variable p      = Array_Type[ Ntrans ] ; % pointer arrays, one per trans
 
     % initialize pointer arrays, to null pointer, -1;
@@ -249,7 +249,7 @@ define xstar_collate_trans_pointers( t )
 	
 	for ( j=0; j<Ndb; j++ )
 	{
-	    if ( t.ids[j][i] )
+	    if ( t.uid_flags[j][i] )
 	    {
 		p[i][j] = where( t.db[j].uid == i )[0] ;
 	    }
@@ -260,9 +260,9 @@ define xstar_collate_trans_pointers( t )
 
 define xstar_all_uid( t )
 {
-    variable r = @t.ids[0] ;
+    variable r = @t.uid_flags[0] ;
     variable i ; 
-    for( i=1; i<length(t.ids); i++ ) r = r or t.ids[i] ;
+    for( i=1; i<length(t.uid_flags); i++ ) r = r or t.uid_flags[i] ;
     return( where( r ) );
 }
 
@@ -271,22 +271,22 @@ define xstar_all_uid( t )
 
 define xstar_load_tables( fnames )
 {
-    variable r   = struct{ db, par, ids, pmap, uids } ; 
+    variable r   = struct{ db, par, uid_flags, uid_map, uids } ; 
     r.db         = _xstar_load_tables( fnames ) ;
     r.par        = xstar_collect_params( r.db, ["rlogxi", "column", "vturbi"] );
     r.par.column = log10( r.par.column ) - 22.0 ;
-    r.ids        = xstar_collate_trans2( r.db );
-    r.pmap       = xstar_collate_trans_pointers( r ) ;
+    r.uid_flags  = xstar_collate_trans2( r.db );
+    r.uid_map    = xstar_collate_trans_pointers( r ) ;
     r.uids       = xstar_all_uid( r );
     return( r );
 }
 
 
-% given the structure above, and id, and a field, collect the values across tables: 
+% given the structure above, an id, and a field, collect the values across tables: 
 %
 define xstar_collect_value( t, id, field )
 {
-    variable a = t.pmap[id] ;
+    variable a = t.uid_map[id] ;
     variable i ;
     variable r = Double_Type[ length( a ) ] ; 
     for( i=0; i<length( a ); i++ )
@@ -296,8 +296,6 @@ define xstar_collect_value( t, id, field )
     }
     return( r );
 }
-
-
 
 
 
@@ -410,9 +408,28 @@ time;
 tic; sph = run_models( photemis_inf ); toc; 
 time;
 
-f = glob( "/tmp/warmabs_10*.fits" );
+f = glob( "/tmp/warmabs_10*.fits" ); % NOTE: these are local to notpirx:/tmp
 f = f[ array_sort( f ) ] ; 
 t = xstar_load_tables( f );
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% test example of collecting a feature vs parameter:
+
+k = 50 ; 
+l = xstar_strong(10, t.db[k]);
+xstar_page_group( t.db[k],  l );
+
+% manually pick out Ne VII 13.83; uid should have length [1]:
+uid = t.db[k].uid[ where( t.db[k].transition == 10453 ) ];
+
+y = xstar_collect_value( t, uid[0], "ew" );
+pointstyle(24);
+plot( t.par.rlogxi, y );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 % ti = xstar_collate_trans( t );
 % xstar_check_trans( t, ti );
@@ -422,7 +439,7 @@ t = xstar_load_tables( f );
 % after making unique transition:
 
 % ti = xstar_collate_trans2( t.t );
-xstar_check_trans( t.db, t.ids );   % all unique.
+xstar_check_trans( t.db, t.uid_flags );   % all unique.
 
 
 
@@ -433,7 +450,7 @@ t = xstar_load_tables( f );
 % ti = xstar_collate_trans( t );
 
 %ti = xstar_collate_trans2( t.t );
-xstar_check_trans( t.db, t.ids );
+xstar_check_trans( t.db, t.uid_flags );
 
 % ad hoc hack to change one entry to see if found as different for
 % same transition.
