@@ -417,13 +417,12 @@ t = xstar_load_tables( f );
 % test example of collecting a feature vs parameter:
 
 k = 50 ; 
-l = xstar_strong(10, t.db[k]);
-xstar_page_group( t.db[k],  l );
+xstar_page_group( t.db[k],  xstar_strong( 10, t.db[k]; wmin=13, wmax=14 ) );
 
 % manually pick out Ne VII 13.83; uid should have length [1]:
 uid = t.db[k].uid[ where( t.db[k].transition == 10453 ) ];
 
-y = xstar_collect_value( t, uid[0], "ew" );
+y = xstar_collect_value( t, uid[0], "luminosity" );
 pointstyle(24);
 plot( t.par.rlogxi, y );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -446,6 +445,24 @@ xstar_check_trans( t.db, t.uid_flags );   % all unique.
 f = glob( "/tmp/photemis_10*.fits" );
 f = f[ array_sort( f ) ] ; 
 t = xstar_load_tables( f );
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% test example of collecting a feature vs parameter:
+
+k = 30 ; 
+xstar_page_group( t.db[k],  xstar_strong( 10, t.db[k] ) );
+
+% manually pick out Ne VII 13.83; uid should have length [1]:
+uid = t.db[k].uid[ where( t.db[k].transition == 10453 ) ];
+
+y = xstar_collect_value( t, uid[0], "ew" );
+pointstyle(24);
+plot( t.par.rlogxi, y );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 % ti = xstar_collate_trans( t );
 
