@@ -1,3 +1,7 @@
+
+% 2014.08.13 lia -- Updated function names, some documentation details
+%      08.22 lia -- Changing function names, warmabs -> xstar for now
+
 % 2014.07.30 dph
 %
 % update draft ewout user function interface specifications.
@@ -11,8 +15,6 @@
 % 	access to atomic data after a model evaluation.  Hence it is
 % 	not clear whether particular feature values will be available
 % 	after any individual model evaluation.
-
-% 2014.08.13 lia -- Updated function names, some documentation
 
 ----------------------------------------------------------------------
 
@@ -103,22 +105,24 @@ s = rd_photemis_output( db_filename );
 
 ---
 
-indices = xstar_wl( s, wlo, whi[; qualifiers] )
+bool_array = xstar_wl( s, wlo, whi[; qualifiers] )
 
-   Return the indices in s for features having wavelengths
-   defined by
+   Return the array of characters expressing boolean results from s
+   for features having wavelengths defined by
 
          wlo < s.wavelength <= whi
 
-   Qualifiers;
-	elem:	Element atomic number(intenger); output will be limited to this element.
-	ion:	Ion state (integer); output will be limited to this ion.
-
 The following are wrappers for xstar_wl
-ii = warmabs_wl(s, wlo, whi)
-ii = photemis_wl(s, wlo, whi)
+ba = warmabs_wl(s, wlo, whi)
+ba = photemis_wl(s, wlo, whi)
 
-** Note from lia: Right now warmabs_wl and photemis_wl don't work with the qualifiers
+bool_array = xstar_el_ion( s, el_list[, ion_list] )
+
+    Return the array of characters expressing boolean results from s
+    for features having wavelengths defined by
+
+    	s.Z == el_list and s.q == ion_list
+
 ---
 
 indices = xstar_strong( n, s [; qualifiers] )
@@ -133,10 +137,14 @@ indices = xstar_strong( n, s [; qualifiers] )
 
     field:   arbitrary field name of the input structure field
      	     defining the feature for the selection of the strongest
-     	     elements. 
+     	     elements. The user can define this.
 	     
 	     ="ew" (equivalent width) if model_type == T_HOTABS or T_WARMABS
 	     ="luminosity" (line luminosity) if model_type == T_HOTEMIS or T_PHOTEMIS
+
+	     Values change according to type qualifier:
+	     = "luminosity" if type == "rrc"
+	     = "tau0" if type == "edge"
 
     emis:     if present, the feature is defined to be in emission and
     	      "strong" means larger (more positive) value for
@@ -151,9 +159,9 @@ indices = xstar_strong( n, s [; qualifiers] )
 
   Qualifiers:
 
-     type:    "line" | "edge" | "rrc" | "edge/rrc" | "any"
-              ("edge" , "rrc", and "edge/rrc" are equivalent")
-	      "any" will match both types.
+     type:    "line" | "edge" | "rrc" | "any"
+	      "any" will match all types with default field as described above.
+	      "edge" and "rrc" change the field parameter
 
 	      A type "line" has upper and lower level designations
 	      the transition. A type "edge" has an upper level of
@@ -167,6 +175,7 @@ indices = xstar_strong( n, s [; qualifiers] )
 
      ion:     Ion state (integer); output will be limited to this ion.
 
+     field:   Set automatically (see above), but can also be specified by the user.
 
 
   Examples:
@@ -177,9 +186,9 @@ indices = xstar_strong( n, s [; qualifiers] )
       y = eval_fun( w1, w2);
       s = rd_xstar_lines_output( "warmabs_1.fits" ) ;
 
-      l = warmabs_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge", field="tau0ewo" ) ; 
+      l = xstar_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge", field="tau0" ) ; 
       
-      warmabs_page_group( s, l );
+      xstar_page_group( s, l );
       #      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label
           3307   O  VIII   14.247  0.000e+00  0.000e+00   2   0  2.064e-01  0.000e+00    0.000e+00   edge/rrc       1s1.2S -     continuu
           3187   O   VII   16.771  0.000e+00  0.000e+00   1   0  9.808e-01  0.000e+00    0.000e+00   edge/rrc       1s2.1S -    continuum
@@ -187,7 +196,7 @@ indices = xstar_strong( n, s [; qualifiers] )
 
 ---
 
-warmabs_page_group( s, l[; qualifiers] )
+xstar_page_group( s, l[; qualifiers] )
     print a table of features of s selected by indices l
 
     Qualifiers:
@@ -199,6 +208,18 @@ warmabs_page_group( s, l[; qualifiers] )
 		anyways. Using sort="none" will print the data in the
 		order that it is listed.
 
+xstar_plot_group( s, l[, color[, style[, redshift]]] )
+
+   mark features in s selected by l on the current plot.
+
+   color: optional integer specifying label color
+   	  default = 2
+
+   style: optional structure giving labeling attributes 
+   	  default = line_label_default_style()
+
+   redshift: redshift for marker placement
+   	     default = 0
 
 ****** WORKING HERE *** xxx -----------------------
 
@@ -220,15 +241,6 @@ index = ewout_trans( s, el, ion[, upper, lower] )
 
    Note: the level designation strings are best obtained via the
    ewout_page_ids and ewout_strong functions.
-
-
-ewout_plot_ids( s, l[, style[, redshift]] )
-
-   mark features in s selected by l on the current plot.
-
-   style: optional structure giving labeling attributes.
-
-   redshift: redshift for marker placement
 
 
 s = ewout_label_style;

@@ -450,14 +450,37 @@ define xstar_wl( s, wlo, whi )
 {
     variable lw =  s.wavelength > wlo and s.wavelength <= whi;
 
-    if ( qualifier_exists("elem") ) lw = lw and s.Z == qualifier( "elem" ) ;
-    if ( qualifier_exists("ion" ) ) lw = lw and s.q  == qualifier( "ion" ) ;
-
-    return where(lw == 1);
+    return lw;
 }
 
 define warmabs_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
 define photemis_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
+
+%
+% find indices from a particular element or ion
+%
+define xstar_el_ion()
+{
+    variable s, el_list, ion_list="None";
+    variable el, el_result = 0;
+    variable ion, ion_result = 0;
+
+    switch(_NARGS)
+    { _NARGS <= 1: message("ERROR: Requires at least two arguments, database structure and element"); return; }
+
+    { case 2: el_list = (); s = (); 
+    foreach el (el_list) el_result = el_result or (s.Z == el);; 
+    return el_result; }
+
+    { case 3: ion_list = (); el_list = (); s = (); 
+    foreach el (el_list) el_result = el_result or (s.Z == el);; 
+    foreach ion (ion_list) ion_result = ion_result or (s.q == ion);;
+    return el_result and ion_result; }
+
+    { _NARGS > 3: message("ERROR: Too many arguments, see help page"); return; 
+}
+
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -521,8 +544,16 @@ define xstar_strong( n, s )
 	ltype = (s.type == LINE_FEATURE_TYPE);
     }
     {
-	case "edge" or case "rrc" or case "edge/rrc":
+	% Strong absorption edges should filter on tau0grid
+	case "edge":
 	ltype = (s.type == EDGE_FEATURE_TYPE);
+	field = "tau0grid";
+    }
+    {
+	% Radiative recombination edges should filter on luminosity
+	case "rrc":
+	ltype = (s.type == EDGE_FEATURE_TYPE);
+	field = "luminosity";
     }
     {
 	case "any":
@@ -581,7 +612,7 @@ private variable warmabs_db_model_type =
 % s is the structure from reading output FITS files;
 % l is an index array (filter)
 %
-define warmabs_page_group( s, l )
+define xstar_page_group( s, l )
 {
     variable hdr =    [
     "id",      % transition
@@ -697,6 +728,27 @@ define warmabs_plot_group( s, l, y )
                           y/yfrac,
 	                  Upcase_Elements[ s.Z[l]-1 ] + " " + Roman_Numerals[ s.q[l]-1 ],
                           90, 1 );
+}
+
+
+% Usage: xstar_plot_group( xstardb_file, line_list[, color_index[, line_style]] );
+%% NOTE: Does not support long labels (style.label_type=1) and will ignore
+define xstar_plot_group()
+{
+    variable s, l, ci=2, style = line_label_default_style(), z = 0.0;
+
+    switch(_NARGS)
+    { _NARGS <= 1: message("ERROR: Requires two arguments"); return; }
+    { case 2: l = (); s = (); }
+    { case 3: ci = (); l = (); s = (); }
+    { case 4: style = (); ci = (); l = (); s = (); }
+    { case 5: z = (); style = (); ci = (); l = (); s = (); }
+    { _NARGS > 5: message("ERROR: Too many arguments"); return; }
+
+    variable wl = s.wavelength[l];
+    variable labels = Upcase_Elements[ s.Z[l]-1 ] + " " + Roman_Numerals[ s.q[l]-1 ];
+
+    plot_linelist(wl, labels, ci, style, z);
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -4,7 +4,7 @@
 % Test to be sure that basic functions work
 %
 %% NOTE: On first run, be sure to uncomment test_autoname_outfile
-%% All of the test function calls are list at the end
+%% All of the test function calls are listed at the end
 
 require("warmabs_db");
 
@@ -46,28 +46,37 @@ test_read_db;
 %% And qualifiers "elem" and "ion"
 
 variable MIN = 3.0, MAX = 3.5;
-variable iwa = warmabs_wl(wa, MIN, MAX);
-variable ipe = photemis_wl(pe, MIN, MAX);
+variable iwa = where(warmabs_wl(wa, MIN, MAX));
+variable ipe = where(photemis_wl(pe, MIN, MAX));
 
 define test_xstar_wl()
 {
     print("Features selected from warmabs model:");
-    warmabs_page_group(wa, iwa);
+    xstar_page_group(wa, iwa);
     print("Features selected from photemis model:");
-    warmabs_page_group(wa, ipe);
+    xstar_page_group(wa, ipe);
 }
 
-% Right now the qualifiers only work for xstar_wl
-define test_xstar_wl_qualifiers()
+% Test boolean stringing together of xstar_wl with others
+
+define test_xstar_el_ion()
 {
-    print("Testing xstar_wl qualifiers, return Ca V lines only");
-    variable iwa2 = xstar_wl(wa, 3.0, 3.5; elem=Ca, ion=5);
-    warmabs_page_group(wa, iwa2);
+    print("Testing xstar_el_ion function, return Ca and Fe lines only");
+    variable iwa2 = where( xstar_el_ion(wa, [Ca,Fe]) );
+    xstar_page_group(wa, iwa2);
+
+    print("Testing xstar_el_ion function, return Fe I and III lines only");
+    variable iwa3 = where( xstar_el_ion(wa, Fe, [1,3]));
+    xstar_page_group(wa, iwa3);
+
+    print("Testing xstar_el_ion function, return Ca V only");
+    variable iwa4 = where( xstar_el_ion(wa, Ca, 5));
+    xstar_page_group(wa, iwa4);
 }
 
 %%---------------------------------------%%
 %% Test xstar_strong and qualifiers
-%% This also tests the warmabs_page_group sorting qualifiers
+%% This also tests the xstar_page_group sorting qualifiers
 
 variable nstrong = 10;
 variable iwa_strong = xstar_strong(nstrong, wa; wmin=MIN, wmax=MAX);
@@ -81,33 +90,62 @@ define test_warmabs_strong()
     print("The largest equiv widths:");
     print(wa_ew[isort[[-nstrong:]]]);
 
-    print("The list returned from xstar_strong");
-    warmabs_page_group(wa, iwa_strong; sort="ew");
+    print("The list returned from xstar_strong, sorted by EW");
+    xstar_page_group(wa, iwa_strong; sort="ew");
 }
 %% Okay, this is correct (note difference in format)
 
 %%---------------------------------------%%
-%% Test sorting cases for warmabs_page_group
+%% Test sorting cases for xstar_page_group
 
-define test_warmabs_page_group_sorting()
+define test_xstar_page_group_sorting()
 {
     print("Sorting photoemis by luminosity");
-    warmabs_page_group(pe, ipe; sort="luminosity");
+    xstar_page_group(pe, ipe; sort="luminosity");
     
     print("Sorting photoemis by nothing");
-    warmabs_page_group(pe, ipe; sort="none");
+    xstar_page_group(pe, ipe; sort="none");
 
     print("Sorting warmabs by tau0");
-    warmabs_page_group(wa, iwa[[0:10]]; sort="tau0");
+    xstar_page_group(wa, iwa[[0:10]]; sort="tau0");
 }
+
+%%---------------------------------------%%
+%% Test plotting with xstar_plot_group
+
+%% Using range 3.0 - 3.1 Angs, plot iwa_strong lines
+
+define test_xstar_plot_group()
+{
+    plot_bin_density;
+    xlabel( latex2pg( "Wavelength [\\A]" ) ) ; 
+    ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
+    xrange(3.0,3.1);
+    hplot(x1, x2, y, 1);
+    xstar_plot_group(wa, iwa_strong, 3);
+    
+    variable style = line_label_default_style();
+    style.offset = -2.0;
+    style.label_type = 1; % Should not do anything, one line label only
+    xstar_plot_group(wa, iwa_strong, 5, style);
+}
+
+%% Another range that shows a multitude of blended lines: 
+%%    18-20 (Includes an edge)
+%%    19-20 (Close up of many blended features)
 
 
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
+test_autoname_outfile();
+test_xstar_plot_group();
+
 %test_xstar_wl;
-%test_xstar_wl_qualifiers;
+%test_xstar_el_ion;
 
-test_warmabs_strong;
+%test_warmabs_strong;
 
-test_warmabs_page_group_sorting;
+%test_xstar_page_group_sorting;
+
+
