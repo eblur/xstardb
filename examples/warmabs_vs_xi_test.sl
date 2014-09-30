@@ -144,7 +144,7 @@ define xstar_get_max_trans( t )
     variable i, n = length( t );
 
     variable tmax_line = 0;
-    variable tmax_edge = 0 ; 
+    variable tmax_edge = 0; 
 
     for( i=0; i<n; i++)
     {
@@ -401,17 +401,18 @@ define xstar_check_trans( tbl, tid )
 
 %%% to create the run of models:
 
-variable swa, sph ; 
-time; 
-tic; swa =  run_models( warmabs_inf ) ;  toc; % about 21 sec each
-time;
-tic; sph = run_models( photemis_inf ); toc; 
-time;
-
-f = glob( "/tmp/warmabs_10*.fits" ); % NOTE: these are local to notpirx:/tmp
+%% lia - comment out (Sept 30)
+%variable swa, sph ; 
+%time; 
+%tic; swa =  run_models( warmabs_inf ) ;  toc; % about 21 sec each
+%time;
+%tic; sph = run_models( photemis_inf ); toc; 
+%f = glob( "/tmp/warmabs_10*.fits" ); % NOTE: these are local to notpirx:/tmp                                       
+%f = glob( "/tmp/warmabs_10*.fits" ); % NOTE: these are local to notpirx:/tmp
+f = glob( "/vex/d1/logxi_test/warmabs_10*.fits");
 f = f[ array_sort( f ) ] ; 
-t = xstar_load_tables( f );
-
+tic; t = xstar_load_tables( f ); toc;
+# ~ 8.5
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % test example of collecting a feature vs parameter:
@@ -422,9 +423,31 @@ xstar_page_group( t.db[k],  xstar_strong( 10, t.db[k]; wmin=13, wmax=14 ) );
 % manually pick out Ne VII 13.83; uid should have length [1]:
 uid = t.db[k].uid[ where( t.db[k].transition == 10453 ) ];
 
-y = xstar_collect_value( t, uid[0], "luminosity" );
+tic; y = xstar_collect_value( t, uid[0], "ew" ); toc;
+# ~ 0.00007
 pointstyle(24);
 plot( t.par.rlogxi, y );
+
+%% Test of find_line function (multi_warmabs_db)
+
+require("multi_warmabs_db");
+variable test_fl;
+tic; test_fl = find_line( 10453, "ne_vii", t.db ); toc;
+# ~ 0.005
+
+variable i;
+%for (i=0; i<length(test_fl); i++) xstar_page_group(t.db[i], test_fl[i];;
+for (i=0; i<length(test_fl); i++) xstar_page_group(t.db[i], where(test_fl[i]));;
+
+variable ew_test=Float_Type[length(t.db)];
+for (i=0; i<length(t.db); i++) 
+{
+    variable temp = where(test_fl[i]);
+    if ( length(temp) != 0 ) ew_test[i] = t.db[i].ew[temp][0];;
+}
+
+plot( t.par.rlogxi, ew_test );
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

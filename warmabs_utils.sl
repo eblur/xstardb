@@ -606,6 +606,7 @@ private variable warmabs_db_model_type =
 %
 define xstar_page_group( s, l )
 {
+
     variable hdr =    [
     "id",      % transition
     "ion",     % elem ion
@@ -797,3 +798,6 @@ define pst() { pointstyle(-1);}
 
 provide( "warmabs_utils" );
 message( "\nwarmabs_utils $warmabs_db_version_string loaded\n"$);
+
+
+
