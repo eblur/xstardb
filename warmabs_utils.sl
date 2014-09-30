@@ -435,12 +435,6 @@ define rd_xstar_output( s )
     return( t ) ;
 }
 
-define rd_warmabs_output(s) { return( rd_xstar_output( s ) );}
-define rd_photemis_output(s) { return( rd_xstar_output( s ) );}
-
-%%% [x] *** TODO: add other types of output here:
-%%%    hotabs, hotemis, multabs, windabs, scatemis 
-%%% 2014.07.14 - should be handled by  rd_xstar_output().
 
 
 %
@@ -453,8 +447,6 @@ define xstar_wl( s, wlo, whi )
     return lw;
 }
 
-define warmabs_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
-define photemis_wl( s, wlo, whi ) { return xstar_wl(s, wlo, whi); }
 
 %
 % find indices from a particular element or ion
@@ -697,38 +689,6 @@ define xstar_page_group( s, l )
     }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Quick-and-dirty line-labeler (should be done in relative viewport
-% coords for y-axis, as in line_label_default_style;
-% Here, just use a user-specified y-coordinate)
-%
-% s = warmabs_db FITS file struct
-% l = index array
-% y = y coordinate for top of label
-%
-define warmabs_plot_group( s, l, y )
-{
-    variable yfrac = qualifier( "yfrac", 1.1 );
-    variable col  = qualifier( "col", 1 );
-    variable n = length( l );
-    variable i ;
-    for (i=0; i<n; i++)
-    {
-	variable k = l[ i ] ; 
-	connect_points(1);
-	pointstyle(-1);
-	oplot( [1,1]*s.wavelength[ k ], [ 1, yfrac]*y, col );
-    }
-    
-    color( col ) ;
-
-    array_map( Void_Type, &xylabel,
-                          s.wavelength[ l ],
-                          y/yfrac,
-	                  Upcase_Elements[ s.Z[l]-1 ] + " " + Roman_Numerals[ s.q[l]-1 ],
-                          90, 1 );
-}
 
 
 % Usage: xstar_plot_group( xstardb_file, line_list[, color_index[, line_style]] );
