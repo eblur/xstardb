@@ -429,10 +429,12 @@ model_map[ "scatemis" ] = T_SCATEMIS ;
 % sorting on wavelength:
 %
 
-define rd_xstar_output( s )
+define rd_xstar_output( fname )
 {
-    variable t = load_warmabs_file( s );
-    return( t ) ;
+    variable result = load_warmabs_file( fname );
+    result = struct_combine( result, "filename" );
+    result.filename = fname;
+    return( result ) ;
 }
 
 
@@ -442,9 +444,7 @@ define rd_xstar_output( s )
 %
 define xstar_wl( s, wlo, whi )
 {
-    variable lw =  s.wavelength > wlo and s.wavelength <= whi;
-
-    return lw;
+    return s.wavelength > wlo and s.wavelength <= whi;
 }
 
 
