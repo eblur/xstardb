@@ -103,3 +103,27 @@ define xstar_page_all(struct_list, bool_list)
     }
 }
 
+
+
+%% Merge two XSTAR models into a single database structure
+%
+% USAGE: merge_xstar_output([s1,s2,s3])
+% RETURNS: A database structure with an extra column, db_fname
+%
+define merge_xstar_output( db_list )
+{
+    variable fields = get_struct_field_names(db_list[0]);
+    variable result = @db_list[0];
+    variable i, ff, temp1, temp2;
+    for (i=1; i<length(db_list); i++)
+    {
+	foreach ff (fields)
+	{
+	    temp1 = get_struct_field( result, ff );
+	    temp2 = get_struct_field( db_list[i], ff );
+	    set_struct_field( result, ff, [temp1, temp2] );
+	}
+    }
+    return result;
+}
+
