@@ -57,10 +57,14 @@ hplot(x1,x2,y1,1);
 variable wa1 = rd_xstar_output("warmabs_1.fits");
 variable wa2 = rd_xstar_output("warmabs_2.fits");
 
-tic; superdb = xstar_load_tables(["warmabs_1.fits","warmabs_2.fits"]); toc;
+%tic; 
+%variable superdb = xstar_load_tables(["warmabs_1.fits","warmabs_2.fits"]); toc;
 % ~ 3.5
 
+variable test = xstar_wl_all([wa1,wa2], 7.0, 10.0);
+xstar_page_all([wa1,wa2], test);
 
+variable wa_all = merge_xstar_output( [wa1, wa2] );
 
 
 
