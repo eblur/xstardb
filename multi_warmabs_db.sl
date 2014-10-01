@@ -61,8 +61,45 @@ define line_id( db, ll )
 {
     if (length(ll) > 1) 
     {
-	print("This function can only take a single line index");
+	print("line_id function can only take one line index as input");
 	return;
     }
     else return db.transition[ll], db.ion[ll];
 }
+
+%%----------------------------------------------------------------------%%
+%% Analogs to single database case
+
+%% Search set of databases for lines within a wavelength range
+%
+% USAGE: xstar_wl_all([s1,s2], wlo, whi);
+% RETURNS: An array of character arrays (booleans) specifying which lines lay
+%          within a certain wavelength range.
+
+define xstar_wl_all(struct_list, wlo, whi)
+{
+    variable i, temp, result = Array_Type[length(struct_list)];
+    for (i=0; i<length(struct_list); i++)
+    {
+	temp = struct_list[i].wavelength > wlo and struct_list[i].wavelength <= whi;
+	result[i] = temp;
+    }
+    return result;
+}
+
+%% Page through a set of databases for a set of lines
+%
+% USAGE: xstar_page_all([s1,s2], [bool1, bool2]);
+% RETURNS: Prints line information sequentially from database
+%          structure s1 and s2
+%
+define xstar_page_all(struct_list, bool_list)
+{
+    variable i;
+    for (i=0; i<length(struct_list); i++)
+    {
+	print("Model " + string(i+1));
+	xstar_page_group( struct_list[i], where(bool_list[i]) );
+    }
+}
+
