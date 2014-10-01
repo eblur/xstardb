@@ -54,18 +54,69 @@ hplot(x1,x2,y1,1);
 %%----------------------------------------------------------------%%
 %% 2. Load multiple datasets from the fits files
 
+%%%%%%%%%%%%%%%%%%%%%%%%% WORKING FROM HERE %%%%%%%%%%%%%%%%%%%%%%%
+
 variable wa1 = rd_xstar_output("warmabs_1.fits");
 variable wa2 = rd_xstar_output("warmabs_2.fits");
 
-%tic; 
-%variable superdb = xstar_load_tables(["warmabs_1.fits","warmabs_2.fits"]); toc;
+tic; 
+variable grid = xstar_load_tables(["warmabs_1.fits","warmabs_2.fits"]); toc;
 % ~ 3.5
 
+% Without merging, new functions need to be created case-by-case to
+% deal with an array of structures
+%
 variable test = xstar_wl_all([wa1,wa2], 7.0, 10.0);
 xstar_page_all([wa1,wa2], test);
 
+% merge_xstar_output creates a single database from two database functions
+%
 variable wa_all = merge_xstar_output( [wa1, wa2] );
 
 
+%%----------------------------------------------------------------%%
+%% 3. Create a model grid by looping over an interesting parameter
 
+%% Dave's code: run_models and mk_pfiles
+
+
+%%----------------------------------------------------------------%%
+%% 4. Load the model into a grid structure
+
+%% Dave's code: xstar_load_tables
+
+
+%% Desired functionality, from lia:
+
+% 1. Find all lines in the grid within a certain wavelength range
+%
+% uids = xgrid_wl( t, wlo, whi );
+
+
+% 2. Find all lines in a grid from a particular element or ion
+%
+% uids = xgrid_el_ion( t, el_list, ion_list );
+
+
+% 3. View some basic information about the lines according to uid
+%
+% xstar_page_grid( t, uids );
+
+
+% 4. Get information from a single line
+%
+% aline = line_info( s, uid );  %<--- needs a different name
+% Returns struct{ wavelength, Z, q, a_ij, type, ew, ...}
+% Make this private?
+
+
+% 5. Get information about a single line, from the entire grid
+%
+% grid_line = xgrid_line_info( t, uid );
+% Returns an array of line_info structures
+
+
+% Then you can get any field you want as a function of the grid parameter
+% line_ew = array_struct_field( grid_line, "ew" );
+% plot( t.param.rlogxi, line_ew );
 
