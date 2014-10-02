@@ -114,16 +114,31 @@ define merge_xstar_output( db_list )
 {
     variable fields = get_struct_field_names(db_list[0]);
     variable result = @db_list[0];
-    variable i, ff, temp1, temp2;
+
+    % add and initialize the "origin_file" column
+    variable dblen = length(db_list[0].transition);
+    result = struct_combine( result, "origin_file" );
+    result.origin_file = String_Type[dblen];
+    result.origin_file[[0:dblen-1]] = db_list[0].filename;
+
+    variable i, ff, temp1, temp2, ogfile;
     for (i=1; i<length(db_list); i++)
     {
+	% append all information to end of result
 	foreach ff (fields)
 	{
 	    temp1 = get_struct_field( result, ff );
 	    temp2 = get_struct_field( db_list[i], ff );
 	    set_struct_field( result, ff, [temp1, temp2] );
 	}
+
+	% create an array of strings containing new filename, append to result
+	dblen  = length(db_list[i].transition);
+	ogfile = String_Type[dblen];
+	ogfile[[0:dblen-1]] = db_list[i].filename;
+	result.origin_file = [result.origin_file, ogfile];
     }
+
     return result;
 }
 
