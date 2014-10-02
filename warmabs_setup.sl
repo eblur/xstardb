@@ -5,7 +5,8 @@
 % local default path; change these as per your installation:
 %
 private variable local_lmoddir_linux32 = "/nfs/cxc/a2/opt/packages/xspec_lmodels/heasoft_6.16_32bit" ; 
-private variable local_lmoddir_linux64 = "/nfs/cxc/a2/opt/packages/xspec_lmodels/heasoft_6.16_64bit" ; 
+private variable local_lmoddir_linux64 = "/nfs/cxc/a2/opt/packages/xspec_lmodels/heasoft_6.16_WARMABS_22DEV_OCT02_2014_64bit"; 
+%/nfs/cxc/a2/opt/packages/xspec_lmodels/heasoft_6.16_64bit" ; 
 
 private variable lmoddir      = NULL ;
 private variable warmabs_data = lmoddir ;
