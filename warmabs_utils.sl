@@ -640,7 +640,7 @@ define xstar_page_group( s, l )
     variable dfmt = [
     "%8d",
     "%3s %5s",
-    "%8.3f",
+    "%8.4f",
     "%10.3e",
     "%10.3e",
     "%3d",
@@ -652,6 +652,14 @@ define xstar_page_group( s, l )
     "%12s - %12s\n"
     ] ; 
     
+    %% If it is a merged database, there will be an addition origin file column
+    if (struct_field_exists(s, "origin_file"))
+    {
+	hdr = [hdr, "origin"];
+	hfmt[-1] = " %S"; hfmt = [hfmt, " %30s\n"];
+	dfmt[-1] = "%12s - %12s"; dfmt = [dfmt, "%15s\n"];
+    }
+
     variable fp = qualifier( "file", stdout ) ;
     if ( typeof(fp) == String_Type ) fp = fopen( fp, "w" );
 
@@ -673,7 +681,25 @@ define xstar_page_group( s, l )
     {
 	%variable k = l[ i ] ; 
 	variable k = sorted_l[ i ] ; 
-	() = fprintf( fp, strjoin( dfmt, " "),
+	if (struct_field_exists(s, "origin_file")){
+	() = fprintf( fp, strjoin(dfmt," "),
+	     s.transition[k],
+	     Upcase_Elements[ s.Z[k]-1 ], Roman_Numerals[ s.q[k]-1 ],
+	     s.wavelength[k],
+	     s.a_ij[k],
+	     s.f_ij[k],
+	     int(s.g_lo[k]),
+	     int(s.g_up[k]),
+	     s.tau0grid[k],
+	     s.ew[k],
+	     s.luminosity[k],
+	     s.type[k],
+	     s.lower_level[k], s.upper_level[k],
+	     s.origin_file[k]
+	);
+	}
+	else {
+	() = fprintf( fp, strjoin(dfmt," "),
 	     s.transition[k],
 	     Upcase_Elements[ s.Z[k]-1 ], Roman_Numerals[ s.q[k]-1 ],
 	     s.wavelength[k],
@@ -687,6 +713,7 @@ define xstar_page_group( s, l )
 	     s.type[k],
 	     s.lower_level[k], s.upper_level[k]
 	);
+	}
     }
 }
 
