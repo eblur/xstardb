@@ -48,7 +48,8 @@ variable y1 = eval_fun(x1, x2);
 plot_bin_density;
 xlabel( latex2pg( "Wavelength [\\A]" ) ) ; 
 ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
-ylog;
+ylog; 
+yrange(200.0,500.0);
 hplot(x1,x2,y1,1);
 
 %%----------------------------------------------------------------%%
@@ -72,6 +73,38 @@ xstar_page_all([wa1,wa2], test);
 % merge_xstar_output creates a single database from two database functions
 %
 variable wa_all = merge_xstar_output( [wa1, wa2] );
+
+%% Example: Find lines strongest lines within an interesting wl range
+yrange();
+xrange(7.0,10.0);
+hplot(x1,x2,y1,1);
+
+variable s_all = xstar_strong(5, wa_all; wmin=7.0, wmax=10.0);
+xstar_page_group(wa_all, s_all; sort="ew");
+
+%% Plot the lines
+variable i1 = where( wa_all.origin_file[s_all] == "warmabs_1.fits" );
+variable i2 = where( wa_all.origin_file[s_all] == "warmabs_2.fits" );
+
+variable lstyle = line_label_default_style();
+lstyle.top_frac = 0.8; 
+ylstyle.bottom_frac = 0.6;
+lstyle.angle = 45;
+
+% For model 1:
+xstar_plot_group( wa_all, s_all[i1], 2, lstyle);
+
+% For model 2, need to include redshift
+xstar_plot_group( wa_all, s_all[i2], 3, lstyle, get_par("warmabs2(2).Redshift"));
+
+%% If you wanted to correct the wavelength for redshift, before
+%% combining datasets, do the following.
+%
+% wa2.wavelength *= (1.0 + get_par("warmabs2(2).Redshift"));
+% wa_all = merge_xstar_output([wa1, wa2]);
+%
+% This will be more necessary if you are modeling something at
+% intermediate redshift, and need to identify lines in your model spectrum.
 
 
 %%----------------------------------------------------------------%%
