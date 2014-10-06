@@ -824,6 +824,85 @@ define cp0() { connect_points(0);}
 define pst() { pointstyle(-1);}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2014.10.06 - Dealing with multiple XSTAR runs
+% Updates from lia, using examples/warmabs_vs_xi_test.sl
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+private variable x1, x2;
+(x1, x2) = linear_grid( 1.0, 40.0, 8192 );
+
+variable _default_binning = struct{ bin_lo, bin_hi, value };
+set_struct_fields( _default_binning, x1, x2 );
+
+variable _default_model_info = struct{ mname, pname, min, max, step, bins };
+
+% USAGE: run_models( info, rootdir[; nstart]);
+
+% info = struct{ bins, mname, pname, min, max, step }
+% info.grid = struct{ bin_lo, bin_hi, value }
+% rootdir = string describing the root directory to dump all the files into
+
+define run_models( info, rootdir )
+{
+    % starting numbering index for model output
+    variable n0 = qualifier( "nstart", 0 );
+    if ( typeof(n0) != Integer_Type ) { print("nstart must be an integer"); return; }
+    print("The starting index is");
+    print(n0);
+
+    %variable g = struct{ bin_lo, bin_hi, value };
+    %(g.bin_lo, g.bin_hi) = linear_grid( 1.0, 40.0, 8192 );
+
+    variable sfun  = info.mname;
+    variable pname = info.pname;
+    variable pgrid = [ info.min : info.max+info.step : info.step ] ;
+    variable n = length( pgrid ); 
+
+    variable t = get_fit_fun ;   % to save the current model
+
+    fit_fun( "$sfun($n0)"$ );
+    set_par( "$sfun($n0).write_outfile"$, 1 );
+
+    variable fpar = get_par( "*" );
+    variable pidx  = where( array_struct_field( get_params , "name" ) == "$sfun($n0).$pname"$)[0];
+
+    fit_fun( t );  % restore the saved model
+
+    variable i, fref = fitfun_handle( sfun );
+
+    variable r = struct{ bin_lo, bin_hi, value };
+    r.bin_lo   = @info.bins.bin_lo ;
+    r.bin_hi   = @info.bins.bin_hi ;
+    r.value    = Array_Type[ n ] ; 
+
+    % Use eval_fun2() to evaluate each model.  This means that the
+    % autoname_outfile feature will not work because the
+    % Isis_Active_Function_Id is not defined (or is always 0).  Hence,
+    % we will use the unwrapped models and set the output filename via
+    % the env.
+
+    for ( i=1; i<=n; i++ )
+    {
+	warmabs_set_outfile( sprintf( rootdir + "%s_%d.fits", sfun, n0+i ) );
+	fpar[ pidx ] = pgrid[ i-1 ] ;
+	message( "Running  $sfun vs $pname ... $i"$ );
+	() = printf("debug: pgrid[%d]=%8.2f\n", i-1, fpar[pidx] );
+	r.value[i-1] = eval_fun2( fref, r.bin_lo, r.bin_hi, fpar );
+	title( "$i"$ ); ylog; limits; hplot( r.bin_lo, r.bin_hi, r.value[i-1] );
+    }
+    warmabs_unset_outfile;
+
+    return( r ) ; 
+}
+
+
+
+
+
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
