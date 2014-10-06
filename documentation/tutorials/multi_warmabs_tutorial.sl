@@ -109,11 +109,17 @@ xstar_plot_group( wa_all, s_all[i2], 3, lstyle, get_par("warmabs2(2).Redshift"))
 %%----------------------------------------------------------------%%
 %% 3. Create a model grid by looping over an interesting parameter
 
-%% Dave's code: run_models and mk_pfiles
+%% xstar_run_model_grid( info, rootdir[; nstart] );
+%% Runs specified XSTAR model over a specific parameter
+%%
+%% INPUTS:
+%% info      = struct{ bins, mname, pname, min, max, step }
+%% info.grid = struct{ bin_lo, bin_hi, value }
+%% rootdir   = string describing the root directory to dump all the files into
+%% nstart    = an integer setting the first index on the output label
 
-%%%%%%%%%%%%%%%%%%%% WORKING FROM HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Run the models over varying column density
+% This example runs a model grid over the column density parameter,
+% from N_H = 1.e20 to 1.e22
 
 variable warmabs_info = @_default_model_info;
 set_struct_fields( warmabs_info, "warmabs", "column", -1.0, 1.0, 0.1, _default_binning );
@@ -123,6 +129,9 @@ tic; swa = xstar_run_model_grid( warmabs_info, "/vex/d1/lia/xstar_test/column/";
 
 %%----------------------------------------------------------------%%
 %% 4. Load the model into a grid structure
+
+%%%%%%%%%%%%%%%%%%%%%%% working from here %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %% Dave's code: xstar_load_tables
 
