@@ -836,13 +836,13 @@ set_struct_fields( _default_binning, x1, x2 );
 
 variable _default_model_info = struct{ mname, pname, min, max, step, bins };
 
-% USAGE: run_models( info, rootdir[; nstart]);
+% USAGE: xstar_run_model_grid( info, rootdir[; nstart]);
 
 % info = struct{ bins, mname, pname, min, max, step }
 % info.grid = struct{ bin_lo, bin_hi, value }
 % rootdir = string describing the root directory to dump all the files into
 
-define run_models( info, rootdir )
+define xstar_run_model_grid( info, rootdir )
 {
     % starting numbering index for model output
     variable n0 = qualifier( "nstart", 0 );

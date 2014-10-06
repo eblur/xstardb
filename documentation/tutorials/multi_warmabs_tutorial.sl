@@ -11,7 +11,7 @@
 
 require("warmabs_db");
 require("multi_warmabs_db");
-require("examples/warmabs_vs_xi_test.sl");
+%require("examples/warmabs_vs_xi_test.sl");
 
 %%----------------------------------------------------------------%%
 %% 1. Simulate a multi-component warm absorption model
@@ -115,14 +115,18 @@ xstar_plot_group( wa_all, s_all[i2], 3, lstyle, get_par("warmabs2(2).Redshift"))
 
 %% Run the models over varying column density
 
-variable _default_model_info = struct{ mname, pname, min, max, step };
 variable warmabs_info = @_default_model_info;
-set_struct_fields( warmabs_info, "warmabs", "column", -1.0, 1.0, 0.1);
+set_struct_fields( warmabs_info, "warmabs", "column", -1.0, 1.0, 0.1, _default_binning );
 
 variable swa;
-%tic; swa = run_models( warmabs_info, "/vex/d1/lia/xstar_test/column/" ); toc;
+tic; swa = xstar_run_model_grid( warmabs_info, "/vex/d1/lia/xstar_test/column/"; nstart=10 ); toc;
 
-%% Load the models into a grid
+%%----------------------------------------------------------------%%
+%% 4. Load the model into a grid structure
+
+%% Dave's code: xstar_load_tables
+
+require("examples/warmabs_vs_xi_test");
 
 variable fgrid, wa_grid;
 fgrid = glob( "/vex/d1/lia/xstar_test/column/warmabs_10*.fits" );
@@ -137,15 +141,10 @@ xstar_page_group( wa_grid.db[k], xstar_strong(5, wa_grid.db[k]; wmin=5, wmax=10)
 % I'll use Si VII
 variable line_ew = xstar_line_ew( 23156, "si_vii", wa_grid.db );
 
-ylin;
+ylin; yrange(); xrange();
 xlabel( latex2pg( "\log(N_H/10^{21})" ) );
 ylabel( latex2pg( "Equivalent Width [\\A]" ) );
 plot(wa_grid.par.column, line_ew, 2 );
-
-%%----------------------------------------------------------------%%
-%% 4. Load the model into a grid structure
-
-%% Dave's code: xstar_load_tables
 
 
 %% Desired functionality, from lia:
@@ -155,9 +154,13 @@ plot(wa_grid.par.column, line_ew, 2 );
 % uids = xgrid_wl( t, wlo, whi );
 
 
+
+
 % 2. Find all lines in a grid from a particular element or ion
 %
 % uids = xgrid_el_ion( t, el_list, ion_list );
+
+
 
 
 % 3. View some basic information about the lines according to uid
