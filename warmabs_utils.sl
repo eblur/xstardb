@@ -1,11 +1,16 @@
 % -*- mode: SLang; mode: fold -*-
-%; Time-stamp: <2014-08-15 13:05:04 dph>
-%; Directory:  ~dph/h3/Analysis/ADP_2010_atomic_data/packages/warmabs_db-0.3/
-%; File:       warmabs_utils-0.2.sl
-%; Author:     David P. Huenemoerder <dph@space.mit.edu>
-%; Orig. version: 2015.05.06
+%; Date: 2014.10.06
+%; Directory:  /vex/d1/lia/wadb_repo.git
+%; File:       warmabs_utils.sl
+%; Author:     David P. Huenemoerder <dph@space.mit.edu>, Lia Corrales <lia@space.mit.edu>
+%; Orig. version: 2015.08.15 - See ~/dph/h3/Analysis/ADP_2010_atomic_data/packages/warmabs_db-0.3/
 %;========================================
 %
+
+% 0.3.4 lia changed most function names to use xstar_ prefix,
+%           xstar_el_ion behavior updated to emulate el_ion
+%           xstar_plot_group behavior updated to emulate plot_group
+%           xstar_page_group updated to handle merged lists
 
 % 0.3.3 dph added units to the warmabs2 wrappers - copied over from 
 %           the xstar models (even though the units of column is [cm^-2] 
