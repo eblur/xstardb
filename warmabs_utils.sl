@@ -823,10 +823,16 @@ define cp1() { connect_points(1);}
 define cp0() { connect_points(0);}
 define pst() { pointstyle(-1);}
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 2014.10.06 - Dealing with multiple XSTAR runs
 % Updates from lia, using examples/warmabs_vs_xi_test.sl
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%-----------------------------------------------------------------------
+% Run a set of models
 
 private variable x1, x2;
 (x1, x2) = linear_grid( 1.0, 40.0, 8192 );
@@ -896,7 +902,34 @@ define xstar_run_model_grid( info, rootdir )
 }
 
 
+%-----------------------------------------------------------------------
+% Load a set of models into a model grid structure
 
+private define add_unique_id( g )
+{
+    variable db, temp;
+    foreach db (g.db)
+    {
+	% Check that our unique id numbering scheme is safe
+	if ( max(db.ind_up) > 999 )
+	{ print("Huge problem, ind_up has more than three digits"); return; }
+	
+	temp   = int( db.ind_ion*1.e6 + db.ind_lo*1.e3 + db.ind_up );
+	db     = struct_combine( db, "uid" );
+	db.uid = temp;
+
+	g.uids = union(g.uids, temp); % This creates a DataType_Type object, problem here
+    }
+}
+
+define xstar_load_tables( fnames )
+{
+    variable result = struct{ db, uids, uid_flags };
+    result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
+
+    result.uids = Array_Type[0];
+    return result;
+}
 
 
 
