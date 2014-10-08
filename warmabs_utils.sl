@@ -716,8 +716,7 @@ define xstar_page_group( s, l )
 	     s.ew[k],
 	     s.luminosity[k],
 	     s.type[k],
-	     s.lower_level[k], s.upper_level[k]
-	);
+	     s.lower_level[k], s.upper_level[k] );
 	}
     }
 }
@@ -905,32 +904,108 @@ define xstar_run_model_grid( info, rootdir )
 %-----------------------------------------------------------------------
 % Load a set of models into a model grid structure
 
+% mdb : master db for grid structure
+% db  : db to merge with master db (mdb)
+% ii  : indices pointing to unique array values
+private define merge_master_db( mdb, db, ii )
+{
+    variable field_list = get_struct_field_names( mdb );
+    variable ff, temp1, temp2;
+    foreach ff (field_list)
+    {
+	temp1 = get_struct_field( mdb, ff );
+	temp2 = get_struct_field( db, ff );
+	set_struct_field( mdb, ff, [temp1, temp2][ii] );
+    }
+}
+
 private define add_unique_id( g )
 {
-    variable db, temp;
+    variable db, temp, ii;
     foreach db (g.db)
     {
-	% Check that our unique id numbering scheme is safe
-	if ( max(db.ind_up) > 999 )
-	{ print("Huge problem, ind_up has more than three digits"); return; }
-	
-	temp   = int( db.ind_ion*1.e6 + db.ind_lo*1.e3 + db.ind_up );
+	temp   = int(db.ind_ion*1.e6 + db.ind_lo*1.e3 + db.ind_up);
 	db     = struct_combine( db, "uid" );
 	db.uid = temp;
 
-	g.uids = union(g.uids, temp); % This creates a DataType_Type object, problem here
+	g.uids = [g.uids, temp];
+	ii     = unique( g.uids );  % sorts while identifying unique indices
+
+	% Append database info onto master database,
+	% keeping only unique values
+	g.uids = g.uids[ii];
+	merge_master_db( g.mdb, db, ii );
     }
 }
 
 define xstar_load_tables( fnames )
 {
-    variable result = struct{ db, uids, uid_flags };
+    variable result = struct{ db, mdb, uids, uid_flags };
     result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
 
-    result.uids = Array_Type[0];
+    result.uids  = Int_Type[0];
+    result.mdb   = struct{ type, ion, wavelength, lower_level, upper_level, Z, q };
+    set_struct_fields( result.mdb, String_Type[0], String_Type[0], Double_Type[0], 
+                       String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0] );
+
+    add_unique_id( result );
     return result;
 }
 
+
+%% I used xstar_page_group as a template
+% g: a grid structure
+% l: indices for g.uids array
+define xstar_page_grid( g, l )
+{
+    
+    variable hdr =    [
+    "uid",     % unique LLong integer for line
+    "ion",     % elem ion
+    "lambda",  % wavelength
+    "type",    % type
+    "label"    % lower_level - upper_level
+    ] ;
+    
+    variable hfmt = [
+    "# %8s",
+    " %8s",
+    " %8s",
+    " %10s",
+    " %S\n"
+    ] ; 
+
+    variable dfmt = [
+    "%12d",
+    "%3s %5s",
+    "%8.4f",
+    "%10s",
+    "%12s - %12s\n"
+    ] ; 
+    
+    % sort by wavelength
+    variable sorted_l = l[ array_sort(g.mdb.wavelength[l]) ];
+
+    % print everything
+    variable fp = qualifier( "file", stdout ) ;
+    if ( typeof(fp) == String_Type ) fp = fopen( fp, "w" );
+
+    () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
+
+    variable i, n = length( l );
+    for (i=0; i<n; i++)
+    {
+	variable k = sorted_l[ i ] ; 
+	() = fprintf( fp, strjoin(dfmt," "),
+	     g.uids[k], 
+	     Upcase_Elements[ g.mdb.Z[k]-1 ], Roman_Numerals[ g.mdb.q[k]-1 ],
+	     g.mdb.wavelength[k],
+	     g.mdb.type[k],
+	     g.mdb.lower_level[k], g.mdb.upper_level[k] );
+    }
+
+    return;
+}
 
 
 
