@@ -943,20 +943,22 @@ private define merge_master_db( mdb, db, ii )
 
 private define add_unique_id( g )
 {
-    variable db, temp, ii;
-    foreach db (g.db)
+    variable db, temp, ii, k;
+    for (k=0; k<length(g.db); k++)
     {
-	temp   = int(db.ind_ion*1.e6 + db.ind_lo*1.e3 + db.ind_up);
-	db     = struct_combine( db, "uid" );
-	db.uid = temp;
+	temp    = g.db[k].ind_ion * 10000000LL + 
+	          g.db[k].ind_lo * 10000LL + 
+	          g.db[k].ind_up;
+	g.db[k] = struct_combine( g.db[k], "uid" );
+	g.db[k].uid = @temp;
 
-	g.uids = [g.uids, temp];
+	g.uids = [g.uids, @temp];
 	ii     = unique( g.uids );  % sorts while identifying unique indices
 
 	% Append database info onto master database,
 	% keeping only unique values
 	g.uids = g.uids[ii];
-	merge_master_db( g.mdb, db, ii );
+	merge_master_db( g.mdb, g.db[k], ii );
     }
 }
 
@@ -971,6 +973,14 @@ define xstar_load_tables( fnames )
                        String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0] );
 
     add_unique_id( result );
+
+    result.uid_flags = Array_Type[length(result.db)];
+    variable i;
+    for (i=0; i<length(result.db); i++)
+    {
+	result.uid_flags[i] = ismember( result.uids, result.db[i].uid );
+    }
+
     return result;
 }
 
@@ -998,7 +1008,7 @@ define xstar_page_grid( g, l )
     ] ; 
 
     variable dfmt = [
-    "%12d",
+    "%12ld",
     "%3s %5s",
     "%8.4f",
     "%10s",
@@ -1028,6 +1038,18 @@ define xstar_page_grid( g, l )
 
     return;
 }
+
+%%% Utilities for navigating the grid structure
+
+define xstar_unpack_uid( uid )
+{
+    variable ion, lo, up ;
+    ion = uid mod 1000 ;
+    up  = uid / 1000 mod 10000 ;
+    lo  = uid / 10000000 ;
+    return( ion, lo, up );
+}
+
 
 
 
