@@ -458,25 +458,47 @@ define xstar_wl( s, wlo, whi )
 %
 define xstar_el_ion()
 {
-    variable s, el_list, ion_list="None";
-    variable el, el_result = 0;
-    variable ion, ion_result = 0;
+    % s is database structure
+    % el_list is array of atomic numbers
+    % ion_list is array of ions
 
-    switch(_NARGS)
-    { _NARGS <= 1: message("ERROR: Requires at least two arguments, database structure and element"); return; }
+    % example:
+    % return flag array where indices of Ne IX or Ne X are set to 1:
+    % l = xstar_el_ion( db, Ne, [9,10] );
 
-    { case 2: el_list = (); s = (); 
-    foreach el (el_list) el_result = el_result or (s.Z == el);; 
-    return el_result; }
+    variable s, el_list, ion_list = NULL ;
+    variable el, ion;
 
-    { case 3: ion_list = (); el_list = (); s = (); 
-    foreach el (el_list) el_result = el_result or (s.Z == el);; 
-    foreach ion (ion_list) ion_result = ion_result or (s.q == ion);;
-    return el_result and ion_result; }
+    switch( _NARGS )
+    {
+        case 2:
+        ( s, el_list ) = ();
+    }
+    {
+        case 3:
+        ( s, el_list, ion_list ) = ();
+    }
+    {
+        message("Wrong number of arguments.");
+        message("USAGE: flags = xstar_el_ion( db_struct, atomic_number[,  ion] )" );
+        return -1;
+    }
 
-    { _NARGS > 3: message("ERROR: Too many arguments, see help page"); return; 
-}
+    variable el_result  = 0;
+    variable ion_result = 1;
 
+    foreach el (el_list)
+    {
+        el_result = el_result or (s.Z == el);
+    }
+
+    if (ion_list != NULL )
+    {
+        ion_result = 0;
+        foreach ion (ion_list) ion_result = ion_result or (s.q == ion);
+    }
+
+    return( el_result and ion_result );
 }
 
 

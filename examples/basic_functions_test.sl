@@ -32,13 +32,13 @@ variable wa, pe;
 
 define test_read_db()
 {
-    wa = rd_warmabs_output("warmabs_1.fits");
-    pe = rd_photemis_output("photemis_123.fits");
+    wa = rd_xstar_output("warmabs_1.fits");
+    pe = rd_xstar_output("photemis_123.fits");
 }
 
 %%---------- After first autoname, must load dbs ----------%%
 
-%test_autoname_outfile;
+test_autoname_outfile;
 test_read_db;
 
 %%---------------------------------------%%
@@ -46,8 +46,8 @@ test_read_db;
 %% And qualifiers "elem" and "ion"
 
 variable MIN = 3.0, MAX = 3.5;
-variable iwa = where(warmabs_wl(wa, MIN, MAX));
-variable ipe = where(photemis_wl(pe, MIN, MAX));
+variable iwa = where(xstar_wl(wa, MIN, MAX));
+variable ipe = where(xstar_wl(pe, MIN, MAX));
 
 define test_xstar_wl()
 {
@@ -82,7 +82,7 @@ variable nstrong = 10;
 variable iwa_strong = xstar_strong(nstrong, wa; wmin=MIN, wmax=MAX);
 
 % warmabs default: field="ew" and emis=0
-define test_warmabs_strong()
+define test_xstar_strong()
 {
     variable wa_ew = get_struct_field(wa,"ew")[iwa];
     variable isort = array_sort(wa_ew);
@@ -138,13 +138,12 @@ define test_xstar_plot_group()
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
-test_autoname_outfile();
-test_xstar_plot_group();
+%test_xstar_plot_group();
 
 %test_xstar_wl;
-%test_xstar_el_ion;
+test_xstar_el_ion;
 
-%test_warmabs_strong;
+%test_xstar_strong;
 
 %test_xstar_page_group_sorting;
 
