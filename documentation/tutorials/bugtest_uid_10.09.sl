@@ -79,3 +79,24 @@ xstar_page_group(wacheck, dupl1);
 % #      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label
 %   11515  Na     X   8.9444  3.740e+12  1.345e-01   1   3  1.445e-07  1.069e-07    0.000e+00       line       1s2.1S -   1s1.3p1.1P
 %   11519  Na     X   8.9444  4.823e+10  1.735e-03   1   3  1.869e-09  1.379e-09    0.000e+00       line       1s2.1S -   1s1.3p1.1P
+
+
+%% Check a few more just to be sure.
+
+variable dupl2 = where( wa_grid.db[0].uid == wa_grid.db[0].uid[missing[1]] );
+xstar_page_group(wacheck, dupl2);
+
+%#      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label
+%    7759   F  VIII  13.7368  8.654e+11  7.342e-02   1   3  6.994e-06  2.189e-06    0.000e+00       line       1s2.1S -   1s1.3p1.1P
+%    7763   F  VIII  13.7368  2.045e+10  1.735e-03   1   3  1.655e-07  5.175e-08    0.000e+00       line       1s2.1S -   1s1.3p1.1P
+
+variable dupl3 = where( wa_grid.db[0].uid == wa_grid.db[0].uid[missing[2]] );
+xstar_page_group(wacheck, dupl3);
+
+%#      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label
+%   27394  Ni   XII  35.1841  0.000e+00  0.000e+00   4   0  1.312e-05  0.000e+00    0.000e+00   edge/rrc   3p5.2P_3/2 -    continuum
+%   27512  Ni   XII  35.1841  0.000e+00  0.000e+00   4   0  6.303e-05  0.000e+00    0.000e+00   edge/rrc   3p5.2P_3/2 -    continuum
+
+
+
+
