@@ -962,9 +962,36 @@ private define add_unique_id( g )
     }
 }
 
+% after reading a table, get a value from the params substructure:
+% e.g., this is where the model rlogxi, column, vturb are.
+% "interesting" parameters in xspec models are rlogxi, column, "vturb".
+% These map to xstar output parameters, "rlogxi", "column", "vturbi", 
+% note that column is in units of cm^-2
+%
+define xstar_get_table_param( t, s)
+{
+    variable l = where( t.params.parameter == s )[0] ; 
+    return( t.params.value[ l ] );
+}
+
+% collect the "interesting" params into arrays for each t[]:
+%
+private define xstar_collect_params( t, s )
+{
+    variable r = struct_combine( ,  s ) ; 
+    variable i ; 
+    for( i=0; i<length( s ); i++ )
+    {
+	set_struct_field( r, s[i], array_map( Double_Type, &xstar_get_table_param, t, s[i] ) );
+    }
+    return( r );
+}
+
+
+
 define xstar_load_tables( fnames )
 {
-    variable result = struct{ db, mdb, uids, uid_flags };
+    variable result = struct{ db, mdb, uids, uid_flags, par };
     result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
 
     result.uids  = Int_Type[0];
@@ -972,6 +999,7 @@ define xstar_load_tables( fnames )
     set_struct_fields( result.mdb, String_Type[0], String_Type[0], Double_Type[0], 
                        String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0] );
 
+    % Deal with assigning unique ids and flagging
     add_unique_id( result );
 
     result.uid_flags = Array_Type[length(result.db)];
@@ -981,6 +1009,8 @@ define xstar_load_tables( fnames )
 	result.uid_flags[i] = ismember( result.uids, result.db[i].uid );
     }
 
+    % Deal with parameter dat
+    result.par  = xstar_collect_params( result.db, ["rlogxi", "column", "vturbi"] );
     return result;
 }
 
@@ -1088,6 +1118,11 @@ define xstar_line_prop( grid, uid, field )
     return result;
 }
 
+
+%define xstar_uid_index( db, uid )
+%{
+%    return where( db.uid == uid );
+%}
 
 %define xstar_line_info( db, index )
 %{

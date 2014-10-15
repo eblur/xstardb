@@ -45,47 +45,38 @@ fgrid = fgrid[ array_sort(fgrid) ];
 
 wa_grid = xstar_load_tables(fgrid);
 
-% 1. Find all lines in the grid within a certain wavelength range
-%
-% uids = xgrid_wl( t, wlo, whi );
+%%----------------------------------------------------------------%%
+%% 3. Navigate the grid by using common functions like xstar_wl and
+%% xstar_el_ion on the "master database": wa_grid.mdb
+
+
+%% Find all lines within a wavelength range
 
 variable test = where( xstar_wl(wa_grid.mdb, 1.0, 2.0) );
 xstar_page_grid( wa_grid, test );
 
 
-%% Pick out a line
+%% Pick lines by wavelength, element, and ion
+
 variable k = 10;
 xstar_page_group( wa_grid.db[k], xstar_strong(5, wa_grid.db[k]; wmin=5, wmax=10) );
 
-% I'll use Si VII
-variable si7 = where( xstar_wl(wa_grid.mdb, 7.0, 8.0) and xstar_el_ion(wa_grid.mdb, Si, 7) )[0];
+% I'll use a single Si VII line...
+variable si7 = where( xstar_wl(wa_grid.mdb, 7.0, 8.0) and xstar_el_ion(wa_grid.mdb, Si, 7) );
 xstar_page_grid( wa_grid, si7 );
 
-variable si7_ew  = xstar_line_prop( wa_grid, wa_grid.uids[si7], "ew" );
-variable si7_aij = xstar_line_prop( wa_grid, wa_grid.uids[si7], "a_ij" );
+% ...to look at a curve-of-growth
+variable si7_ew  = xstar_line_prop( wa_grid, wa_grid.uids[si7[0]], "ew" );
 
+% Look at the "par" field of wa_grid to get interesting parameters
+variable log_col = log10( wa_grid.par.column ) / 22.0;
 
-%ylin; yrange(); xrange();
-%xlabel( latex2pg( "\log(N_H/10^{21})" ) );
-%ylabel( latex2pg( "Equivalent Width [\\A]" ) );
-%plot(wa_grid.par.column, line_ew, 2 );
-
-
-%% Desired functionality, from lia:
-
-
-
-
-% 2. Find all lines in a grid from a particular element or ion
-%
-% uids = xgrid_el_ion( t, el_list, ion_list );
-
-
-
-
-% 3. View some basic information about the lines according to uid
-%
-% xstar_page_grid( t, uids );
+% Plot it up
+ylin; yrange(); xrange();
+xlabel( latex2pg( "\log(N_H/10^{22}\ cm^{-2})" ) );
+ylabel( latex2pg( "Equivalent Width [\\A]" ) );
+title("Si VII : " + wa_grid.mdb.lower_level[si7[0]] + " - " + wa_grid.mdb.upper_level[si7[0]] );
+plot(log_col, si7_ew, 2 );
 
 
 % 4. Get information from a single line
