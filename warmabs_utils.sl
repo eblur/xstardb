@@ -1052,6 +1052,57 @@ define xstar_unpack_uid( uid )
 
 
 
+%% Returns lists of booleans, for use with where function
+% USE: find_line(wa_grid, wa_grid.uids[0])
+% RETURNS: An array of character arrays containing boolean flags for use with where function
+%
+private define xstar_find_line( grid, uid )
+{
+    variable i, result = Array_Type[length(grid.db)];
+    for( i=0; i<length(grid.db); i++ )
+    {
+	result[i] = grid.db[i].uid == uid;
+    }
+    return result;
+}
+
+
+%% Get the property of a given line, using the "field" entry
+% USE: xstar_line_prop( wa_grid, wa_grid.uids[0], "ew" )
+% RETURNS: An Double_Type array containing the value of the field of interest.
+% NOTE: Will break if used on a field that contains a string
+%
+define xstar_line_prop( grid, uid, field )
+{
+    variable i, fl_list;
+    variable temp, result = Double_Type[length(grid.db)];
+
+    fl_list = xstar_find_line( grid, uid );
+    
+    for( i=0; i<length(grid.db); i++ )
+    {
+	temp = where(fl_list[i]);
+	if( length(temp) != 0) result[i] = get_struct_field( grid.db[i], field )[temp][0];
+    }
+    
+    return result;
+}
+
+
+%define xstar_line_info( db, index )
+%{
+%    variable ff, fields = get_struct_field_names(db);
+%    variable temp, result = struct{};
+%    foreach ff (fields)
+%    {
+%	result = struct_combine( result, ff );
+%	temp   = get_struct_field( db, ff );
+%
+%	set_struct_field(result, ff, temp );
+%    }
+%
+%    return result;
+%}
 
 
 

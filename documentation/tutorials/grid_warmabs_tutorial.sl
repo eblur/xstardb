@@ -39,15 +39,6 @@ set_struct_fields( warmabs_info, "warmabs", "column", -1.0, 1.0, 0.1, _default_b
 %%----------------------------------------------------------------%%
 %% 2. Load the model into a grid structure
 
-%%%%%%%%%%%%%%%%%%%%%%% working from here %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%% Dave's code: xstar_load_tables
-
-%require("examples/warmabs_vs_xi_test");
-
-% 0. Load data
-
 variable fgrid, wa_grid;
 fgrid = glob( "/vex/d1/lia/xstar_test/column/warmabs_*.fits" );
 fgrid = fgrid[ array_sort(fgrid) ];
@@ -61,12 +52,18 @@ wa_grid = xstar_load_tables(fgrid);
 variable test = where( xstar_wl(wa_grid.mdb, 1.0, 2.0) );
 xstar_page_grid( wa_grid, test );
 
+
 %% Pick out a line
-%variable k = 10;
-%xstar_page_group( wa_grid.db[k], xstar_strong(5, wa_grid.db[k]; wmin=5, wmax=10) );
+variable k = 10;
+xstar_page_group( wa_grid.db[k], xstar_strong(5, wa_grid.db[k]; wmin=5, wmax=10) );
 
 % I'll use Si VII
-%variable line_ew = xstar_line_ew( 23156, "si_vii", wa_grid.db );
+variable si7 = where( xstar_wl(wa_grid.mdb, 7.0, 8.0) and xstar_el_ion(wa_grid.mdb, Si, 7) )[0];
+xstar_page_grid( wa_grid, si7 );
+
+variable si7_ew  = xstar_line_prop( wa_grid, wa_grid.uids[si7], "ew" );
+variable si7_aij = xstar_line_prop( wa_grid, wa_grid.uids[si7], "a_ij" );
+
 
 %ylin; yrange(); xrange();
 %xlabel( latex2pg( "\log(N_H/10^{21})" ) );
