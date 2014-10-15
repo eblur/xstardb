@@ -97,6 +97,43 @@ xstar_page_group(wacheck, dupl3);
 %   27394  Ni   XII  35.1841  0.000e+00  0.000e+00   4   0  1.312e-05  0.000e+00    0.000e+00   edge/rrc   3p5.2P_3/2 -    continuum
 %   27512  Ni   XII  35.1841  0.000e+00  0.000e+00   4   0  6.303e-05  0.000e+00    0.000e+00   edge/rrc   3p5.2P_3/2 -    continuum
 
+%% How many duplicate entries are we talking about?
+variable j;
+for (j=0; j<length(wa_grid.uid_flags); j++)
+{
+    print( string(length(wa_grid.db[j].uid) - length(where(wa_grid.uid_flags[j]))) + " missing entries" );
+}
+%% 9 in each! Maybe it is just those nine
+
+
+%%%--- 2014.10.15 : Check that at least the uids at least correspond 
+%%%--- to the same lines across several dbs
+
+%% Get a few examples from the 1-10 Angstrom range
+variable AMIN = 1.0, AMAX = 10.0;
+variable i, example = 1.0;
+for (i=0; i<=3; i++) example = example and ( xstar_wl(wa_grid.mdb, AMIN, AMAX) and wa_grid.uid_flags[i]);
+variable ex_uids = where(example)[[0:5]];
+
+xstar_page_grid(wa_grid, ex_uids);
+
+variable k, line;
+foreach  k ([0:5])
+{
+    xstar_page_grid(wa_grid, ex_uids[k]);
+
+    line = Integer_Type[0];
+    variable db;
+    foreach db (wa_grid.db)
+    {
+	line = where(db.uid == wa_grid.uids[ex_uids[k]])[0];
+	() = printf( "%i , %s , %.4f\n", db.transition[line], db.ion[line], db.wavelength[line] );
+    }
+}
+
+
+%% Looks like everything is working properly
+
 
 
 
