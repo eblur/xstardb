@@ -722,7 +722,7 @@ define xstar_page_group( s, l )
 	     s.luminosity[k],
 	     s.type[k],
 	     s.lower_level[k], s.upper_level[k],
-	     s.origin_file[k]
+	     s.filename[s.origin_file[k]];
 	);
 	}
 	else {
@@ -850,6 +850,41 @@ define pst() { pointstyle(-1);}
 % 2014.10.06 - Dealing with multiple XSTAR runs
 % Updates from lia, using examples/warmabs_vs_xi_test.sl
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Merge two XSTAR models into a single database structure
+%
+% USAGE: merge_xstar_output([s1,s2,s3])
+% RETURNS: A database structure with an extra column, db_fname
+%
+define merge_xstar_output( db_list )
+{
+    variable fields = get_struct_field_names(db_list[0]);
+    variable result = @db_list[0];
+
+    % add and initialize the "origin_file" column
+    variable dblen = length(db_list[0].transition);
+    result = struct_combine( result, "origin_file" );
+    result.origin_file = Integer_Type[dblen];
+
+    variable i, ff, temp1, temp2, ogfile;
+    for (i=1; i<length(db_list); i++)
+    {
+	% append all information to end of result
+	foreach ff (fields)
+	{
+	    temp1 = get_struct_field( result, ff );
+	    temp2 = get_struct_field( db_list[i], ff );
+	    set_struct_field( result, ff, [temp1, temp2] );
+	}
+
+	% create an array of strings containing new filename, append to result
+	dblen  = length(db_list[i].transition);
+	ogfile = Integer_Type[dblen] + i;
+	result.origin_file = [result.origin_file, ogfile];
+    }
+
+    return result;
+}
 
 
 %-----------------------------------------------------------------------

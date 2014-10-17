@@ -8,7 +8,6 @@
 %%%%
 
 require("warmabs_db");
-require("multi_warmabs_db");
 
 %%----------------------------------------------------------------%%
 %% 1. Simulate a multi-component warm absorption model
@@ -68,8 +67,8 @@ variable s_all = xstar_strong(5, wa_all; wmin=7.0, wmax=10.0);
 xstar_page_group(wa_all, s_all; sort="ew");
 
 %% Plot the lines
-variable i1 = where( wa_all.origin_file[s_all] == "warmabs_1.fits" );
-variable i2 = where( wa_all.origin_file[s_all] == "warmabs_2.fits" );
+variable i1 = where( wa_all.origin_file[s_all] == 0 );
+variable i2 = where( wa_all.origin_file[s_all] == 1 );
 
 variable lstyle = line_label_default_style();
 lstyle.top_frac = 0.8; 
