@@ -856,7 +856,7 @@ define pst() { pointstyle(-1);}
 % USAGE: merge_xstar_output([s1,s2,s3])
 % RETURNS: A database structure with an extra column, db_fname
 %
-define merge_xstar_output( db_list )
+define xstar_merge( db_list )
 {
     variable fields = get_struct_field_names(db_list[0]);
     variable result = @db_list[0];

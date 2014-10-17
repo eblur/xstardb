@@ -56,7 +56,7 @@ variable wa2 = rd_xstar_output("warmabs_2.fits");
 
 % merge_xstar_output creates a single database from two database functions
 %
-variable wa_all = merge_xstar_output( [wa1, wa2] );
+variable wa_all = xstar_merge( [wa1, wa2] );
 
 %% Example: Find lines strongest lines within an interesting wl range
 yrange();
