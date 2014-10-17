@@ -8,7 +8,6 @@
 require("warmabs_db");
 
 %% Load grid from previous run
-
 variable fgrid, wa_grid;
 fgrid = glob( "/vex/d1/lia/xstar_test/column/warmabs_*.fits" );
 fgrid = fgrid[ array_sort(fgrid) ];
@@ -132,6 +131,88 @@ foreach  k ([0:5])
 }
 
 %% Looks like everything is working properly
+
+
+%%%--- 2014.10.17 : Using some old code that searches according to
+%%%--- transition number and ion, make ew curve for that weird Na line.
+
+%% Code form multi_warmabs_db.sl
+
+%% Returns lists of booleans, for use with where function
+% USE: find_line(1493, "c_v", [s1,s2])
+% RETURNS: An array of character arrays containing boolean flags for use with where function
+%
+define find_line( transition_id, ion_string, struct_list )
+{
+    variable i, ltemp, result = Array_Type[length(struct_list)];
+    for (i=0; i<length(struct_list); i++)
+    {
+	ltemp = struct_list[i].transition == transition_id and struct_list[i].ion == ion_string;
+	result[i] = ltemp;
+    }
+    return result;
+}
+
+%% Get equivalent widths across a list of db structures
+% USAGE: xstar_line_ew( 10453, "ne_vii", db_list );
+% RETURNS: An array containing ew values from a particular line
+%
+define xstar_line_ew( transition_id, ion_string, struct_list )
+{
+    variable i, fl_list;
+    variable temp, result = Float_Type[length(struct_list)];
+
+    fl_list = find_line( transition_id, ion_string, struct_list );
+
+    for (i=0; i<length(struct_list); i++)
+    {
+	temp = where(fl_list[i]);
+	if ( length(temp) != 0 ) result[i] = struct_list[i].ew[temp][0];;
+    }
+    return result;
+}
+
+%% Get the weird line and plot curve
+
+variable l1 = xstar_line_ew( 11515, "na_x", wa_grid.db );
+variable l2 = xstar_line_ew( 11519, "na_x", wa_grid.db );
+
+plot( wa_grid.par.column, l1 );
+oplot( wa_grid.par.column, l2, 2 );
+
+
+%% Test on Dave's warmabs_vs_xi values
+
+%% Warmabs models
+variable f2 = glob( "/vex/d1/lia/xstar_test/warmabs_10*.fits");
+f2 = f2[ array_sort(f2) ];
+
+variable wa_xi = xstar_load_tables(f2);
+
+variable l1_wxi = xstar_line_ew( 11515, "na_x", wa_xi.db );
+variable l2_wxi = xstar_line_ew( 11519, "na_x", wa_xi.db );
+
+ylog;
+xlabel( latex2pg( "r \log\\xi" ) );
+ylabel( latex2pg( "W [\\A]" ) );
+title( "warmabs models" );
+plot( wa_xi.par.rlogxi, l1_wxi );
+oplot( wa_xi.par.rlogxi, l2_wxi, 2 );
+
+%% Photemis models
+
+variable f3 = glob( "/vex/d1/lia/xstar_test/photemis_10*.fits" );
+f3 = f3[ array_sort(f3) ];
+
+variable pe_xi = xstar_load_tables(f3);
+
+variable l1_pxi = xstar_line_ew( 11515, "na_x", pe_xi.db );
+variable l2_pxi = xstar_line_ew( 11519, "na_x", pe_xi.db );
+
+ylin;
+title( "photemis models" );
+plot( pe_xi.par.rlogxi, -l1_pxi );
+oplot( pe_xi.par.rlogxi, -l2_pxi, 2 );
 
 
 
