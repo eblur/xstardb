@@ -104,8 +104,16 @@ for (j=0; j<length(wa_grid.uid_flags); j++)
 }
 %% 9 in each! Maybe it is just those nine
 
+%%%--- 2014.10.20 : What line is missing from each?
 
-%%%--- 2014.10.15 : Check that at least the uids at least correspond 
+variable dd;
+foreach dd (wa_grid.db[0].uid[missing])
+{
+    xstar_page_group(wa_grid.db[0], where(wa_grid.db[0].uid == dd) );
+}
+
+
+%%%--- 2014.10.15 : Check that at least the uids correspond
 %%%--- to the same lines across several dbs
 
 %% Get a few examples from the 1-10 Angstrom range
