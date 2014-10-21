@@ -1168,10 +1168,9 @@ define xstar_load_tables( fnames )
 }
 
 
-%% I used xstar_page_group as a template
 % g: a grid structure
 % l: indices for g.uids array
-define xstar_page_grid( g, l )
+define xstar_page_grid_old( g, l )
 {
     
     variable hdr =    [
@@ -1218,9 +1217,74 @@ define xstar_page_grid( g, l )
 	     g.mdb.type[k],
 	     g.mdb.lower_level[k], g.mdb.upper_level[k] );
     }
-
-    return;
 }
+
+%% Sleeker version
+define xstar_page_grid( g, l )
+{
+    
+    variable hdr =    [
+    "uid",     % unique LLong integer for line
+    "ion",     % elem ion
+    "lambda",  % wavelength
+    "type",    % type
+    "label"    % lower_level - upper_level
+    ] ;
+    
+    variable hfmt = [
+    "#%11s",
+    " %9s",
+    " %8s",
+    " %10s",
+    " %24s\n"
+    ] ; 
+
+    variable dfmt = [
+    "%12ld",
+    " %3s",
+    " %5s",
+    " %8.4f",
+    " %10s",
+    " %12s -",
+    " %12s\n"
+    ] ; 
+    
+    variable fields = [
+    "uid",
+    "Z",
+    "q",
+    "wavelength",
+    "type",
+    "lower_level",
+    "upper_level"
+    ];
+
+    % sort by wavelength
+    variable sorted_l = l[ array_sort(g.mdb.wavelength[l]) ];
+
+    % set up output area
+    variable fp = qualifier( "file", stdout ) ;
+    if ( typeof(fp) == String_Type ) fp = fopen( fp, "w" );
+
+    % print header
+    () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
+
+    % print everything
+    variable i, j, k, n = length( l );
+    for (i=0; i<n; i++)
+    {
+	k = sorted_l[ i ] ; 
+	for (j=0; j<length(fields); j++)
+	{
+	    switch( fields[j] )
+	    { case "uid": () = fprintf( fp, dfmt[j], g.uids[k] ); }
+	    { case "Z": () = fprintf( fp, dfmt[j], Upcase_Elements[g.mdb.Z[k]-1] ); }
+	    { case "q": () = fprintf( fp, dfmt[j], Roman_Numerals[g.mdb.q[k]-1] ); }
+	    { () = fprintf( fp, dfmt[j], get_struct_field(g.mdb, fields[j])[k] ); }
+	}
+    }
+}
+
 
 %%% Utilities for navigating the grid structure
 
