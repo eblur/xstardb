@@ -832,28 +832,30 @@ define xstar_page_group( s, l )
     % print the header
     () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
 
-    % Sort by field (descending order, except lambda)
+    % Sort by field (descending order)
+    % Special cases: sort wavelength by descending order
+    %                tau0 should refer to tau0grid field
+    %                none prints in the order provided by user
     variable sorted_l;
     variable fsort = qualifier( "sort", "wavelength" );
     switch( fsort )
-    { case "wavelength": sorted_l = l[ array_sort(s.wavelength[l]) ]; }
-    { case "ew":         sorted_l = reverse( l[ array_sort(s.ew[l]) ] ); }
-    { case "luminosity": sorted_l = reverse( l[ array_sort(s.luminosity[l]) ] ); }
-    { case "tau0":       sorted_l = reverse( l[ array_sort(s.tau0grid[l]) ] );}
     { case "none":       sorted_l = l; }
+    { case "wavelength": sorted_l = l[ array_sort(s.wavelength[l]) ]; }
+    { case "tau0":       sorted_l = reverse( l[ array_sort(s.tau0grid[l]) ] );}
+    { sorted_l = reverse( l[ array_sort( get_struct_field(s, fsort)[l] ) ] ); }
 
     % print the data piece by piece
-    variable i, j, n = length( l );
+    variable i, j, k, n = length( l );
     for (i=0; i<n; i++)
     {
+	k = sorted_l[i];
 	for (j=0; j<length(fields); j++)
 	{
 	    switch( fields[j] )
-	    { case "Z": () = fprintf(fp, dfmt[j], Upcase_Elements[ s.Z[i]-1 ]); }
-	    { case "q": () = fprintf(fp, dfmt[j], Roman_Numerals[ s.q[i]-1 ]); }
-	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[i]]); }
-	    { () = fprintf( fp, dfmt[j], get_struct_field(s, fields[j])[i] ); }
-
+	    { case "Z": () = fprintf(fp, dfmt[j], Upcase_Elements[ s.Z[k]-1 ]); }
+	    { case "q": () = fprintf(fp, dfmt[j], Roman_Numerals[ s.q[k]-1 ]); }
+	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[k]]); }
+	    { () = fprintf( fp, dfmt[j], get_struct_field(s, fields[j])[k] ); }
 	}
     }
 

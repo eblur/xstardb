@@ -110,6 +110,9 @@ define test_xstar_page_group_sorting()
 
     print("Sorting warmabs by tau0");
     xstar_page_group(wa, iwa[[0:10]]; sort="tau0");
+
+    print("Sorting warmabs by a_ij");
+    xstar_page_group(wa, iwa[[0:10]]; sort="a_ij");
 }
 
 %%---------------------------------------%%
@@ -145,8 +148,8 @@ define test_xstar_plot_group()
 %test_xstar_wl;
 %test_xstar_el_ion;
 
-test_xstar_strong;
+%test_xstar_strong;
 
-%test_xstar_page_group_sorting;
+test_xstar_page_group_sorting;
 
 
