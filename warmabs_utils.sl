@@ -762,8 +762,8 @@ define xstar_page_group( s, l )
     ] ;
     
     variable hfmt = [
-    "# %7s",
-    " %8s",
+    "#%7s",
+    " %9s",
     " %8s",
     " %10s",
     " %10s",
@@ -815,8 +815,8 @@ define xstar_page_group( s, l )
     if (struct_field_exists(s, "origin_file"))
     {
 	hdr = [hdr, "origin"];
-	hfmt = [hfmt, " %30s\n"];
-	dfmt = [dfmt, " %15s\n"];
+	hfmt = [hfmt, " %24s\n"];
+	dfmt = [dfmt, " %12s\n"];
 	fields = [fields, "origin"];
     }
     else
@@ -851,7 +851,7 @@ define xstar_page_group( s, l )
 	    switch( fields[j] )
 	    { case "Z": () = fprintf(fp, dfmt[j], Upcase_Elements[ s.Z[i]-1 ]); }
 	    { case "q": () = fprintf(fp, dfmt[j], Roman_Numerals[ s.q[i]-1 ]); }
-	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[k]]); }
+	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[i]]); }
 	    { () = fprintf( fp, dfmt[j], get_struct_field(s, fields[j])[i] ); }
 
 	}
