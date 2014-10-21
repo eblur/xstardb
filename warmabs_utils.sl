@@ -631,7 +631,7 @@ private variable warmabs_db_model_type =
 % s is the structure from reading output FITS files;
 % l is an index array (filter)
 %
-define xstar_page_group( s, l )
+define xstar_page_group_old( s, l )
 {
 
     variable hdr =    [
@@ -741,6 +741,122 @@ define xstar_page_group( s, l )
 	     s.lower_level[k], s.upper_level[k] );
 	}
     }
+}
+
+% An alternative version of xstar_page_group that is a little sleeker?
+define xstar_page_group( s, l )
+{
+    variable hdr =    [
+    "id",      % transition
+    "ion",     % elem ion
+    "lambda",  % wavelength
+    "A[s^-1]", % a_ij
+    "f",       % f_ij
+    "gl",      % g_lo
+    "gu",      % g_up
+    "tau_0",   % tau0grid
+    "W(A)",    % ew
+    "L[10^38 cgs]",  % luminosity
+    "type",    % type
+    "label"    % lower_level - upper_level
+    ] ;
+    
+    variable hfmt = [
+    "# %7s",
+    " %8s",
+    " %8s",
+    " %10s",
+    " %10s",
+    " %3s",
+    " %3s",
+    " %10s",
+    " %10s",
+    " %12s",
+    " %10s",
+    " %24s"
+    ] ; 
+
+    variable dfmt = [
+    "%8d",
+    " %3s",
+    " %5s",
+    " %8.4f",
+    " %10.3e",
+    " %10.3e",
+    " %3.0f",
+    " %3.0f",
+    " %10.3e",
+    " %10.3e",
+    " %12.3e",
+    " %10s",
+    " %12s -", 
+    " %12s"
+    ] ; 
+
+    variable fields = [
+    "transition", 
+    "Z",
+    "q",
+    "wavelength",
+    "a_ij",
+    "f_ij",
+    "g_lo",
+    "g_up",
+    "tau0grid",
+    "ew",
+    "luminosity",
+    "type",
+    "lower_level", 
+    "upper_level"
+    ];
+    
+
+    % If it is a merged database, there will be an addition origin file column
+    if (struct_field_exists(s, "origin_file"))
+    {
+	hdr = [hdr, "origin"];
+	hfmt = [hfmt, " %30s\n"];
+	dfmt = [dfmt, " %15s\n"];
+	fields = [fields, "origin"];
+    }
+    else
+    {
+	hfmt[-1] += "\n";
+	dfmt[-1] += "\n";
+    }
+
+    % output printed to screen or file 
+    variable fp = qualifier( "file", stdout ) ;
+    if ( typeof(fp) == String_Type ) fp = fopen( fp, "w" );
+
+    % print the header
+    () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
+
+    % Sort by field (descending order, except lambda)
+    variable sorted_l;
+    variable fsort = qualifier( "sort", "wavelength" );
+    switch( fsort )
+    { case "wavelength": sorted_l = l[ array_sort(s.wavelength[l]) ]; }
+    { case "ew":         sorted_l = reverse( l[ array_sort(s.ew[l]) ] ); }
+    { case "luminosity": sorted_l = reverse( l[ array_sort(s.luminosity[l]) ] ); }
+    { case "tau0":       sorted_l = reverse( l[ array_sort(s.tau0grid[l]) ] );}
+    { case "none":       sorted_l = l; }
+
+    % print the data piece by piece
+    variable i, j, n = length( l );
+    for (i=0; i<n; i++)
+    {
+	for (j=0; j<length(fields); j++)
+	{
+	    switch( fields[j] )
+	    { case "Z": () = fprintf(fp, dfmt[j], Upcase_Elements[ s.Z[i]-1 ]); }
+	    { case "q": () = fprintf(fp, dfmt[j], Roman_Numerals[ s.q[i]-1 ]); }
+	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[k]]); }
+	    { () = fprintf( fp, dfmt[j], get_struct_field(s, fields[j])[i] ); }
+
+	}
+    }
+
 }
 
 

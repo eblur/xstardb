@@ -6,6 +6,8 @@
 %% NOTE: On first run, be sure to uncomment test_autoname_outfile
 %% All of the test function calls are listed at the end
 
+_traceback = 1;
+
 require("warmabs_db");
 
 %%---------------------------------------%%
@@ -38,7 +40,7 @@ define test_read_db()
 
 %%---------- After first autoname, must load dbs ----------%%
 
-test_autoname_outfile;
+%test_autoname_outfile;
 test_read_db;
 
 %%---------------------------------------%%
@@ -141,9 +143,9 @@ define test_xstar_plot_group()
 %test_xstar_plot_group();
 
 %test_xstar_wl;
-test_xstar_el_ion;
+%test_xstar_el_ion;
 
-%test_xstar_strong;
+test_xstar_strong;
 
 %test_xstar_page_group_sorting;
 
