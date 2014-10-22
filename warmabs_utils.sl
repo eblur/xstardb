@@ -833,7 +833,7 @@ define xstar_page_group( s, l )
     () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
 
     % Sort by field (descending order)
-    % Special cases: sort wavelength by descending order
+    % Special cases: sort wavelength by ascending order
     %                tau0 should refer to tau0grid field
     %                none prints in the order provided by user
     variable sorted_l;
@@ -1278,13 +1278,15 @@ define xstar_page_grid( g, l )
     ];
 
     % Sort by field (descending order)
-    % Special cases: sort wavelength by descending order
+    % Special cases: sort wavelength by ascending order
+    %                sort uid in ascending order
     %                none prints in the order provided by user
     variable sorted_l;
     variable fsort = qualifier( "sort", "wavelength" );
     switch( fsort )
-    { case "none":       sorted_l = l; }
     { case "wavelength": sorted_l = l[ array_sort(g.mdb.wavelength[l]) ]; }
+    { case "uid":        sorted_l = l[ array_sort(g.uids[l]) ]; }
+    { case "none":       sorted_l = l; }
     { sorted_l = reverse( l[ array_sort( get_struct_field(g.mdb, fsort)[l] ) ] ); }
 
     % set up output area
