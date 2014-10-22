@@ -1121,7 +1121,7 @@ private define add_unique_id( g )
 % These map to xstar output parameters, "rlogxi", "column", "vturbi", 
 % note that column is in units of cm^-2
 %
-define xstar_get_table_param( t, s)
+private define xstar_get_table_param(t, s)
 {
     variable l = where( t.params.parameter == s )[0] ; 
     return( t.params.value[ l ] );
@@ -1141,16 +1141,18 @@ private define xstar_collect_params( t, s )
 }
 
 
-
 define xstar_load_tables( fnames )
 {
     variable result = struct{ db, mdb, uids, uid_flags, par };
     result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
 
     result.uids  = Int_Type[0];
-    result.mdb   = struct{ type, ion, wavelength, lower_level, upper_level, Z, q };
+    result.mdb   = struct{ type, ion, wavelength, 
+                           lower_level, upper_level, Z, q, 
+                           a_ij, f_ij, g_lo, g_up };
     set_struct_fields( result.mdb, String_Type[0], String_Type[0], Double_Type[0], 
-                       String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0] );
+                       String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0],
+                       Float_Type[0], Float_Type[0], Float_Type[0], Float_Type[0]);
 
     % Deal with assigning unique ids and flagging
     add_unique_id( result );
@@ -1227,6 +1229,10 @@ define xstar_page_grid( g, l )
     "uid",     % unique LLong integer for line
     "ion",     % elem ion
     "lambda",  % wavelength
+    "A[s^-1]", % a_ij
+    "f",       % f_ij
+    "gl",      % g_lo
+    "gu",      % g_up
     "type",    % type
     "label"    % lower_level - upper_level
     ] ;
@@ -1236,6 +1242,10 @@ define xstar_page_grid( g, l )
     " %9s",
     " %8s",
     " %10s",
+    " %10s",
+    " %3s",
+    " %3s",
+    " %10s",
     " %24s\n"
     ] ; 
 
@@ -1244,6 +1254,10 @@ define xstar_page_grid( g, l )
     " %3s",
     " %5s",
     " %8.4f",
+    " %10.3e",
+    " %10.3e",
+    " %3.0f",
+    " %3.0f",
     " %10s",
     " %12s -",
     " %12s\n"
@@ -1254,6 +1268,10 @@ define xstar_page_grid( g, l )
     "Z",
     "q",
     "wavelength",
+    "a_ij",
+    "f_ij",
+    "g_lo",
+    "g_up",
     "type",
     "lower_level",
     "upper_level"
