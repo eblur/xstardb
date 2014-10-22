@@ -1277,8 +1277,15 @@ define xstar_page_grid( g, l )
     "upper_level"
     ];
 
-    % sort by wavelength
-    variable sorted_l = l[ array_sort(g.mdb.wavelength[l]) ];
+    % Sort by field (descending order)
+    % Special cases: sort wavelength by descending order
+    %                none prints in the order provided by user
+    variable sorted_l;
+    variable fsort = qualifier( "sort", "wavelength" );
+    switch( fsort )
+    { case "none":       sorted_l = l; }
+    { case "wavelength": sorted_l = l[ array_sort(g.mdb.wavelength[l]) ]; }
+    { sorted_l = reverse( l[ array_sort( get_struct_field(g.mdb, fsort)[l] ) ] ); }
 
     % set up output area
     variable fp = qualifier( "file", stdout ) ;

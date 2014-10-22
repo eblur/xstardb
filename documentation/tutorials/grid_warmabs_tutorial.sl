@@ -63,10 +63,15 @@ xstar_page_group( wa_grid.db[k], xstar_strong(5, wa_grid.db[k]; wmin=5, wmax=10)
 
 % I'll use a single Si VII line...
 variable si7 = where( xstar_wl(wa_grid.mdb, 7.0, 8.0) and xstar_el_ion(wa_grid.mdb, Si, 7) );
-xstar_page_grid( wa_grid, si7 );
 
-% ...to look at a curve-of-growth
-variable si7_ew  = xstar_line_prop( wa_grid, wa_grid.uids[si7[0]], "ew" );
+% Sort the output by A coefficients
+xstar_page_grid( wa_grid, si7; sort="a_ij" );
+
+% Look at a curve-of-growth from first Si line with highest A_ij
+% I'm going to pick it out by uid value
+variable si7_strong = 980040015L;
+variable si7_ew  = xstar_line_prop( wa_grid, si7_strong, "ew" );
+xstar_page_grid( wa_grid, where(wa_grid.uids == 980040015L) );
 
 % Look at the "par" field of wa_grid to get interesting parameters
 variable log_col = log10( wa_grid.par.column ) / 22.0;
