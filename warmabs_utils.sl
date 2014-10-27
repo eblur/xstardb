@@ -920,7 +920,7 @@ define xstar_merge( db_list )
 private variable x1, x2;
 (x1, x2) = linear_grid( 1.0, 40.0, 8192 );
 
-variable _default_binning = struct{ bin_lo, bin_hi, value };
+variable _default_binning = struct{ bin_lo, bin_hi };
 set_struct_fields( _default_binning, x1, x2 );
 
 variable _default_model_info = struct{ mname, pname, min, max, step, bins };
@@ -928,8 +928,8 @@ variable _default_model_info = struct{ mname, pname, min, max, step, bins };
 % USAGE: xstar_run_model_grid( info, rootdir[; nstart]);
 
 % info = struct{ bins, mname, pname, min, max, step }
-% info.grid = struct{ bin_lo, bin_hi, value }
-% rootdir = string describing the root directory to dump all the files into
+% info.bins = struct{ bin_lo, bin_hi }
+% rootdir   = string describing the root directory to dump all the files into
 
 define xstar_run_model_grid( info, rootdir )
 {
