@@ -395,7 +395,8 @@ private define load_warmabs_file (file)
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Start of joint dph, lia code
 %
@@ -427,7 +428,7 @@ define rd_xstar_output( fname )
     variable result = load_warmabs_file( fname );
     result = struct_combine( result, "filename" );
     result.filename = fname;
-    return( result ) ;
+    return( result );
 }
 
 
@@ -494,11 +495,11 @@ define xstar_el_ion()
 %
 % prototype a "strong" function for warmabs_db variables.
 %
-% for warmabs, "strong" could apply to tau0grid, tau02ewo
+% for warmabs, "strong" could apply to tau0grid, or ew
 %
 % for photemis, to luminosity.
 %
-% default to warmabs_db if warmabs, luminosity if photabs; 
+% default to warmabs_db if warmabs, luminosity if photabs, or tau0 if type="edge"; 
 % use a "field = " qualifier for any other.
 %
 % s is structure from  read of warmabs output FITS table
@@ -512,7 +513,7 @@ define xstar_el_ion()
 %             wmax = value maximum wavelength
 %             elem = Z     element atomic number
 %             ion  = n     ion state ( 1 => neutral )
-%             type = "line" | edge" | "rrc" 
+%             type = "line" | "edge" | "rrc" 
 %
 define xstar_strong( n, s )
 {
@@ -574,7 +575,7 @@ define xstar_strong( n, s )
     variable wmin = min( s.wavelength ); 
     variable wmax = max( s.wavelength ); 
 
-    if ( qualifier_exists( "emis" ) ) emis =  1 ;
+    %if ( qualifier_exists( "emis" ) ) emis =  1 ;
     if ( qualifier_exists( "wmin" ) ) wmin =  qualifier( "wmin" ) ;
     if ( qualifier_exists( "wmax" ) ) wmax =  qualifier( "wmax" ) ;
 
@@ -600,10 +601,10 @@ define xstar_strong( n, s )
     r  = lw[ l[ [-n:] ] ]; % grab the tail end of the sorted array
     
     % EXCEPT in the case of emission features, where ew is a negative value
-    if ( emis and field == "ew" )  % want smallest (most negative)
-    {
-	r = lw[ l[ [0:n-1] ] ] ;
-    }
+    %if ( emis and field == "ew" )  % want smallest (most negative)
+    %{
+    %    r = lw[ l[ [0:n-1] ] ] ;
+    %}
 
     % put in ascending wavelength order
     r = r[ array_sort( s.wavelength[r] ) ] ; 
@@ -872,90 +873,10 @@ define xstar_plot_group()
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-
-%%%------------------------------------------------------------------
-%%%%%% extras, for plotting
-
-
-define setvp( xmin, xmax, ymin, ymax )
-{
-    set_outer_viewport( struct {xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax } );
-}
-
-
-define stdpltsetup()
-{
-    set_frame_line_width(3);
-    setvp( 0.12, 0.98, 0.12, 0.9);
-    charsize( 1.4 ) ;
-    set_line_width( 5 ) ;
-    _pgscf(2);  % nicer pgplot fonts.
-}
-
-define pltid( )  % ( x, y, s )
-{
-    variable x = 0.01, y = 0.01, s = time ;
-    
-    variable s_usage =
-`USAGE: pltid( [[x,y], s] ; options);
-Write a string, s, to identify the current plot; default is time.
-EXAMPLE:  pltid( time  + " user@somewhere" );
-Qualifiers: color, angle, size, justify, width` ;
-
-    switch ( _NARGS )
-    {
-	case 0:
-    }
-    {
-	case 1:  s = () ;
-    }
-    {
-	case 2: (x,y) = () ;
-    }
-    {
-	case 3: ( x, y, s ) = () ;
-    }
-    {
-	message( s_usage ) ; 
-	return ; 
-    }
-
-    if ( qualifier_exists( "help" ) )
-    {
-	message( s_usage ) ; 
-	return ; 
-    }
-    
-    variable p = get_plot_options;
-    xlin; ylin; 
-    _pgswin( 0, 1, 0, 1 ) ;
-    _pgsvp( 0, 1, 0, 1);
-
-    variable c = qualifier( "color",   1 ) ;
-    variable a = qualifier( "angle",   0 ) ;
-    variable b = qualifier( "size",    1 ) ;
-    variable j = qualifier( "justify", 0 ) ;
-    variable w = qualifier( "width",   1 ) ;
-
-    set_line_width( w ) ;     charsize( b ) ;     color( c ) ;
-
-    xylabel( x, y, s, a, j );
-
-    set_plot_options( p ) ; 
-}
-%-----------------------------------------------------------------------
-
-define cp1() { connect_points(1);}
-define cp0() { connect_points(0);}
-define pst() { pointstyle(-1);}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 2014.10.06 - Dealing with multiple XSTAR runs
 % Updates from lia, using examples/warmabs_vs_xi_test.sl
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Merge two XSTAR models into a single database structure
 %
