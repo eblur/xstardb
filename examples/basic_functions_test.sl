@@ -40,7 +40,7 @@ define test_read_db()
 
 %%---------- After first autoname, must load dbs ----------%%
 
-test_autoname_outfile;
+%test_autoname_outfile;
 test_read_db;
 
 %%---------------------------------------%%
@@ -74,6 +74,23 @@ define test_xstar_el_ion()
     print("Testing xstar_el_ion function, return Ca V only");
     variable iwa4 = where( xstar_el_ion(wa, Ca, 5));
     xstar_page_group(wa, iwa4);
+}
+
+% Test output of xstar_trans
+
+define test_xstar_trans()
+{
+    print("Return OIII lines only");
+    variable o_iii = where( xstar_trans(wa, O, 3) );
+    xstar_page_group(wa, o_iii);
+
+    print("Return OIII transitions into the ground state");
+    variable o_iii_ground = where( xstar_trans(wa, O, 3, 1) );
+    xstar_page_group(wa, o_iii_ground);
+
+    print("Return OVII helium triplet only");
+    variable o_vii_triplet = where( xstar_trans(wa, O, 7, 1, [2:7]) );
+    xstar_page_group(wa, o_vii_triplet);
 }
 
 %%---------------------------------------%%
@@ -143,13 +160,14 @@ define test_xstar_plot_group()
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
-test_xstar_plot_group();
+%test_xstar_plot_group();
 
 %test_xstar_wl;
 %test_xstar_el_ion;
+test_xstar_trans;
 
 %test_xstar_strong;
 
-test_xstar_page_group_sorting;
+%test_xstar_page_group_sorting;
 
 

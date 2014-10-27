@@ -434,7 +434,7 @@ define rd_xstar_output( fname )
 
 
 %
-% find indices within a wavelength range:
+% boolean array for transitions within a wavelength range
 %
 define xstar_wl( s, wlo, whi )
 {
@@ -443,7 +443,7 @@ define xstar_wl( s, wlo, whi )
 
 
 %
-% find indices from a particular element or ion
+% boolean array for transitions from a particular element and/or ion
 %
 define xstar_el_ion()
 {
@@ -488,6 +488,39 @@ define xstar_el_ion()
     }
 
     return( el_result and ion_result );
+}
+
+%
+% boolean array containing transitions based on lower and/or upper level index
+%
+% USAGE: index = xstar_trans( s, el, ion[, lower[, upper]] );
+%
+define xstar_trans()
+{
+    variable s, el, ion;
+    variable lower = Integer_Type[0];
+    variable upper = Integer_Type[0];
+    switch(_NARGS)
+    { _NARGS < 3 : print("ERROR: Requires at least three arguments,\nindex = xstar_trans(s, el, ion[,lower, upper]);"); }
+    { case 3   : ion = (); el = (); s = (); }
+    { case 4   : lower = (); ion = (); el = (); s = (); }
+    { case 5   : upper = (); lower=(); ion = (); el = (); s = (); }
+    { _NARGS > 5 : print("ERROR: Too many arguments,\nindex = xstar_trans(s, el, ion[,lower, upper]);"); }
+
+    variable result = xstar_el_ion( s, el, ion );
+
+    if ( length(lower) > 0 )
+    {
+	result = result and ismember(s.ind_lo, lower);
+    }
+
+    if ( length(upper) > 0 )
+    {
+	result = result and ismember(s.ind_up, upper);
+    }
+
+
+    return result;
 }
 
 
