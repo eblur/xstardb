@@ -1,6 +1,7 @@
 
 % 2014.08.13 lia -- Updated function names, some documentation details
 %      08.22 lia -- Changing function names, warmabs -> xstar for now
+%      10.27 lia -- Major updates
 
 % 2014.07.30 dph
 %
@@ -61,6 +62,7 @@ Define new functions with an auto-naming feature:
   hotemis2
   multabs2
   windabs2
+  scatemis2
 
   Introduce a parameter, autoname_outfile, which if it has the value
   1, will use the model name and instance to name the output FITS
@@ -80,52 +82,80 @@ Define new functions with an auto-naming feature:
 
 ---
 
-s = rd_xstar_output( db_filename )
+%% HELP - Not sure if I documented these corectly -- lia
 
-  Read the warmabs output table;
+Some output controls:
 
-  Returns a structure, containing fields... TBS
+xstar_set_outfile(f)
+    Sets the name of the warmabs file
+    Use f="" t disable use of the WARMABS_OUTFILE
 
-   wavelength sorted in ascending order
+xstar_get_outfile()
+    Returns the name of current WARMABS_OUTFILE
 
-   fields added to the basic output:
-   
-     model_name  e.g., "warmabs", "photemis"
-     params      a sub-structure holding model parameters)
-     Z           atomic number; e.g., Ne = 10
-     q           ion state (arabic; e.g., 9 for IX)
-     transition_name   string form of other fields:
-                      "<Element> <ion>f <upper_level> <lower_level> <type>"
-
-
-The following are wrappers for rd_xstar_output
-
-s = rd_warmabs_output( db_filename );
-s = rd_photemis_output( db_filename );
+xstar_unset_outfile
+    Returns to default
 
 ---
 
-bool_array = xstar_wl( s, wlo, whi[; qualifiers] )
+s = rd_xstar_output( db_filename );
 
-   Return the array of characters expressing boolean results from s
-   for features having wavelengths defined by
+  Read the warmabs output table;
+  Returns a structure, containing fields sorted by ascending wavelength
+    transition  : (int) an index for the transition
+    type        : (string) "line" or "edge/rrc"
+    ion	    	: (string) describing ion, e.g. "si_iv"
+    wavelength  : (double) transition wavelength in Angs
+    tau0	: (float) optical depth of the transition (??)
+    tau0grid    : (float) optical depth of the transition (??)
+    ew	   	: (float) equivalent width of a line transition,
+   		  has a negative value in the case of emission
+    luminosity  : (float) luminosity of a line transition
+    lower_level : (string) lower level of transition
+    upper_level : (string) upper level of transition
+    a_ij	: (float) A_ij rate coefficient
+    f_ij	: (float) f_ij rate coefficient
+    g_lo	: (float) g value for lower level of transition
+    g_up	: (float) g value for upper level of transition
+    ind_lo	: (int) index for transition lower level, 
+		  see xstarlevels.text
+    ind_up	: (int) index for transition upper level,
+		  see xstarlevels.text
+    ind_ion	: (int) index for ion
+
+  fields added to the basic output:
+    model_name  : (string) "warmabs" or "photemis", etc...
+    Z	        : (int) atomic number; e.g., Ne = 10
+    q	        : (int) ion state (arabic; e.g., 9 for IX)
+    params	: sub-structure holding model parameters
+    transition_name : (string) description of other fields 
+		      "<Element> <ion> <upper_level> <lower_level> <type>"
+    filename	    : (string) name of file(s) the database was read from
+
+  merged databases only
+    origin_file     : (int) index of s.filename from which transition was read
+
+		      
+---
+
+bool_array = xstar_wl( s, wlo, whi );
+
+ Return the array of characters expressing boolean results from s
+ for features having wavelengths defined by
 
          wlo < s.wavelength <= whi
 
-The following are wrappers for xstar_wl
-ba = warmabs_wl(s, wlo, whi)
-ba = photemis_wl(s, wlo, whi)
 
 bool_array = xstar_el_ion( s, el_list[, ion_list] )
 
-    Return the array of characters expressing boolean results from s
-    for features having wavelengths defined by
+  Return the array of characters expressing boolean results from s
+  for features having wavelengths defined by
 
     	s.Z == el_list and s.q == ion_list
 
 ---
 
-indices = xstar_strong( n, s [; qualifiers] )
+indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion] );
 
   Return the indices in warmabs_db structure s for the n strongest
   features.  Depending on the feature type, "strongest" can mean the
@@ -133,98 +163,211 @@ indices = xstar_strong( n, s [; qualifiers] )
   (e.g., line luminosity or optical depth).
 
   The features may be specified by qualifiers.  Defaults are
-  determined from the model type (defined by s.lmodtyp) as:
-
-    field:   arbitrary field name of the input structure field
-     	     defining the feature for the selection of the strongest
-     	     elements. The user can define this.
-	     
-	     ="ew" (equivalent width) if model_type == T_HOTABS or T_WARMABS
-	     ="luminosity" (line luminosity) if model_type == T_HOTEMIS or T_PHOTEMIS
-
-	     Values change according to type qualifier:
-	     = "luminosity" if type == "rrc"
-	     = "tau0" if type == "edge"
-
-    emis:     if present, the feature is defined to be in emission and
-    	      "strong" means larger (more positive) value for
-     	      luminosity or more negative value for equivalent widths.
-     	      Otherwise, the feature is assumed to be in absorption
-     	      and "strong" means greater absorption, a more positive value.
-
-	      =1 if model_type == T_HOTEMIS or T_PHOTEMIS
-	      =0 if model_type == T_HOTABS or T_WARMABS
-
-    If model_type is not found, field="ew" and emis=0 are the defaults.
+  determined from the model type (defined by s.model_name) as:
 
   Qualifiers:
 
-     type:    "line" | "edge" | "rrc" | "any"
-	      "any" will match all types with default field as described above.
-	      "edge" and "rrc" change the field parameter
+    field  : arbitrary field name of the input structure field
+     	     defining the feature for the selection of the strongest
+     	     elements. The user can override this.
+	     
+	     = "ew" (equivalent width) if model_type == T_HOTABS or T_WARMABS
+	     = "luminosity" (line luminosity) if model_type == T_HOTEMIS or T_PHOTEMIS
 
-	      A type "line" has upper and lower level designations
-	      the transition. A type "edge" has an upper level of
-	      "continuum".
-	      
-     wmin:    minimum wavelength [A] for selection.
+	     If model_type is not found, field="ew" is the default setting
 
-     wmax:    maximum wavelength [A] for selection
+	     Values also change according to type qualifier:
+	     = "luminosity" if type == "rrc"
+	     = "tau0" if type == "edge"
 
-     elem:    Element atomic number (integer); output will be limited to this element.
+	     If field is set by user, it will override all conditionals above
 
-     ion:     Ion state (integer); output will be limited to this ion.
+%% NOTE: Cut out emis, it seems superfluous
+%    emis  : if present, the feature is defined to be in emission and
+%    	     "strong" means larger (more positive) value for
+%     	     luminosity or more negative value for equivalent widths.
+%     	     Otherwise, the feature is assumed to be in absorption
+%     	     and "strong" means greater absorption, a more positive value.
+%
+%	     =1 if model_type == T_HOTEMIS or T_PHOTEMIS
+%	     =0 if model_type == T_HOTABS or T_WARMABS
 
-     field:   Set automatically (see above), but can also be specified by the user.
 
+     type  : "line" | "edge" | "rrc" | "any"
+	    
+	     "any" will match all types with default field as described above.
+	     "edge" and "rrc" will change the field parameter
+
+     wmin  : minimum wavelength [A] for selection.
+
+     wmax  : maximum wavelength [A] for selection
+
+     elem  : Element atomic number (integer); output will be limited to this element.
+
+     ion   : Ion state (integer); output will be limited to this ion.
 
   Examples:
 
-      fit_fun( "warmabs(1)" );
-      set_par( "warmabs(1).rlogxi", 1 );
-      (w1, w2) = linear_grid( 1.0, 40.0, 8192 );
-      y = eval_fun( w1, w2);
-      s = rd_xstar_lines_output( "warmabs_1.fits" ) ;
+    fit_fun( "warmabs2(1)" );
+    set_par( "warmabs2(1).rlogxi", 1 );
+    set_par( "warmabs2(1).write_outfile", 1 );
+    (w1, w2) = linear_grid( 1.0, 40.0, 8192 );
+    y = eval_fun( w1, w2 );
 
-      l = xstar_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge", field="tau0" ) ; 
-      
-      xstar_page_group( s, l );
-      #      id      ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type label
-          3307   O  VIII   14.247  0.000e+00  0.000e+00   2   0  2.064e-01  0.000e+00    0.000e+00   edge/rrc       1s1.2S -     continuu
-          3187   O   VII   16.771  0.000e+00  0.000e+00   1   0  9.808e-01  0.000e+00    0.000e+00   edge/rrc       1s2.1S -    continuum
+    s = rd_xstar_output( "warmabs_1.fits" ) ;
+    l = xstar_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge" ) ; 
+
+    xstar_page_group( s, l );
+    #     id       ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type                    label
+        3543   O  VIII  14.2281  0.000e+00  0.000e+00   2   0  2.317e-01  0.000e+00    0.000e+00   edge/rrc   1s1.2S_1/2 -     continuu
+        3363   O   VII  16.7705  0.000e+00  0.000e+00   1   0  1.261e+00  0.000e+00    0.000e+00   edge/rrc     1s2.1S_0 -    continuum
 
 
 ---
 
-xstar_page_group( s, l[; qualifiers] )
-    print a table of features of s selected by indices l
+xstar_page_group( s, l[; sort] );
 
-    Qualifiers:
-	sort:	"wavelength" | "ew" | "luminosity" | "tau0" | "none"
+  Print a table of features of s selected by indices l
 
-		Will sort the list in descending order based on the
-		values in these fields.  The default is to sort by
-		wavelength.  Note that xstar_strong does this
-		anyways. Using sort="none" will print the data in the
-		order that it is listed.
+  Qualifiers:
+    sort : "wavelength" | "tau0" | "none" | field name
 
-xstar_plot_group( s, l[, color[, style[, redshift]]] )
-
-   mark features in s selected by l on the current plot.
-
-   color: optional integer specifying label color
-   	  default = 2
-
-   style: optional structure giving labeling attributes 
-   	  default = line_label_default_style()
-
-   redshift: redshift for marker placement
-   	     default = 0
-
-****** WORKING HERE *** xxx -----------------------
+	   Will sort the list in descending order based on the field
+	   name value in these fields, except in a few special cases:
+    	   = "wavelength" by default, sorts in ascending order
+	   = "none" will print the data in the same order as l
+	   = "tau0" sorts according to tau0grid field in s
 
 
-index = ewout_trans( s, el, ion[, upper, lower] ) 
+xstar_plot_group( s, l[, color[, style[, redshift]]] );
+
+  mark features in s selected by l on the current plot.
+
+  Qualifiers:
+    color    : optional integer specifying label color
+   	       default = 2
+
+    style    : optional structure giving labeling attributes 
+   	       default = line_label_default_style()
+
+    redshift : redshift for marker placement
+   	       default = 0
+
+---
+---
+
+Functions for handling multiple databases
+---
+
+s = xstar_merge( db_list );
+
+  Merges two or more database structures, adding the origin_file field.
+  (see rd_xstar_output)
+
+
+xstar_run_model_grid( model_info, root_dir[; nstart] );
+
+  Runs a series of xstar models set by the model_info structure.
+  All output is stored in the location specified by root_dir.
+
+  model_info is a structure containing the fields:
+    mname   : model name, e.g., "warmabs" or "photemis"
+    pname   : parameter of interest to vary, e.g., "column"
+    min	    : minimal value for parameter of interest
+    max	    : maximal value for parameter of interest
+    step    : step-size for parameter of interest
+    bins    : a sub-structure containing
+      bin_lo
+      bin_hi
+
+  Two global variables are provided to help initialize model_info
+    _default_model_info : initializes structure with the above fields
+    _default_binning    : (bin_lo, bin_hi) = linear_grid(1.0, 40.0, 8192);
+
+
+g = xstar_load_tables( fnames );
+
+  Loads a series of xstar models, defined by sorted array of strings
+  containing the database file names (fnames).
+
+  Output is a grid structure containing the following fields:
+   db        : An array of database structures loaded from each file
+   	       (See results of rd_xstar_output)
+	       Each structure in db contains an additional field
+
+     uid : (long int) the "unique id" assigned to each transition
+     according to ion index, ind_lo, and ind_hi
+     (see xstarlevels.text)
+
+   mdb       : The "master databse" sub-structure containing the union set
+   	       of all transitions in db array.
+     type
+     ion
+     wavelength
+     lower_level
+     upper_level
+     Z
+     q
+     a_ij
+     f_ij
+     g_lo
+     g_up
+     (see results of rd_xstar_output for field descriptions)
+
+   uids      : (long int) Union of all uid values in db array
+   uid_flags : An array of character arrays containing boolean information.
+   	       length(g.uid_flags)    = length(g.db)
+   	       length(g.uid_flags[i]) = length(g.uids)
+               g.uid_flags[i][j] = '1' if g.uids[j] is in g.db[i]
+
+   par	     : A sub-structure contaiing parameters of typical interest to users
+     rlogxi : (double) 
+     column : (double)
+     vturbi : (double)
+
+
+xstar_page_grid( g, l );
+
+  Print a table of transitions in g (a grid of xstar models) 
+  selected by indices l
+
+  Qualifiers:
+    sort : "wavelength" | "none" | "uid" | field name
+
+	   Will sort the list in descending order based on the field
+	   name value in these fields, except in a few special cases:
+    	   = "wavelength" by default, sorts in ascending order
+	   = "none" will print the data in the same order as l
+	   = "uid" will print the data in order of ascending uid,
+	     this is the equivalent of ascending ion species
+
+
+(ion, lo, up) = xstar_unpack_uid( uid );
+
+  Returns the index values for ion (ind_ion), lower level (ind_lo),
+  and upper level (ind_up) associated with a unique id.
+
+
+xstar_line_prop( g, uid, field );
+
+  Returns an array containing the values of "field" for the transition
+  of interest (uid), over the grid of models.
+
+  Example:
+
+    fgrid = glob("wamrbas_*.fits");
+    fgrid = fgrid[ array_sort(fgrid) ];
+    wa_grid = xstar_load_tables(fgrid);
+
+    line_ew = xstar_line_prop( wa_grid, 980040015L, "ew" );
+
+---
+---
+
+Function wish list
+---
+
+index = xstar_trans( s, el, ion[, upper, lower] ) 
 
    return indices in the ewout structure, s, corresponding the the
    feature selected by element, ion, upper, and lower levels.
@@ -239,16 +382,9 @@ index = ewout_trans( s, el, ion[, upper, lower] )
 
      lower: lower level designation (string);
 
-   Note: the level designation strings are best obtained via the
-   ewout_page_ids and ewout_strong functions.
 
 
-s = ewout_label_style;
-
-   returns a structure of attributes for labeling the features with ewout_plot_ids
-
-
-s = ewout_feature_strength( el, ion, lower, upper, model_name, params, pgrid )
+s = xsatr_feature_strength( el, ion, lower, upper, model_name, params, pgrid )
 
     For the feature indexed by el, ion, lower, upper,  evaluate the
     model given by model_name with parameter array, params,  on the
