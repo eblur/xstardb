@@ -40,7 +40,7 @@ define test_read_db()
 
 %%---------- After first autoname, must load dbs ----------%%
 
-%test_autoname_outfile;
+test_autoname_outfile;
 test_read_db;
 
 %%---------------------------------------%%
@@ -143,7 +143,7 @@ define test_xstar_plot_group()
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
-%test_xstar_plot_group();
+test_xstar_plot_group();
 
 %test_xstar_wl;
 %test_xstar_el_ion;

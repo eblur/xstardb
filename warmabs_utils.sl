@@ -72,20 +72,20 @@ private variable WARMABS_OUTFILE         = "${WARMABS_ROOT}.fits"$ ;
 
 % Use f="" to disable use of WARMABS_OUTFILE:
 %
-define warmabs_set_outfile( f )
+define xstar_set_outfile( f )
 {
     WARMABS_OUTFILE = f ;
     putenv( "WARMABS_OUTFILE=$f"$ ) ; 
 }
 
-define warmabs_get_outfile()
+define xstar_get_outfile()
 {
     return( getenv("WARMABS_OUTFILE") );
 }
 
 define warmabs_unset_outfile()
 {
-   warmabs_set_outfile("");
+   xstar_set_outfile("");
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,7 +159,7 @@ private define _warmabs2( warmabs_fname, lo, hi, par )
 
     if ( autoname ) % set the outfile name in the environment:
     {
-	 warmabs_set_outfile( sprintf( "%s_%d.fits",
+	 xstar_set_outfile( sprintf( "%s_%d.fits",
 	               warmabs_fname, Isis_Active_Function_Id ) ) ;
     }
 
@@ -168,11 +168,11 @@ private define _warmabs2( warmabs_fname, lo, hi, par )
 
     % else % use default action, which is "warmabs<idx>.fits"
     % {
-    % 	warmabs_set_outfile("");
+    % 	xstar_set_outfile("");
     % }
 
     variable y = eval_fun2( warmabs_handle, lo, hi, warmabs_pars ) ;
-    % warmabs_set_outfile("");  % disable env name
+    % xstar_set_outfile("");  % disable env name
     return( y );
 }
 
@@ -1063,7 +1063,7 @@ define xstar_run_model_grid( info, rootdir )
 
     for ( i=1; i<=n; i++ )
     {
-	warmabs_set_outfile( sprintf( rootdir + "%s_%d.fits", sfun, n0+i ) );
+	xstar_set_outfile( sprintf( rootdir + "%s_%d.fits", sfun, n0+i ) );
 	fpar[ pidx ] = pgrid[ i-1 ] ;
 	message( "Running  $sfun vs $pname ... $i"$ );
 	() = printf("debug: pgrid[%d]=%8.2f\n", i-1, fpar[pidx] );
