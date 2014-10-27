@@ -40,7 +40,7 @@ define test_read_db()
 
 %%---------- After first autoname, must load dbs ----------%%
 
-%test_autoname_outfile;
+test_autoname_outfile;
 test_read_db;
 
 %%---------------------------------------%%
@@ -64,15 +64,15 @@ define test_xstar_wl()
 define test_xstar_el_ion()
 {
     print("Testing xstar_el_ion function, return Ca and Fe lines only");
-    variable iwa2 = where( xstar_el_ion(wa, [Ca,Fe]) );
+    variable iwa2 = where( xstar_el_ion(wa, [Ca,Fe]) and xstar_wl(wa,1,40) );
     xstar_page_group(wa, iwa2);
 
     print("Testing xstar_el_ion function, return Fe I and III lines only");
-    variable iwa3 = where( xstar_el_ion(wa, Fe, [1,3]));
+    variable iwa3 = where( xstar_el_ion(wa, Fe, [1,3]) and xstar_wl(wa,1,40) );
     xstar_page_group(wa, iwa3);
 
     print("Testing xstar_el_ion function, return Ca V only");
-    variable iwa4 = where( xstar_el_ion(wa, Ca, 5));
+    variable iwa4 = where( xstar_el_ion(wa, Ca, 5) and xstar_wl(wa,1,40) );
     xstar_page_group(wa, iwa4);
 }
 
@@ -80,15 +80,15 @@ define test_xstar_el_ion()
 
 define test_xstar_trans()
 {
-    print("Return OIII lines only");
+    print("Testing xstar_trans, return OIII lines only");
     variable o_iii = where( xstar_trans(wa, O, 3) );
     xstar_page_group(wa, o_iii);
 
-    print("Return OIII transitions into the ground state");
+    print("Testing xstar_trans, return OIII transitions into the ground state");
     variable o_iii_ground = where( xstar_trans(wa, O, 3, 1) );
     xstar_page_group(wa, o_iii_ground);
 
-    print("Return OVII helium triplet only");
+    print("Testing xstar_trans, return OVII helium triplet only");
     variable o_vii_triplet = where( xstar_trans(wa, O, 7, 1, [2:7]) );
     xstar_page_group(wa, o_vii_triplet);
 }
@@ -144,12 +144,15 @@ define test_xstar_plot_group()
     ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
     xrange(3.0,3.1);
     hplot(x1, x2, y, 1);
-    xstar_plot_group(wa, iwa_strong, 3);
+    xstar_plot_group(wa, iwa_strong, 5);
     
     variable style = line_label_default_style();
-    style.offset = -2.0;
-    style.label_type = 1; % Should not do anything, one line label only
-    xstar_plot_group(wa, iwa_strong, 5, style);
+    style.angle = -25.0;
+    style.top_frac = 0.65;
+    style.bottom_frac = 0.8;
+    style.offset = 0.5;
+    style.label_type = 1; 
+    xstar_plot_group(wa, iwa_strong, 3, style);
 }
 
 %% Another range that shows a multitude of blended lines: 
@@ -160,11 +163,11 @@ define test_xstar_plot_group()
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
-%test_xstar_plot_group();
+test_xstar_plot_group();
 
 %test_xstar_wl;
 %test_xstar_el_ion;
-test_xstar_trans;
+%test_xstar_trans;
 
 %test_xstar_strong;
 

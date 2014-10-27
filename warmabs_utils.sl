@@ -353,7 +353,7 @@ private define parse_ion_string (s)
 
 private define make_transition_name_string (Z, q, upper_level, lower_level, type)
 {
-    return sprintf ("%s %s %s %s [%s]",
+    return sprintf ("%s %s %s - %s [%s]",
                      Upcase_Elements[ Z-1 ], Roman_Numerals[ q-1 ],
                      upper_level, lower_level, type);
 }
@@ -893,7 +893,15 @@ define xstar_plot_group()
     { _NARGS > 5: message("ERROR: Too many arguments"); return; }
 
     variable wl = s.wavelength[l];
-    variable labels = Upcase_Elements[ s.Z[l]-1 ] + " " + Roman_Numerals[ s.q[l]-1 ];
+    variable labels;
+    if ( style.label_type == 1 )
+    {
+	labels = s.transition_name[l];
+    }
+    else
+    {
+	labels = Upcase_Elements[ s.Z[l]-1 ] + " " + Roman_Numerals[ s.q[l]-1 ];
+    }
 
     plot_linelist(wl, labels, ci, style, z);
 }
