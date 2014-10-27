@@ -140,18 +140,26 @@ s = rd_xstar_output( db_filename );
 
 bool_array = xstar_wl( s, wlo, whi );
 
- Return the array of characters expressing boolean results from s
- for features having wavelengths defined by
+  Return boolean array of characters for transitions in s matching
 
          wlo < s.wavelength <= whi
 
 
 bool_array = xstar_el_ion( s, el_list[, ion_list] )
 
-  Return the array of characters expressing boolean results from s
-  for features having wavelengths defined by
+  Return boolean array of characters for transitions in s matching
 
-    	s.Z == el_list and s.q == ion_list
+	ismember( s.Z, el_list ) and
+	ismember( s.q, ion_list )
+
+
+bool_array = xstar_trans( s, el_list, ion_list[, lower_list[, upper_list]] );
+
+  Return boolean array of characters for transitions in s matching
+  
+        xstar_el_ion( s, el_list, ion_list ) and
+	ismember( s.ind_lo, lower_list ) and
+	ismember( s.ind_up, upper_list )
 
 ---
 

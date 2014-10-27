@@ -452,42 +452,30 @@ define xstar_el_ion()
     % ion_list is array of ions
 
     % example:
-    % return flag array where indices of Ne IX or Ne X are set to 1:
-    % l = xstar_el_ion( db, Ne, [9,10] );
+    % l = xstar_el_ion( s, Ne, [9,10] );
 
-    variable s, el_list, ion_list = NULL ;
-    variable el, ion;
+    variable s, el_list;
+    variable ion_list = Integer_Type[0];
 
+    % load arguments
     switch( _NARGS )
-    {
-        case 2:
-        ( s, el_list ) = ();
-    }
-    {
-        case 3:
-        ( s, el_list, ion_list ) = ();
-    }
+    { case 2: ( s, el_list ) = (); }
+    { case 3: ( s, el_list, ion_list ) = (); }
     {
         message("Wrong number of arguments.");
         message("USAGE: flags = xstar_el_ion( db_struct, atomic_number[,  ion] )" );
         return -1;
     }
 
-    variable el_result  = 0;
-    variable ion_result = 1;
+    % Perform comparisons
+    variable result = ismember( s.Z, el_list );
 
-    foreach el (el_list)
+    if ( length(ion_list) > 0 )
     {
-        el_result = el_result or (s.Z == el);
+	result = result and ismember( s.q, ion_list );
     }
 
-    if (ion_list != NULL )
-    {
-        ion_result = 0;
-        foreach ion (ion_list) ion_result = ion_result or (s.q == ion);
-    }
-
-    return( el_result and ion_result );
+    return result;
 }
 
 %
@@ -500,12 +488,17 @@ define xstar_trans()
     variable s, el, ion;
     variable lower = Integer_Type[0];
     variable upper = Integer_Type[0];
+
+    % load arguments
     switch(_NARGS)
-    { _NARGS < 3 : print("ERROR: Requires at least three arguments,\nindex = xstar_trans(s, el, ion[,lower, upper]);"); }
-    { case 3   : ion = (); el = (); s = (); }
-    { case 4   : lower = (); ion = (); el = (); s = (); }
-    { case 5   : upper = (); lower=(); ion = (); el = (); s = (); }
-    { _NARGS > 5 : print("ERROR: Too many arguments,\nindex = xstar_trans(s, el, ion[,lower, upper]);"); }
+    { case 3   : (s, el, ion) = (); }
+    { case 4   : (s, el, ion, lower) = (); }
+    { case 5   : (s, el, ion, lower, upper) = (); }
+    {
+	message("Wrong number of arguments.");
+	message("USAGE: flags = xstar_trans( db_struct, atomic_number, ion[, ind_lower[, ind_upper]] );" );
+	return -1;
+    }
 
     variable result = xstar_el_ion( s, el, ion );
 
