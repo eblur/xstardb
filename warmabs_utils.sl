@@ -300,17 +300,12 @@ foreach k ( warmabs_models )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % From J.Houck:
 %
-%private
-variable Elements = Assoc_Type[];
-%private 
-variable Roman = Assoc_Type[];
-%private 
-variable Roman_Numerals;
-%private 
-variable Upcase_Elements;
+private variable Elements = Assoc_Type[];
+private variable Roman = Assoc_Type[];
+private variable Roman_Numerals;
+private variable Upcase_Elements;
 
-%private 
-define init_elems()
+private define init_elems()
 {
     Upcase_Elements =
     ["H" , "He", "Li", "Be", "B" , "C" , "N" , "O" , "F" , "Ne",
@@ -338,8 +333,7 @@ define init_elems()
 init_elems();
 %
 
-%private 
-define parse_ion_string (s)
+private define parse_ion_string (s)
 {
     variable t = strtok (s, "_");
     if (length(t) != 2)
@@ -357,8 +351,7 @@ define parse_ion_string (s)
     return Z, q;
 }
 
-%private 
-define make_transition_name_string (Z, q, upper_level, lower_level, type)
+private define make_transition_name_string (Z, q, upper_level, lower_level, type)
 {
     return sprintf ("%s %s %s %s [%s]",
                      Upcase_Elements[ Z-1 ], Roman_Numerals[ q-1 ],
@@ -369,8 +362,7 @@ define make_transition_name_string (Z, q, upper_level, lower_level, type)
 % 2014.07.14 dph; add a field, "model", and read the header keyword, "MODEL", 
 % which specifies which type was run (e.g., warmabs, photemis, hotemis...).
 
-
-define load_warmabs_file (file)
+private define load_warmabs_file (file)
 {
     variable db = fits_read_table ("${file}[XSTAR_LINES]"$);
 
@@ -405,12 +397,8 @@ define load_warmabs_file (file)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% get indices for an element, ion pair:
+% Start of joint dph, lia code
 %
-define warmabs_db_elion( s, el, ion )
-{
-    return( s.elem == el and s.ion == ion ) ;
-}
 
 private variable T_HOTABS   = 1, 
 		 T_HOTEMIS  = 2,
