@@ -375,22 +375,6 @@ xstar_line_prop( g, uid, field );
 Function wish list
 ---
 
-index = xstar_trans( s, el, ion[, lower, upper] );
-
-   return indices in the ewout structure, s, corresponding the the
-   feature selected by element, ion, upper, and lower levels.
-
-     s:  ewout structure (as obtained by ewout_common2())
-
-     el: element atomic number (integer)
-
-     ion: ion state (integer; 1 => neutral)
-
-     lower: lower level designation (string);
-
-     upper: upper level designation (string);
-
-
 index = xstar_db_index( s, id_list );
 
   return indices acoording to transition or unique id in a database or
