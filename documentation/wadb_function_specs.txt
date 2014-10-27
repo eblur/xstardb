@@ -367,7 +367,7 @@ xstar_line_prop( g, uid, field );
 Function wish list
 ---
 
-index = xstar_trans( s, el, ion[, upper, lower] ) 
+index = xstar_trans( s, el, ion[, lower, upper] );
 
    return indices in the ewout structure, s, corresponding the the
    feature selected by element, ion, upper, and lower levels.
@@ -378,31 +378,18 @@ index = xstar_trans( s, el, ion[, upper, lower] )
 
      ion: ion state (integer; 1 => neutral)
 
-     upper: upper level designation (string);
-
      lower: lower level designation (string);
 
+     upper: upper level designation (string);
 
 
-s = xsatr_feature_strength( el, ion, lower, upper, model_name, params, pgrid )
+index = xstar_db_index( s, id_list );
 
-    For the feature indexed by el, ion, lower, upper,  evaluate the
-    model given by model_name with parameter array, params,  on the
-    grid, x, and return the feature strength vs x.  Interpretation of
-    x depends on the model, and is logxi for models photemis and
-    warmabs, and is logt4 for hotabs and hotemis.
+  return indices acoording to transition or unique id in a database or
+  grid structure
 
-    The returned structure holds the relevant feature strength values
-    from the ewout stucture (tau0ewo, ewout, elout).
 
-    params is a parameter array for the desired model.  E.g.,
-
-       fit_fun( "warmabs(999)" );
-       params = get_par( "warmabs(999).*" );
-
-    param[1] corresponds to the variable parameter. .
-
-    Note: this can be time-consuming because it requires a model
-    	  evaluation for each xi point, rather than a database lookup.
-	  
+Something that deals with line blending
+-- For plotting?
+-- For finding line features?
 
