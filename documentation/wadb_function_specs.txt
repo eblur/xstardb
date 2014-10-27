@@ -144,6 +144,8 @@ bool_array = xstar_wl( s, wlo, whi );
 
          wlo < s.wavelength <= whi
 
+  where wavelength is in units of angstroms
+
 
 bool_array = xstar_el_ion( s, el_list[, ion_list] )
 
@@ -151,6 +153,13 @@ bool_array = xstar_el_ion( s, el_list[, ion_list] )
 
 	ismember( s.Z, el_list ) and
 	ismember( s.q, ion_list )
+
+  where Z is an array of integers specifying atomic number (e.g. 6 for oxygen)
+  and q is an array of integers specifying charge (e.g. 1 for neutral)
+
+  Examples:
+    o_all = where( xstar_el_ion( s, 8 ) );
+    o_vii = where( xstar_el_ion( s, 8, 7 ) );
 
 
 bool_array = xstar_trans( s, el_list, ion_list[, lower_list[, upper_list]] );
@@ -160,6 +169,9 @@ bool_array = xstar_trans( s, el_list, ion_list[, lower_list[, upper_list]] );
         xstar_el_ion( s, el_list, ion_list ) and
 	ismember( s.ind_lo, lower_list ) and
 	ismember( s.ind_up, upper_list )
+
+  Examples:
+    o_vii_triplet = where( xstar_trans( s, 8, 7, 1, [2:7] ) );
 
 ---
 
