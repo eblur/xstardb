@@ -31,7 +31,10 @@ set_par( "warmabs2(1).Redshift", 0.0 );
 set_par( "warmabs2(2).column", log10(8.1) );
 set_par( "warmabs2(2).rlogxi", 3.8 );
 set_par( "warmabs2(2).vturb", 500.0 );
-set_par( "warmabs2(2).Redshift", 0.007749 );
+
+% For sake of example, 
+% I increased the redshift in comparison to paper
+set_par( "warmabs2(2).Redshift", 0.1 ); 
 
 list_par; % Check out the model settings
 
@@ -59,16 +62,35 @@ variable wa2 = rd_xstar_output("warmabs_2.fits");
 variable wa_all = xstar_merge( [wa1, wa2] );
 
 %% Example: Find lines strongest lines within an interesting wl range
+variable AMIN = 19.5;
+variable AMAX = 22.0;
+
 yrange();
-xrange(7.0,10.0);
+xrange(AMIN, AMAX);
 hplot(x1,x2,y1,1);
 
-variable s_all = xstar_strong(5, wa_all; wmin=7.0, wmax=10.0);
+
+variable s_all = xstar_strong(5, wa_all; wmin=AMIN, wmax=AMAX );
 xstar_page_group(wa_all, s_all; sort="ew");
 
-%% Plot the lines
-variable i1 = where( wa_all.origin_file[s_all] == 0 );
-variable i2 = where( wa_all.origin_file[s_all] == 1 );
+%%---
+%% NOTE : XSTAR model runs are calculated for the rest frame, but 
+%% one of the absorbers in our model has z = 0.1
+%%
+%% When we run xstar_strong, the database will be searched for rest frame wavelengths.
+%%
+%% There are two ways one can manage this:
+
+%%---
+%% A. Search each database separately
+
+variable s1 = xstar_strong(5, wa1; wmin=AMIN, wmax=AMAX );
+xstar_page_group(wa1, s1; sort="ew");
+
+variable s2 = xstar_strong(5, wa2; wmin=AMIN, wmax=AMAX, 
+                           redshift=get_par("warmabs2(2).Redshift"));
+xstar_page_group(wa2, s2; sort="ew");
+
 
 variable lstyle = line_label_default_style();
 lstyle.top_frac = 0.8; 
@@ -76,18 +98,41 @@ lstyle.bottom_frac = 0.6;
 lstyle.angle = 45;
 
 % For model 1:
-xstar_plot_group( wa_all, s_all[i1], 2, lstyle);
+xstar_plot_group( wa1, s1, 2, lstyle);
 
 % For model 2, need to include redshift
-xstar_plot_group( wa_all, s_all[i2], 3, lstyle, get_par("warmabs2(2).Redshift"));
+xstar_plot_group( wa2, s2, 3, lstyle, get_par("warmabs2(2).Redshift") );
 
-%% If you wanted to correct the wavelength for redshift, do so before
-%% combining the datasets
-%
-% wa2.wavelength *= (1.0 + get_par("warmabs2(2).Redshift"));
-% wa_all = merge_xstar_output([wa1, wa2]);
-%
-% This will be more necessary if you are modeling something at large
-% enough redshift (z >~ 0.1), which will affect your ability to
-% identify lines in the model spectrum.
+%% This doesn't look so great, so method B is probably better.
 
+%%---
+%% B. Adjust wavelength of the redshifted databases before combining
+
+wa2.wavelength *= (1.0 + get_par("warmabs2(2).Redshift"));
+
+variable wa_all_B = xstar_merge( [wa1, wa2] );
+
+variable s_all = xstar_strong( 10, wa_all_B; wmin=AMIN, wmax=AMAX );
+xstar_page_group( wa_all_B, s_all; sort="ew" );
+
+variable i1 = where( wa_all_B.origin_file[s_all] == 0 );
+variable i2 = where( wa_all_B.origin_file[s_all] == 1 );
+
+hplot(x1, x2, y1, 1);
+xstar_plot_group( wa_all_B, s_all[i1], 2, lstyle);
+xstar_plot_group( wa_all_B, s_all[i2], 3, lstyle);
+
+%%---
+%% DEBUG this -- what are those lines around 19.8 - 20.4 Angs?
+%% What about 20.5 - 21 Angs?
+
+variable test1 = where( xstar_wl( wa1, AMIN, AMAX ) );
+xstar_page_group( wa1, test1 );
+
+variable test2 = where( xstar_wl( wa2, AMIN, AMAX ) );
+xstar_page_group( wa2, test2 );
+
+%% plot them all, and you can see ... there are a lot of lines missing!
+hplot(x1, x2, y1, 1);
+xstar_plot_group(wa1, test1, 2);
+xstar_plot_group(wa2, test2, 3);
