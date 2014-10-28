@@ -438,7 +438,8 @@ define rd_xstar_output( fname )
 %
 define xstar_wl( s, wlo, whi )
 {
-    return s.wavelength > wlo and s.wavelength <= whi;
+    variable z = qualifier( "redshift", 0.0 );
+    return s.wavelength * (1+z) > wlo and s.wavelength * (1+z) <= whi;
 }
 
 
@@ -602,8 +603,8 @@ define xstar_strong( n, s )
     variable wmax = max( s.wavelength ); 
 
     %if ( qualifier_exists( "emis" ) ) emis =  1 ;
-    if ( qualifier_exists( "wmin" ) ) wmin =  qualifier( "wmin" ) ;
-    if ( qualifier_exists( "wmax" ) ) wmax =  qualifier( "wmax" ) ;
+    if ( qualifier_exists( "wmin" ) ) wmin =  qualifier( "wmin" );
+    if ( qualifier_exists( "wmax" ) ) wmax =  qualifier( "wmax" );
 
     if ( qualifier_exists( "field") ) field = qualifier( "field" );
     variable v = get_struct_field( s, field ) ;
@@ -613,7 +614,9 @@ define xstar_strong( n, s )
     variable r  = NULL ;
 
     % Pick out features from element, ion, and wavelength range of interest
-    lw =  s.wavelength > wmin and s.wavelength <= wmax  ;
+    variable z = qualifier( "redshift", 0.0 );
+    lw =  s.wavelength*(1.0+z) > wmin and 
+          s.wavelength*(1.0+z) <= wmax  ;
 
     if ( qualifier_exists( "elem" ) ) lw = lw and s.Z == qualifier( "elem" ) ;
     if ( qualifier_exists( "ion"  ) ) lw = lw and s.q  == qualifier( "ion" ) ;
