@@ -7,6 +7,8 @@
 %%
 %%%%
 
+_traceback = 1;  % helpful for debugging
+
 require("warmabs_db");
 
 %%----------------------------------------------------------------%%
@@ -57,6 +59,9 @@ hplot(x1,x2,y1,1);
 variable wa1 = rd_xstar_output("warmabs_1.fits");
 variable wa2 = rd_xstar_output("warmabs_2.fits");
 
+% set up redshift array for searching the dbd
+variable zvals = [get_par("warmabs2(1).Redshift"), get_par("warmabs2(2).Redshift")];
+
 % merge_xstar_output creates a single database from two database functions
 %
 variable wa_all = xstar_merge( [wa1, wa2] );
@@ -71,7 +76,7 @@ hplot(x1,x2,y1,1);
 
 
 variable s_all = xstar_strong(5, wa_all; wmin=AMIN, wmax=AMAX );
-xstar_page_group(wa_all, s_all; sort="ew");
+xstar_page_group(wa_all, s_all; sort="ew", redshift=zvals);
 
 %%---
 %% NOTE : XSTAR model runs are calculated for the rest frame, but 

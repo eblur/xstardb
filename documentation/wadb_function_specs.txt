@@ -239,7 +239,7 @@ indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion, redshift] );
 
 ---
 
-xstar_page_group( s, l[; sort] );
+xstar_page_group( s, l[; sort, redshift] );
 
   Print a table of features of s selected by indices l
 
@@ -251,6 +251,12 @@ xstar_page_group( s, l[; sort] );
     	   = "wavelength" by default, sorts in ascending order
 	   = "none" will print the data in the same order as l
 	   = "tau0" sorts according to tau0grid field in s
+
+    redshift : Will print the observer-frame wavelengths in the table.
+               In the case of a merged database, the user should
+               supply an array containing the redshift for each origin
+               file, in the same order as s.filename
+	       (see xstar_merge and rd_xstar_output)
 
 
 xstar_plot_group( s, l[, color[, style[, redshift]]] );

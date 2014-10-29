@@ -641,6 +641,7 @@ private variable warmabs_db_model_type =
 %
 % s is the structure from reading output FITS files;
 % l is an index array (filter)
+% qualifier: Redshift - for altering the wavelengths of the lines
 %
 define xstar_page_group( s, l )
 {
@@ -707,15 +708,20 @@ define xstar_page_group( s, l )
     "lower_level", 
     "upper_level"
     ];
-    
 
-    % If it is a merged database, there will be an addition origin file column
+
+    % Handle any redshift issues
+    variable z = qualifier("redshift", Double_Type[length(s.Z)] );
+    variable ofile = Integer_Type[length(s.Z)];
+
+    % If it is a merged database, there will be an additional "origin file" column
     if (struct_field_exists(s, "origin_file"))
     {
 	hdr = [hdr, "origin"];
 	hfmt = [hfmt, " %24s\n"];
 	dfmt = [dfmt, " %12s\n"];
 	fields = [fields, "origin"];
+	ofile = @s.origin_file;
     }
     else
     {
@@ -750,6 +756,7 @@ define xstar_page_group( s, l )
 	for (j=0; j<length(fields); j++)
 	{
 	    switch( fields[j] )
+	    { case "wavelength": () = fprintf(fp, dfmt[j], s.wavelength[k]*(1.0+z[ofile[k]])); }
 	    { case "Z": () = fprintf(fp, dfmt[j], Upcase_Elements[ s.Z[k]-1 ]); }
 	    { case "q": () = fprintf(fp, dfmt[j], Roman_Numerals[ s.q[k]-1 ]); }
 	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[k]]); }
