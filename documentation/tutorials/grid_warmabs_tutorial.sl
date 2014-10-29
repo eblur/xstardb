@@ -70,11 +70,8 @@ xstar_page_grid( wa_grid, o_vii_triplet; sort="a_ij");
 variable o_vii_R = where( xstar_trans(wa_grid.mdb, O, 7, 1, 7) );
 xstar_page_grid( wa_grid, o_vii_R );
 
-
 % Look at a curve-of-growth for this line
-variable si7_strong = 980040015L;
-variable si7_ew  = xstar_line_prop( wa_grid, si7_strong, "ew" );
-xstar_page_grid( wa_grid, where(wa_grid.uids == 980040015L) );
+variable o_vii_R_ew  = xstar_line_prop( wa_grid, o_vii_R, "ew" );
 
 % Look at the "par" field of wa_grid to get interesting parameters
 variable log_col = log10( wa_grid.par.column ) / 22.0;
@@ -83,20 +80,13 @@ variable log_col = log10( wa_grid.par.column ) / 22.0;
 ylin; yrange(); xrange();
 xlabel( latex2pg( "\log(N_H/10^{22}\ cm^{-2})" ) );
 ylabel( latex2pg( "Equivalent Width [\\A]" ) );
-title("Si VII : " + wa_grid.mdb.lower_level[si7[0]] + " - " + wa_grid.mdb.upper_level[si7[0]] );
-plot(log_col, si7_ew, 2 );
+title( wa_grid.mdb.transition_name[o_vii_R][0] );
+plot(log_col, o_vii_R_ew, 2 );
 
 
-% 4. Get information from a single line
+% 5. Get information about a single line, from the entire grid?
 %
-% aline = line_info( s, uid );  %<--- needs a different name
-% Returns struct{ wavelength, Z, q, a_ij, type, ew, ...}
-% Make this private?
-
-
-% 5. Get information about a single line, from the entire grid
-%
-% grid_line = xgrid_line_info( t, uid );
+% grid_line = xstar_line_info( t, uid );
 % Returns an array of line_info structures
 
 

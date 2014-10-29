@@ -355,7 +355,7 @@ private define make_transition_name_string (Z, q, upper_level, lower_level, type
 {
     return sprintf ("%s %s %s - %s [%s]",
                      Upcase_Elements[ Z-1 ], Roman_Numerals[ q-1 ],
-                     upper_level, lower_level, type);
+                     lower_level, upper_level, type);
 }
 
 
@@ -1096,11 +1096,12 @@ define xstar_load_tables( fnames )
     result.mdb   = struct{ type, ion, wavelength, 
                            lower_level, upper_level, Z, q, 
                            a_ij, f_ij, g_lo, g_up,
-                           ind_ion, ind_up, ind_lo };
+                           ind_ion, ind_up, ind_lo,
+                           transition_name };
     set_struct_fields( result.mdb, String_Type[0], String_Type[0], Double_Type[0], 
                        String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0],
                        Float_Type[0], Float_Type[0], Float_Type[0], Float_Type[0],
-                       Integer_Type[0], Integer_Type[0], Integer_Type[0] );
+                       Integer_Type[0], Integer_Type[0], Integer_Type[0], String_Type[0] );
 
     % Deal with assigning unique ids and flagging
     add_unique_id( result );
@@ -1275,11 +1276,12 @@ define xstar_unpack_uid( uid )
 
 
 %% Returns lists of booleans, for use with where function
-% USE: find_line(wa_grid, wa_grid.uids[0])
+% USE: find_line(wa_grid, ll)
 % RETURNS: An array of character arrays containing boolean flags for use with where function
 %
-private define xstar_find_line( grid, uid )
+private define xstar_find_line( grid, ll )
 {
+    variable uid = grid.uids[ll][0];
     variable i, result = Array_Type[length(grid.db)];
     for( i=0; i<length(grid.db); i++ )
     {
@@ -1290,16 +1292,16 @@ private define xstar_find_line( grid, uid )
 
 
 %% Get the property of a given line, using the "field" entry
-% USE: xstar_line_prop( wa_grid, wa_grid.uids[0], "ew" )
+% USE: xstar_line_prop( wa_grid, ll, "ew" )
 % RETURNS: An Double_Type array containing the value of the field of interest.
 % NOTE: Will break if used on a field that contains a string
 %
-define xstar_line_prop( grid, uid, field )
+define xstar_line_prop( grid, ll, field )
 {
     variable i, fl_list;
     variable temp, result = Double_Type[length(grid.db)];
 
-    fl_list = xstar_find_line( grid, uid );
+    fl_list = xstar_find_line( grid, ll );
     
     for( i=0; i<length(grid.db); i++ )
     {

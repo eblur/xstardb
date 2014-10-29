@@ -373,10 +373,15 @@ xstar_page_grid( g, l );
   and upper level (ind_up) associated with a unique id.
 
 
-xstar_line_prop( g, uid, field );
+xstar_line_prop( g, l, field );
 
   Returns an array containing the values of "field" for the transition
-  of interest (uid), over the grid of models.
+  of interest over the grid of models.
+
+  Inputs:
+    g     : grid structure containing all model databases (see xstar_load_tables)
+    l     : (int) index for the transition in the master databas (g.mdb)
+    field : (string) name the database field of interest, e.g. "ew"
 
   Example:
 
