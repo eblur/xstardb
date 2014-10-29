@@ -75,3 +75,61 @@ xstar_page_group(db2, l2; sort="ew");
 xstar_plot_group( db2, l2, 3, lstyle, get_par("warmabs2(2).Redshift") );
 
 
+%%-- 
+%% 10.29 : Turn off everything except Oxygen.  Dave said he tried
+%% every element in turn and Oxygen appeared associated with that 20
+%% Angstrom line.
+%%
+%% It might be part of an edge, so look for edge structure
+
+fit_fun("warmabs2(3)");
+
+set_par( "warmabs2(3).column", -1 ); % Log10(1.e20/1.e21) ??
+set_par( "warmabs2(3).rlogxi", -1.0 ); % Guess
+set_par( "warmabs2(3).vturb", 100.0 );
+set_par( "warmabs2(3).Redshift", 0.0 );
+
+set_par( [3:27], 0.0 );
+set_par( "warmabs2(3).Oabund", 1.0 );
+
+set_par("warmabs2(*).write_outfile", 1);
+set_par("warmabs2(*).autoname_outfile", 1);
+variable y3 = eval_fun(x1, x2);
+
+hplot(x1, x2, y3, 1); 
+
+%%--
+
+variable db_o = rd_xstar_output("warmabs_3.fits");
+variable o_trans = where( xstar_wl(db_o, AMIN, AMAX) );
+xstar_plot_group(db_o, o_trans, 2, lstyle);
+
+variable o_edges = where( xstar_wl(db_o, 1, 40) and db_o.type == "edge/rrc" );
+xstar_page_group(db_o, o_edges);
+
+%%--
+%% Now try nothing but nitrogen
+
+fit_fun("warmabs2(4)");
+
+set_par( "warmabs2(4).column", -1 ); % Log10(1.e20/1.e21) ??
+set_par( "warmabs2(4).rlogxi", -1.0 ); % Guess
+set_par( "warmabs2(4).vturb", 100.0 );
+set_par( "warmabs2(4).Redshift", 0.0 );
+
+set_par( [3:27], 0.0 );
+set_par( "warmabs2(4).Nabund", 1.0 );
+
+set_par("warmabs2(*).write_outfile", 1);
+set_par("warmabs2(*).autoname_outfile", 1);
+variable y4 = eval_fun(x1, x2);
+
+hplot(x1, x2, y4, 1); %nothing
+
+%%--
+%% Look at the bigger picture
+
+xrange(1.0,40.0);
+hplot(x1, x2, y4, 1); % N only
+ohplot(x1, x2, y3, 2); % O only
+
