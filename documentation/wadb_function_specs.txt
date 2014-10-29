@@ -205,17 +205,6 @@ indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion, redshift] );
 
 	     If field is set by user, it will override all conditionals above
 
-%% NOTE: Cut out emis, it seems superfluous
-%    emis  : if present, the feature is defined to be in emission and
-%    	     "strong" means larger (more positive) value for
-%     	     luminosity or more negative value for equivalent widths.
-%     	     Otherwise, the feature is assumed to be in absorption
-%     	     and "strong" means greater absorption, a more positive value.
-%
-%	     =1 if model_type == T_HOTEMIS or T_PHOTEMIS
-%	     =0 if model_type == T_HOTABS or T_WARMABS
-
-
      type  : "line" | "edge" | "rrc" | "any"
 	    
 	     "any" will match all types with default field as described above.

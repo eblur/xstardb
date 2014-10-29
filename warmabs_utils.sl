@@ -602,7 +602,6 @@ define xstar_strong( n, s )
     variable wmin = min( s.wavelength ); 
     variable wmax = max( s.wavelength ); 
 
-    %if ( qualifier_exists( "emis" ) ) emis =  1 ;
     if ( qualifier_exists( "wmin" ) ) wmin =  qualifier( "wmin" );
     if ( qualifier_exists( "wmax" ) ) wmax =  qualifier( "wmax" );
 
@@ -629,12 +628,6 @@ define xstar_strong( n, s )
     n  = min( [length( lw ), n ] );
     r  = lw[ l[ [-n:] ] ]; % grab the tail end of the sorted array
     
-    % EXCEPT in the case of emission features, where ew is a negative value
-    %if ( emis and field == "ew" )  % want smallest (most negative)
-    %{
-    %    r = lw[ l[ [0:n-1] ] ] ;
-    %}
-
     % put in ascending wavelength order
     r = r[ array_sort( s.wavelength[r] ) ] ; 
 
