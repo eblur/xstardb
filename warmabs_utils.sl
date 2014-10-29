@@ -1095,10 +1095,12 @@ define xstar_load_tables( fnames )
     result.uids  = Int_Type[0];
     result.mdb   = struct{ type, ion, wavelength, 
                            lower_level, upper_level, Z, q, 
-                           a_ij, f_ij, g_lo, g_up };
+                           a_ij, f_ij, g_lo, g_up,
+                           ind_ion, ind_up, ind_lo };
     set_struct_fields( result.mdb, String_Type[0], String_Type[0], Double_Type[0], 
                        String_Type[0], String_Type[0], Integer_Type[0], Integer_Type[0],
-                       Float_Type[0], Float_Type[0], Float_Type[0], Float_Type[0]);
+                       Float_Type[0], Float_Type[0], Float_Type[0], Float_Type[0],
+                       Integer_Type[0], Integer_Type[0], Integer_Type[0] );
 
     % Deal with assigning unique ids and flagging
     add_unique_id( result );

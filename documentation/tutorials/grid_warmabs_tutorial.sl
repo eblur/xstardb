@@ -56,19 +56,22 @@ variable test = where( xstar_wl(wa_grid.mdb, 1.0, 2.0) );
 xstar_page_grid( wa_grid, test );
 
 
-%% Pick lines by wavelength, element, and ion
+%% Pick transitions by ion, e.g., O VII
+variable o_vii = where( xstar_el_ion(wa_grid.mdb, O, 7) );
+xstar_page_grid( wa_grid, o_vii; sort="a_ij" );
 
-variable k = 10;
-xstar_page_group( wa_grid.db[k], xstar_strong(5, wa_grid.db[k]; wmin=5, wmax=10) );
+% The first one in the list -- resonance line from O VII triplet -- is strongest.
+% I'll pick out the O VII triplet first
 
-% I'll use a single Si VII line...
-variable si7 = where( xstar_wl(wa_grid.mdb, 7.0, 8.0) and xstar_el_ion(wa_grid.mdb, Si, 7) );
+variable o_vii_triplet = where( xstar_trans(wa_grid.mdb, O, 7, 1, [2:7]) );
+xstar_page_grid( wa_grid, o_vii_triplet; sort="a_ij");
 
-% Sort the output by A coefficients
-xstar_page_grid( wa_grid, si7; sort="a_ij" );
+% Pick out the resonance line
+variable o_vii_R = where( xstar_trans(wa_grid.mdb, O, 7, 1, 7) );
+xstar_page_grid( wa_grid, o_vii_R );
 
-% Look at a curve-of-growth from first Si line with highest A_ij
-% I'm going to pick it out by uid value
+
+% Look at a curve-of-growth for this line
 variable si7_strong = 980040015L;
 variable si7_ew  = xstar_line_prop( wa_grid, si7_strong, "ew" );
 xstar_page_grid( wa_grid, where(wa_grid.uids == 980040015L) );
