@@ -458,12 +458,14 @@ private define form_z_array( s, redshift )
 %
 define xstar_wl( s, wlo, whi )
 {
-    % Manage redshift values
-    variable rs = qualifier("redshift", Double_Type[length(s.filename)] );
+    variable rs0 = 0.0;
+    if (struct_field_exists(s,"filename")) rs0 = Double_Type[length(s.filename)];
+    % ^This conditional is necessary in case s is a grid.mdb structure
+    
+    variable rs = qualifier("redshift", rs0 );
     variable z  = form_z_array( s, rs );
 
     return s.wavelength * (1+z) > wlo and s.wavelength * (1+z) <= whi;
-
 }
 
 
