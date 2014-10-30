@@ -132,7 +132,7 @@ s = rd_xstar_output( db_filename );
 		      "<Element> <ion> <upper_level> <lower_level> <type>"
     filename	    : (string) name of file(s) the database was read from
 
-  merged databases only
+  merged databases only (see xstar_merge)
     origin_file     : (int) index of s.filename from which transition was read
 
 		      
@@ -282,10 +282,13 @@ xstar_plot_group( s, l[, color[, style[, redshift]]] );
 Functions for handling multiple databases
 ---
 
-s = xstar_merge( db_list );
+s = xstar_merge( file_list );
 
-  Merges two or more database structures, adding the origin_file field.
-  (see rd_xstar_output)
+  Merges two or more databases from an array of file names.
+  The resulting database structure includes an additional field
+    origin_file : (int) index of s.filename from which transition was read
+
+  (see rd_xstar_output for other fields)
 
 
 xstar_run_model_grid( model_info, root_dir[; nstart] );

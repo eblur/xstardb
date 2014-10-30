@@ -56,29 +56,22 @@ hplot(x1,x2,y1,1);
 %%----------------------------------------------------------------%%
 %% 2. Load multiple datasets from the fits files
 
-variable wa1 = rd_xstar_output("warmabs_1.fits");
-variable wa2 = rd_xstar_output("warmabs_2.fits");
+% merge_xstar_output creates a single database from a list of filenames
+%
+variable wa_all = xstar_merge( ["warmabs_1.fits","warmabs_2.fits"] );
 
-% set up redshift array for searching the dbd
+% Set up redshift array for searching the db
 variable zvals = [get_par("warmabs2(1).Redshift"), get_par("warmabs2(2).Redshift")];
 
-% merge_xstar_output creates a single database from two database functions
-%
-variable wa_all = xstar_merge( [wa1, wa2] );
+%%---
+%% Find everything within a certain wavelength range
 
-%% Example: Find lines strongest lines within an interesting wl range
 variable AMIN = 19.5;
 variable AMAX = 22.0;
 
 yrange();
 xrange(AMIN, AMAX);
 hplot(x1,x2,y1,1);
-
-variable s_all = xstar_strong(5, wa_all; wmin=AMIN, wmax=AMAX );
-xstar_page_group(wa_all, s_all; sort="ew", redshift=zvals);
-
-%%---
-%% Find everything within a certain wavelength range
 
 variable ll = where( xstar_wl(wa_all, AMIN, AMAX; redshift=zvals) );
 xstar_page_group(wa_all, ll);
@@ -101,13 +94,14 @@ xstar_plot_group( wa_all, l2, 3, lstyle, zvals[1]);
 
 
 %%---
-%% Choose the strongest transitions in this wavelength range
+%% Choose the strongest transitions in the entire spectrum
 
 variable ss = xstar_strong( 5, wa_all; redshift=zvals );
 xstar_page_group( wa_all, ss; sort="ew", redshift=zvals );
 
+% They are all within 1.5 and 2.5 Angstroms
 xrange(1.5,2.5);
 hplot(x1, x2, y1, 1);
 
-%% They are all from warmabs_2, so use just one plotting command
+% They are all from warmabs_2, so use just one plotting command
 xstar_plot_group( wa_all, ss, 3, lstyle, zvals[1]);

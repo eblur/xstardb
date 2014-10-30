@@ -831,11 +831,14 @@ define xstar_plot_group()
 
 %% Merge two XSTAR models into a single database structure
 %
-% USAGE: merge_xstar_output([s1,s2,s3])
+% USAGE: merge_xstar_output(["file1.fits","file2.fits"])
 % RETURNS: A database structure with an extra column, db_fname
 %
-define xstar_merge( db_list )
+define xstar_merge( file_list )
 {
+    variable fname, db_list = Struct_Type[0];
+    foreach fname (file_list) db_list = [db_list, rd_xstar_output(fname)];
+
     variable fields = get_struct_field_names(db_list[0]);
     variable result = @db_list[0];
 
