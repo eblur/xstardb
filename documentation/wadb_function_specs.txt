@@ -218,6 +218,9 @@ indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion, redshift] );
 
      ion   : Ion state (integer); output will be limited to this ion.
 
+     limit : Lower limit for the field of interest. Only transitions
+     	     with s.field >= limit will be returned.
+
      redshift : Will adjust search to wmin < s.wavelength * (1+redshift) <= wmax
 
   Examples:

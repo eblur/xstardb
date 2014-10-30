@@ -115,10 +115,13 @@ define test_xstar_strong()
     variable isort = array_sort(wa_ew);
     
     message("The largest equiv widths:");
-    message(wa_ew[isort[[-nstrong:]]]);
+    print(wa_ew[isort[[-nstrong:]]]);
 
     message("The list returned from xstar_strong, sorted by EW");
     xstar_page_group(wa, iwa_strong; sort="ew");
+
+    message("Test the limit qualifier by returning ew values above 0.5");
+    xstar_page_group(wa, xstar_strong(1000, wa; limit=0.5); sort="ew");
 }
 %% Okay, this is correct (note difference in format)
 
@@ -173,11 +176,11 @@ define test_xstar_plot_group()
 
 %test_xstar_plot_group();
 
-test_xstar_wl;
+%test_xstar_wl;
 %test_xstar_el_ion;
 %test_xstar_trans;
 
-%test_xstar_strong;
+test_xstar_strong;
 
 %test_xstar_page_group_sorting;
 

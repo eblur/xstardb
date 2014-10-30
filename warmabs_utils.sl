@@ -644,8 +644,9 @@ define xstar_strong( n, s )
     lw =  s.wavelength * (1.0+z) > wmin and 
           s.wavelength * (1.0+z) <= wmax  ;
 
-    if ( qualifier_exists( "elem" ) ) lw = lw and s.Z == qualifier( "elem" ) ;
-    if ( qualifier_exists( "ion"  ) ) lw = lw and s.q  == qualifier( "ion" ) ;
+    if ( qualifier_exists( "elem" ) ) lw = lw and s.Z == qualifier( "elem" );
+    if ( qualifier_exists( "ion"  ) ) lw = lw and s.q  == qualifier( "ion" );
+    if ( qualifier_exists( "limit" ) ) lw = lw and v >= qualifier( "limit" );
 
     lw = where( lw  and  ltype ) ;
     if ( length( lw ) == 0 )  return( NULL );   % NO MATCH
@@ -654,7 +655,7 @@ define xstar_strong( n, s )
     l  = array_sort(  v[ lw ] ) ;
     n  = min( [length( lw ), n ] );
     r  = lw[ l[ [-n:] ] ]; % grab the tail end of the sorted array
-    
+
     % put in ascending wavelength order
     r = r[ array_sort( s.wavelength[r] ) ] ; 
 
