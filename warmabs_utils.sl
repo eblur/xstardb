@@ -624,7 +624,7 @@ define xstar_strong( n, s )
     }
 
     variable wmin = min( s.wavelength ); 
-    variable wmax = max( s.wavelength ); 
+    variable wmax = max( s.wavelength );
 
     if ( qualifier_exists( "wmin" ) ) wmin =  qualifier( "wmin" );
     if ( qualifier_exists( "wmax" ) ) wmax =  qualifier( "wmax" );
@@ -637,9 +637,12 @@ define xstar_strong( n, s )
     variable r  = NULL ;
 
     % Pick out features from element, ion, and wavelength range of interest
-    variable z = qualifier( "redshift", 0.0 );
-    lw =  s.wavelength*(1.0+z) > wmin and 
-          s.wavelength*(1.0+z) <= wmax  ;
+    % Manage wavelengths and redshift
+    variable rs = qualifier( "redshift", Double_Type[length(s.filename)] );
+    variable z  = form_z_array( s, rs );
+
+    lw =  s.wavelength * (1.0+z) > wmin and 
+          s.wavelength * (1.0+z) <= wmax  ;
 
     if ( qualifier_exists( "elem" ) ) lw = lw and s.Z == qualifier( "elem" ) ;
     if ( qualifier_exists( "ion"  ) ) lw = lw and s.q  == qualifier( "ion" ) ;

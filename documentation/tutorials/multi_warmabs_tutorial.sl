@@ -99,3 +99,15 @@ xstar_plot_group( wa_all, l1, 2, lstyle, zvals[0]);
 % For model 2, need to include redshift
 xstar_plot_group( wa_all, l2, 3, lstyle, zvals[1]);
 
+
+%%---
+%% Choose the strongest transitions in this wavelength range
+
+variable ss = xstar_strong( 5, wa_all; redshift=zvals );
+xstar_page_group( wa_all, ss; sort="ew", redshift=zvals );
+
+xrange(1.5,2.5);
+hplot(x1, x2, y1, 1);
+
+%% They are all from warmabs_2, so use just one plotting command
+xstar_plot_group( wa_all, ss, 3, lstyle, zvals[1]);
