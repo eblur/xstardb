@@ -87,13 +87,29 @@ title( wa_grid.mdb.transition_name[o_vii_R][0] );
 plot(log_col, o_vii_R_ew, 2 );
 
 
-% 5. Get information about a single line, from the entire grid?
-%
-% grid_line = xstar_line_info( t, uid );
-% Returns an array of line_info structures
+%%----------------------------------------------------------------%%
+%% Get some diagnostic line ratios over the grid
+
+% Coming back to O VII triplet, get the ratio of resonance to forbidden line
+
+variable o_vii_F = where( xstar_trans(wa_grid.mdb, O, 7, 1, 2) );
+xstar_page_grid( wa_grid, o_vii_F );
+
+variable FR_ratio = xstar_line_ratios( wa_grid, o_vii_R, o_vii_F, "ew" );
+
+title( "O VII F/R ratio" );
+plot(log_col, FR_ratio, 2);
+
+% Test line blending capability of xstar_line_ratios by calculating
+% ratio of intercombination lines (I) to R
+
+variable o_vii_I = where( xstar_trans(wa_grid.mdb, O, 7, 1, [3:5]) );
+xstar_page_grid( wa_grid, o_vii_I );
+
+variable IR_ratio = xstar_line_ratios( wa_grid, o_vii_R, o_vii_I, "ew" );
+
+title( "O VII I/R ratio" );
+plot(log_col, IR_ratio, 2);
 
 
-% Then you can get any field you want as a function of the grid parameter
-% line_ew = array_struct_field( grid_line, "ew" );
-% plot( t.param.rlogxi, line_ew );
 

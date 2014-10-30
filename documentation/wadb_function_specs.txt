@@ -387,16 +387,36 @@ xstar_line_prop( g, l, field );
 
   Inputs:
     g     : grid structure containing all model databases (see xstar_load_tables)
-    l     : (int) index for the transition in the master databas (g.mdb)
+    l     : (int) index for the transition in the master database (g.mdb)
     field : (string) name the database field of interest, e.g. "ew"
 
   Example:
 
-    fgrid = glob("wamrbas_*.fits");
+    fgrid = glob("warmabs_*.fits");
     fgrid = fgrid[ array_sort(fgrid) ];
     wa_grid = xstar_load_tables(fgrid);
 
     line_ew = xstar_line_prop( wa_grid, 980040015L, "ew" );
+
+
+xstar_line_ratios( grid, l1, l2, field );
+
+  Returns an array containing the ratio l2 to l1 for the field of
+  interest, over the grid of models.
+
+  Inputs:
+    g     : grid structure containing all model databases (see xstar_load_tables)
+    l1    : (int) index for the transition from master database (g.mdb),
+            may be an array of integers to account for blended lines
+    l2    : same as above
+    field : (string) name of the database field of interest, e.g. "ew"
+
+  Example:
+
+    o_vii_R = where( xstar_trans(g.mdb, O, 7, 1, 7) );
+    o_vii_I = where( xstar_trans(g.mdb, O, 7, 1, [3:5]) );
+    ratio_IR = xstar_line_ratios( g, o_vii_R, o_vii_I, "ew" );
+
 
 ---
 ---

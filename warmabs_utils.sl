@@ -1183,25 +1183,27 @@ define xstar_line_prop( grid, ll, field )
 }
 
 
-%define xstar_uid_index( db, uid )
-%{
-%    return where( db.uid == uid );
-%}
+%% Get line ratios accross the entire grid
+% USE: xstar_line_ratios( grid, l1, l2, field )
+% RETURNS: A Double_Type array contianing the ratio l2/l1 over the
+%          field of interest
+% INPUT: Both l1 and l2 may be lists of indices.  In this case the
+% line properties will be summed (presumably because they are blended
+% lines).  This will be done without regard to field type or ion
+% species.
+%
+define xstar_line_ratios( grid, l1, l2, field )
+{
+    variable val1 = 0.0;
+    variable val2 = 0.0;
 
-%define xstar_line_info( db, index )
-%{
-%    variable ff, fields = get_struct_field_names(db);
-%    variable temp, result = struct{};
-%    foreach ff (fields)
-%    {
-%	result = struct_combine( result, ff );
-%	temp   = get_struct_field( db, ff );
-%
-%	set_struct_field(result, ff, temp );
-%    }
-%
-%    return result;
-%}
+    variable l;
+    foreach l (l1) val1 += xstar_line_prop( grid, l, field );
+    foreach l (l2) val2 += xstar_line_prop( grid, l, field );
+
+    return val2 / val1;
+}
+
 
 
 
