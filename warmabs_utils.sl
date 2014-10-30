@@ -432,29 +432,35 @@ define rd_xstar_output( fname )
 }
 
 
-
-%
-% boolean array for transitions within a wavelength range
-%
-define xstar_wl( s, wlo, whi )
+% Manage redshift values 
+private define form_z_array( s, redshift )
 {
-    variable rs = qualifier("redshift", Double_Type[length(s.filename)] );
-    variable z  = Double_Type[length(s.Z)];
+    variable z = Double_Type[length(s.Z)];
 
     if ( struct_field_exists(s, "origin_file") )
     {
 	variable ii;
 	foreach ii ([0:length(s.filename)-1])
 	{
-	    z[ where(s.origin_file == ii) ] = rs[ii];
+	    z[ where(s.origin_file == ii) ] = redshift[ii];
 	}
     }
     else
     {
-	z += rs[0];
+	z += redshift[0];
     }
-    
-    %variable z = qualifier( "redshift", 0.0 );
+
+    return z;
+}
+
+%
+% boolean array for transitions within a wavelength range
+%
+define xstar_wl( s, wlo, whi )
+{
+    % Manage redshift values
+    variable rs = qualifier("redshift", Double_Type[length(s.filename)] );
+    variable z  = form_z_array( s, rs );
 
     return s.wavelength * (1+z) > wlo and s.wavelength * (1+z) <= whi;
 
@@ -730,21 +736,7 @@ define xstar_page_group( s, l )
 
     % Handle any redshift issues
     variable rs = qualifier("redshift", Double_Type[length(s.filename)] );
-    variable z  = Double_Type[length(s.Z)];
-
-    if ( struct_field_exists(s, "origin_file") )
-    {
-	variable ii;
-	foreach ii ([0:length(s.filename)-1])
-	{
-	    z[ where(s.origin_file == ii) ] = rs[ii];
-	}
-    }
-    else
-    {
-	z += rs[0];
-    }
-
+    variable z  = form_z_array( s, rs );
 
     % If it is a merged database, there will be an additional "origin file" column
     if (struct_field_exists(s, "origin_file"))

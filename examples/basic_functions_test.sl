@@ -53,29 +53,33 @@ variable ipe = where(xstar_wl(pe, MIN, MAX));
 
 define test_xstar_wl()
 {
-    print("Features selected from warmabs model:");
+    message("Features selected from warmabs model:");
     xstar_page_group(wa, iwa);
 
-    print("Features selected from photemis model:");
+    message("Features selected from photemis model:");
     xstar_page_group(pe, ipe);
 
-    print("Test the redshift parameter on phoetemis features:");
+    message("Test the redshift parameter on phoetemis features:");
     xstar_page_group(pe, ipe; redshift=0.1);
+
+    message("The above transitions are in the wrong range.\nTest the redshift features on xstar_wl with wa");
+    variable iwa_z = where( xstar_wl(wa, MIN, MAX; redshift=0.1) );
+    xstar_page_group(wa, iwa_z; redshift=0.1);
 }
 
 % Test boolean stringing together of xstar_wl with others
 
 define test_xstar_el_ion()
 {
-    print("Testing xstar_el_ion function, return Ca and Fe lines only");
+    message("Testing xstar_el_ion function, return Ca and Fe lines only");
     variable iwa2 = where( xstar_el_ion(wa, [Ca,Fe]) and xstar_wl(wa,1,40) );
     xstar_page_group(wa, iwa2);
 
-    print("Testing xstar_el_ion function, return Fe I and III lines only");
+    message("Testing xstar_el_ion function, return Fe I and III lines only");
     variable iwa3 = where( xstar_el_ion(wa, Fe, [1,3]) and xstar_wl(wa,1,40) );
     xstar_page_group(wa, iwa3);
 
-    print("Testing xstar_el_ion function, return Ca V only");
+    message("Testing xstar_el_ion function, return Ca V only");
     variable iwa4 = where( xstar_el_ion(wa, Ca, 5) and xstar_wl(wa,1,40) );
     xstar_page_group(wa, iwa4);
 }
@@ -84,15 +88,15 @@ define test_xstar_el_ion()
 
 define test_xstar_trans()
 {
-    print("Testing xstar_trans, return OIII lines only");
+    message("Testing xstar_trans, return OIII lines only");
     variable o_iii = where( xstar_trans(wa, O, 3) );
     xstar_page_group(wa, o_iii);
 
-    print("Testing xstar_trans, return OIII transitions into the ground state");
+    message("Testing xstar_trans, return OIII transitions into the ground state");
     variable o_iii_ground = where( xstar_trans(wa, O, 3, 1) );
     xstar_page_group(wa, o_iii_ground);
 
-    print("Testing xstar_trans, return OVII helium triplet only");
+    message("Testing xstar_trans, return OVII helium triplet only");
     variable o_vii_triplet = where( xstar_trans(wa, O, 7, 1, [2:7]) );
     xstar_page_group(wa, o_vii_triplet);
 }
@@ -110,10 +114,10 @@ define test_xstar_strong()
     variable wa_ew = get_struct_field(wa,"ew")[iwa];
     variable isort = array_sort(wa_ew);
     
-    print("The largest equiv widths:");
-    print(wa_ew[isort[[-nstrong:]]]);
+    message("The largest equiv widths:");
+    message(wa_ew[isort[[-nstrong:]]]);
 
-    print("The list returned from xstar_strong, sorted by EW");
+    message("The list returned from xstar_strong, sorted by EW");
     xstar_page_group(wa, iwa_strong; sort="ew");
 }
 %% Okay, this is correct (note difference in format)
@@ -123,16 +127,16 @@ define test_xstar_strong()
 
 define test_xstar_page_group_sorting()
 {
-    print("Sorting photoemis by luminosity");
+    message("Sorting photoemis by luminosity");
     xstar_page_group(pe, ipe; sort="luminosity");
     
-    print("Sorting photoemis by nothing");
+    message("Sorting photoemis by nothing");
     xstar_page_group(pe, ipe; sort="none");
 
-    print("Sorting warmabs by tau0");
+    message("Sorting warmabs by tau0");
     xstar_page_group(wa, iwa[[0:10]]; sort="tau0");
 
-    print("Sorting warmabs by a_ij");
+    message("Sorting warmabs by a_ij");
     xstar_page_group(wa, iwa[[0:10]]; sort="a_ij");
 }
 
