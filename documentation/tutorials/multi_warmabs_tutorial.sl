@@ -74,70 +74,28 @@ yrange();
 xrange(AMIN, AMAX);
 hplot(x1,x2,y1,1);
 
-
 variable s_all = xstar_strong(5, wa_all; wmin=AMIN, wmax=AMAX );
 xstar_page_group(wa_all, s_all; sort="ew", redshift=zvals);
 
 %%---
-%% NOTE : XSTAR model runs are calculated for the rest frame, but 
-%% one of the absorbers in our model has z = 0.1
-%%
-%% When we run xstar_strong, the database will be searched for rest frame wavelengths.
-%%
-%% There are two ways one can manage this:
+%% Find everything within a certain wavelength range
 
-%%---
-%% A. Search each database separately
+variable ll = where( xstar_wl(wa_all, AMIN, AMAX; redshift=zvals) );
+xstar_page_group(wa_all, ll);
+xstar_page_group(wa_all, ll; redshift=zvals);
 
-variable s1 = xstar_strong(5, wa1; wmin=AMIN, wmax=AMAX );
-xstar_page_group(wa1, s1; sort="ew");
-
-variable s2 = xstar_strong(5, wa2; wmin=AMIN, wmax=AMAX, 
-                           redshift=get_par("warmabs2(2).Redshift"));
-xstar_page_group(wa2, s2; sort="ew");
-
+% Plot lines from each model, respectively
+variable l1 = ll[ where( wa_all.origin_file[ll] == 0 ) ];
+variable l2 = ll[ where( wa_all.origin_file[ll] == 1 ) ];
 
 variable lstyle = line_label_default_style();
-lstyle.top_frac = 0.8; 
-lstyle.bottom_frac = 0.6;
-lstyle.angle = 45;
+lstyle.top_frac = 0.6; 
+lstyle.bottom_frac = 0.8;
+lstyle.angle = -45;
 
 % For model 1:
-xstar_plot_group( wa1, s1, 2, lstyle);
+xstar_plot_group( wa_all, l1, 2, lstyle, zvals[0]);
 
 % For model 2, need to include redshift
-xstar_plot_group( wa2, s2, 3, lstyle, get_par("warmabs2(2).Redshift") );
+xstar_plot_group( wa_all, l2, 3, lstyle, zvals[1]);
 
-%% This doesn't look so great, so method B is probably better.
-
-%%---
-%% B. Adjust wavelength of the redshifted databases before combining
-
-wa2.wavelength *= (1.0 + get_par("warmabs2(2).Redshift"));
-
-variable wa_all_B = xstar_merge( [wa1, wa2] );
-
-variable s_all = xstar_strong( 10, wa_all_B; wmin=AMIN, wmax=AMAX );
-xstar_page_group( wa_all_B, s_all; sort="ew" );
-
-variable i1 = where( wa_all_B.origin_file[s_all] == 0 );
-variable i2 = where( wa_all_B.origin_file[s_all] == 1 );
-
-hplot(x1, x2, y1, 1);
-xstar_plot_group( wa_all_B, s_all[i1], 2, lstyle);
-xstar_plot_group( wa_all_B, s_all[i2], 3, lstyle);
-
-%%---
-%% DEBUG this -- what are those lines around 19.8 - 20.4 Angs?
-%% What about 20.5 - 21 Angs?
-
-variable test1 = where( xstar_wl( wa1, AMIN, AMAX ) );
-xstar_page_group( wa1, test1 );
-
-variable test2 = where( xstar_wl( wa2, AMIN, AMAX ) );
-xstar_page_group( wa2, test2 );
-
-%% plot them all, and you can see ... there are a lot of lines missing!
-hplot(x1, x2, y1, 1);
-xstar_plot_group(wa1, test1, 2);
-xstar_plot_group(wa2, test2, 3);

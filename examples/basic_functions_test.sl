@@ -40,7 +40,7 @@ define test_read_db()
 
 %%---------- After first autoname, must load dbs ----------%%
 
-test_autoname_outfile;
+%test_autoname_outfile;
 test_read_db;
 
 %%---------------------------------------%%
@@ -55,8 +55,12 @@ define test_xstar_wl()
 {
     print("Features selected from warmabs model:");
     xstar_page_group(wa, iwa);
+
     print("Features selected from photemis model:");
-    xstar_page_group(wa, ipe);
+    xstar_page_group(pe, ipe);
+
+    print("Test the redshift parameter on phoetemis features:");
+    xstar_page_group(pe, ipe; redshift=0.1);
 }
 
 % Test boolean stringing together of xstar_wl with others
@@ -163,9 +167,9 @@ define test_xstar_plot_group()
 %%------- TEST FUNCTION CALLS ----------------%%
 %% Modify this portion to turn on various tests
 
-test_xstar_plot_group();
+%test_xstar_plot_group();
 
-%test_xstar_wl;
+test_xstar_wl;
 %test_xstar_el_ion;
 %test_xstar_trans;
 

@@ -438,8 +438,26 @@ define rd_xstar_output( fname )
 %
 define xstar_wl( s, wlo, whi )
 {
-    variable z = qualifier( "redshift", 0.0 );
+    variable rs = qualifier("redshift", Double_Type[length(s.filename)] );
+    variable z  = Double_Type[length(s.Z)];
+
+    if ( struct_field_exists(s, "origin_file") )
+    {
+	variable ii;
+	foreach ii ([0:length(s.filename)-1])
+	{
+	    z[ where(s.origin_file == ii) ] = rs[ii];
+	}
+    }
+    else
+    {
+	z += rs[0];
+    }
+    
+    %variable z = qualifier( "redshift", 0.0 );
+
     return s.wavelength * (1+z) > wlo and s.wavelength * (1+z) <= whi;
+
 }
 
 
@@ -711,8 +729,22 @@ define xstar_page_group( s, l )
 
 
     % Handle any redshift issues
-    variable z = qualifier("redshift", Double_Type[length(s.Z)] );
-    variable ofile = Integer_Type[length(s.Z)];
+    variable rs = qualifier("redshift", Double_Type[length(s.filename)] );
+    variable z  = Double_Type[length(s.Z)];
+
+    if ( struct_field_exists(s, "origin_file") )
+    {
+	variable ii;
+	foreach ii ([0:length(s.filename)-1])
+	{
+	    z[ where(s.origin_file == ii) ] = rs[ii];
+	}
+    }
+    else
+    {
+	z += rs[0];
+    }
+
 
     % If it is a merged database, there will be an additional "origin file" column
     if (struct_field_exists(s, "origin_file"))
@@ -721,7 +753,6 @@ define xstar_page_group( s, l )
 	hfmt = [hfmt, " %24s\n"];
 	dfmt = [dfmt, " %12s\n"];
 	fields = [fields, "origin"];
-	ofile = @s.origin_file;
     }
     else
     {
@@ -744,7 +775,7 @@ define xstar_page_group( s, l )
     variable fsort = qualifier( "sort", "wavelength" );
     switch( fsort )
     { case "none":       sorted_l = l; }
-    { case "wavelength": sorted_l = l[ array_sort(s.wavelength[l]) ]; }
+    { case "wavelength": sorted_l = l[ array_sort(s.wavelength[l]*(1.0+z[l])) ]; }
     { case "tau0":       sorted_l = reverse( l[ array_sort(s.tau0grid[l]) ] );}
     { sorted_l = reverse( l[ array_sort( get_struct_field(s, fsort)[l] ) ] ); }
 
@@ -756,7 +787,7 @@ define xstar_page_group( s, l )
 	for (j=0; j<length(fields); j++)
 	{
 	    switch( fields[j] )
-	    { case "wavelength": () = fprintf(fp, dfmt[j], s.wavelength[k]*(1.0+z[ofile[k]])); }
+	    { case "wavelength": () = fprintf(fp, dfmt[j], s.wavelength[k]*(1.0+z[k])); }
 	    { case "Z": () = fprintf(fp, dfmt[j], Upcase_Elements[ s.Z[k]-1 ]); }
 	    { case "q": () = fprintf(fp, dfmt[j], Roman_Numerals[ s.q[k]-1 ]); }
 	    { case "origin": () = fprintf(fp, dfmt[j], s.filename[s.origin_file[k]]); }
