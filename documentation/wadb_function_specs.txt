@@ -325,20 +325,26 @@ g = xstar_load_tables( fnames );
      according to ion index, ind_lo, and ind_hi
      (see xstarlevels.text)
 
-   mdb       : The "master databse" sub-structure containing the union set
-   	       of all transitions in db array.
-     type
-     ion
-     wavelength
-     lower_level
-     upper_level
-     Z
-     q
-     a_ij
-     f_ij
-     g_lo
-     g_up
-     (see results of rd_xstar_output for field descriptions)
+   mdb : The "master database" sub-structure containing the union set
+   	 of all transitions in db array.
+    type        : (string) "line" or "edge/rrc"
+    ion	    	: (string) describing ion, e.g. "si_iv"
+    wavelength  : (double) transition wavelength in Angs
+    lower_level : (string) lower level of transition
+    upper_level : (string) upper level of transition
+    Z	        : (int) atomic number; e.g., Ne = 10
+    q	        : (int) ion state (arabic; e.g., 9 for IX)
+    a_ij	: (float) A_ij rate coefficient
+    f_ij	: (float) f_ij rate coefficient
+    g_lo	: (float) g value for lower level of transition
+    g_up	: (float) g value for upper level of transition
+    ind_lo	: (int) index for transition lower level, 
+		  see xstarlevels.text
+    ind_up	: (int) index for transition upper level,
+		  see xstarlevels.text
+    ind_ion	: (int) index for ion
+    transition_name : (string) description of other fields 
+		      "<Element> <ion> <upper_level> <lower_level> <type>"
 
    uids      : (long int) Union of all uid values in db array
    uid_flags : An array of character arrays containing boolean information.
@@ -346,7 +352,7 @@ g = xstar_load_tables( fnames );
    	       length(g.uid_flags[i]) = length(g.uids)
                g.uid_flags[i][j] = '1' if g.uids[j] is in g.db[i]
 
-   par	     : A sub-structure contaiing parameters of typical interest to users
+   par	    : A sub-structure contaiing parameters of typical interest to users
      rlogxi : (double) 
      column : (double)
      vturbi : (double)
