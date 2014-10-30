@@ -352,10 +352,15 @@ g = xstar_load_tables( fnames );
    	       length(g.uid_flags[i]) = length(g.uids)
                g.uid_flags[i][j] = '1' if g.uids[j] is in g.db[i]
 
-   par	    : A sub-structure contaiing parameters of typical interest to users
-     rlogxi : (double) 
-     column : (double)
-     vturbi : (double)
+
+par_values = xstar_get_grid_par( g, param )
+
+  Returns an array containing a parameter of interest over the grid of
+  models.
+
+  Input:
+    g     : a grid structure (see xstar_load_tables)
+    param : (string) name of interesting parameter from the XSTAR model
 
 
 xstar_page_grid( g, l );

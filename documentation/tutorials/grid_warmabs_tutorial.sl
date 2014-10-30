@@ -74,10 +74,7 @@ xstar_page_grid( wa_grid, o_vii_R );
 variable o_vii_R_ew  = xstar_line_prop( wa_grid, o_vii_R, "ew" );
 
 % Look at the "par" field of wa_grid to get interesting parameters
-variable log_col = log10( wa_grid.par.column ) / 22.0;
-
-% Want
-%variable log_col = xstar_get_par(wa_grid, "column");
+variable log_col = log10( xstar_get_grid_par(wa_grid, "column") ) / 22.0;
 
 % Plot it up
 ylin; yrange(); xrange();

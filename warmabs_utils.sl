@@ -986,29 +986,24 @@ private define add_unique_id( g )
 % These map to xstar output parameters, "rlogxi", "column", "vturbi", 
 % note that column is in units of cm^-2
 %
-private define xstar_get_table_param(t, s)
+private define xstar_get_table_param( t, s )
 {
     variable l = where( t.params.parameter == s )[0] ; 
     return( t.params.value[ l ] );
 }
 
-% collect the "interesting" params into arrays for each t[]:
+% collect a parameter of interest into an array
 %
-private define xstar_collect_params( t, s )
+define xstar_get_grid_par( g, p )
 {
-    variable r = struct_combine( ,  s ) ; 
-    variable i ; 
-    for( i=0; i<length( s ); i++ )
-    {
-	set_struct_field( r, s[i], array_map( Double_Type, &xstar_get_table_param, t, s[i] ) );
-    }
+    variable r = array_map( Double_Type, &xstar_get_table_param, g.db, p );
     return( r );
 }
 
 
 define xstar_load_tables( fnames )
 {
-    variable result = struct{ db, mdb, uids, uid_flags, par };
+    variable result = struct{ db, mdb, uids, uid_flags };
     result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
 
     result.uids  = Int_Type[0];
@@ -1032,8 +1027,6 @@ define xstar_load_tables( fnames )
 	result.uid_flags[i] = ismember( result.uids, result.db[i].uid );
     }
 
-    % Deal with parameter dat
-    result.par  = xstar_collect_params( result.db, ["rlogxi", "column", "vturbi"] );
     return result;
 }
 
