@@ -1062,7 +1062,7 @@ define xstar_page_grid( g, l )
     ] ; 
 
     variable dfmt = [
-    "%12ld",
+    "%12lld",
     " %3s",
     " %5s",
     " %8.4f",

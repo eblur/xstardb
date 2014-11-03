@@ -11,7 +11,6 @@
 %%%%
 
 require("warmabs_db");
-require("multi_warmabs_db");
 
 %%----------------------------------------------------------------%%
 %% 1. Create a model grid by looping over an interesting parameter
@@ -40,7 +39,7 @@ set_struct_fields( warmabs_info, "warmabs", "column", -1.0, 1.0, 0.1, _default_b
 %% 2. Load the model into a grid structure
 
 variable fgrid, wa_grid;
-fgrid = glob( "/vex/d1/lia/xstar_test/column/warmabs_*.fits" );
+fgrid = glob( "/nfs/vex/d1/lia/xstar_test/column/warmabs_*.fits" );
 fgrid = fgrid[ array_sort(fgrid) ];
 
 wa_grid = xstar_load_tables(fgrid);
