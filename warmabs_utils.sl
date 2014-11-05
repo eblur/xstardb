@@ -419,8 +419,6 @@ model_map[ "windabs"  ] = T_WINDABS  ;
 model_map[ "scatemis" ] = T_SCATEMIS ; 
 
 
-() = evalfile("warmabs_help.sl", "help");
-
 % Read the FITS table; re-structure by adding element,ion fields, and
 % sorting on wavelength:
 %
@@ -428,7 +426,7 @@ define rd_xstar_output()
 {
     if( _NARGS == 0 or _NARGS > 1)
     {
-	() = array_map( Integer_Type, &fprintf, stdout, help->_help_rd_xstar_output );
+	message("USAGE:  db = rd_xstar_output( filename )");
 	return;
     }
 
@@ -841,7 +839,7 @@ define xstar_plot_group()
 
 %% Merge two XSTAR models into a single database structure
 %
-% USAGE: merge_xstar_output(["file1.fits","file2.fits"])
+% USAGE: xstar_merge(["file1.fits","file2.fits"])
 % RETURNS: A database structure with an extra column, db_fname
 %
 define xstar_merge( file_list )

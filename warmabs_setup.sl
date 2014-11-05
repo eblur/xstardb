@@ -62,6 +62,17 @@ define put_to_env()
 }
 
 
+define load_help_text()
+{
+
+    variable p;
+    foreach p (strchop(get_isis_load_path(), ':', 0))
+    {
+	add_help_file(p + "/xstardb_help.txt");
+    }
+}
+
+
 define warmabs_setup()
 {
     if ( qualifier_exists( "guess" ) )
@@ -80,6 +91,7 @@ define warmabs_setup()
 
     put_to_env ; 
     warmabs_print_setup ;
+    load_help_text;
 
     if ( qualifier_exists( "help" ) )
     {
