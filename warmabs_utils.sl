@@ -419,12 +419,20 @@ model_map[ "windabs"  ] = T_WINDABS  ;
 model_map[ "scatemis" ] = T_SCATEMIS ; 
 
 
+() = evalfile("warmabs_help.sl", "help");
+
 % Read the FITS table; re-structure by adding element,ion fields, and
 % sorting on wavelength:
 %
-
-define rd_xstar_output( fname )
+define rd_xstar_output()
 {
+    if( _NARGS == 0 or _NARGS > 1)
+    {
+	() = array_map( Integer_Type, &fprintf, stdout, help->_help_rd_xstar_output );
+	return;
+    }
+
+    variable fname = ();
     variable result = load_warmabs_file( fname );
     result = struct_combine( result, "filename" );
     result.filename = fname;
