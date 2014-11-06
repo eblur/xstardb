@@ -64,12 +64,8 @@ define put_to_env()
 
 define load_help_text()
 {
-
-    variable p;
-    foreach p (strchop(get_isis_load_path(), ':', 0))
-    {
-	add_help_file(p + "/xstardb_help.txt");
-    }
+    variable hf = path_concat(path_dirname (__FILE__), "xstardb_help.txt");
+    add_help_file(hf);
 }
 
 
