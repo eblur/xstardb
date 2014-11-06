@@ -464,6 +464,12 @@ private define form_z_array( s, redshift )
 %
 define xstar_wl( s, wlo, whi )
 {
+    if ( _NARGS == 0 or _NARGS > 3 )
+    {
+	message("USAGE: bool_array = xstar_wl( db, wlo, whi[; redshift] )");
+	return;
+    }
+
     variable rs0 = 0.0;
     if (struct_field_exists(s,"filename")) rs0 = Double_Type[length(s.filename)];
     % ^This conditional is necessary in case s is a grid.mdb structure
@@ -483,10 +489,6 @@ define xstar_el_ion()
     % s is database structure
     % el_list is array of atomic numbers
     % ion_list is array of ions
-
-    % example:
-    % l = xstar_el_ion( s, Ne, [9,10] );
-
     variable s, el_list;
     variable ion_list = Integer_Type[0];
 
@@ -495,9 +497,8 @@ define xstar_el_ion()
     { case 2: ( s, el_list ) = (); }
     { case 3: ( s, el_list, ion_list ) = (); }
     {
-        message("Wrong number of arguments.");
-        message("USAGE: flags = xstar_el_ion( db_struct, atomic_number[,  ion] )" );
-        return -1;
+	message("USAGE: bool_array = xstar_el_ion( db, el_list[, ion_list] )");
+        return;
     }
 
     % Perform comparisons
@@ -528,9 +529,8 @@ define xstar_trans()
     { case 4   : (s, el, ion, lower) = (); }
     { case 5   : (s, el, ion, lower, upper) = (); }
     {
-	message("Wrong number of arguments.");
-	message("USAGE: flags = xstar_trans( db_struct, atomic_number, ion[, ind_lower[, ind_upper]] );" );
-	return -1;
+	message("USAGE: bool_array = xstar_trans( db, el_list, ion_list[, lower_list[, upper_list]] )");
+	return;
     }
 
     variable result = xstar_el_ion( s, el, ion );
@@ -579,7 +579,13 @@ define xstar_strong( n, s )
     % n = number of strongest features
     % s = structure returned by reading FITS table
 
-    variable field, emis ; 
+    if ( _NARGS == 0 or _NARGS > 2 )
+    {
+	message("USAGE: indices = xstar_strong( n, db [; type, wmin, wmax, elem, ion, redshift] )");
+	return;
+    }
+
+    variable field, emis; 
 
     %% Read from structure, not global variable
 
@@ -681,6 +687,13 @@ private variable warmabs_db_model_type =
 %
 define xstar_page_group( s, l )
 {
+
+    if ( _NARGS == 0 or _NARGS > 2 )
+    {
+	message("USAGE: xstar_page_group( db, l[; sort, redshift, file] )");
+	return;
+    }
+
     variable hdr =    [
     "id",      % transition
     "ion",     % elem ion
@@ -804,18 +817,20 @@ define xstar_page_group( s, l )
 
 
 % Usage: xstar_plot_group( xstardb_file, line_list[, color_index[, line_style]] );
-%% NOTE: Does not support long labels (style.label_type=1) and will ignore
+%
 define xstar_plot_group()
 {
     variable s, l, ci=2, style = line_label_default_style(), z = 0.0;
 
     switch(_NARGS)
-    { _NARGS <= 1: message("ERROR: Requires two arguments"); return; }
     { case 2: l = (); s = (); }
     { case 3: ci = (); l = (); s = (); }
     { case 4: style = (); ci = (); l = (); s = (); }
     { case 5: z = (); style = (); ci = (); l = (); s = (); }
-    { _NARGS > 5: message("ERROR: Too many arguments"); return; }
+    { 
+	message("USAAGE: xstar_page_group( db, l[; sort, redshift, file] )");
+	return;
+    }
 
     variable wl = s.wavelength[l];
     variable labels;
@@ -844,6 +859,12 @@ define xstar_plot_group()
 %
 define xstar_merge( file_list )
 {
+    if ( _NARGS == 0 or _NARGS > 1 )
+    {
+	message("USAGE: db = xstar_merge( file_list )");
+	return;
+    }
+
     variable fname, db_list = Struct_Type[0];
     foreach fname (file_list) db_list = [db_list, rd_xstar_output(fname)];
 
@@ -895,6 +916,12 @@ variable _default_model_info = struct{ mname, pname, min, max, step, bins };
 
 define xstar_run_model_grid( info, rootdir )
 {
+    if ( _NARGS == 0 or _NARGS > 2 )
+    {
+	message("USAGE: xstar_run_model_grid( model_info, root_dir[; nstart] )");
+	return;
+    }
+
     % starting numbering index for model output
     variable n0 = qualifier( "nstart", 0 );
     if ( typeof(n0) != Integer_Type ) { print("nstart must be an integer"); return; }
@@ -1002,6 +1029,12 @@ private define xstar_get_table_param( t, s )
 %
 define xstar_get_grid_par( g, p )
 {
+    if ( _NARGS == 0 or _NARGS > 2 )
+    {
+	message("USAGE: par_values = xstar_get_grid_par( g, param )");
+	return;
+    }
+
     variable r = array_map( Double_Type, &xstar_get_table_param, g.db, p );
     return( r );
 }
@@ -1009,6 +1042,12 @@ define xstar_get_grid_par( g, p )
 
 define xstar_load_tables( fnames )
 {
+    if ( _NARGS == 0 or _NARGS > 1 )
+    {
+	message("USAGE: g = xstar_load_tables( fnames )");
+	return;
+    }
+
     variable result = struct{ db, mdb, uids, uid_flags };
     result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
 
@@ -1042,6 +1081,12 @@ define xstar_load_tables( fnames )
 %
 define xstar_page_grid( g, l )
 {
+
+    if ( _NARGS == 0 or _NARGS > 2 )
+    {
+	message("USAGE: xstar_page_grid( g, l[; sort, file] )");
+	return;
+    }
     
     variable hdr =    [
     "uid",     % unique LLong integer for line
@@ -1135,6 +1180,12 @@ define xstar_page_grid( g, l )
 
 define xstar_unpack_uid( uid )
 {
+    if ( _NARGS == 0 or _NARGS > 1 )
+    {
+	message("USAGE: (ion, lo, up) = xstar_unpack_uid( uid )");
+	return;
+    }
+
     variable ion, lo, up ;
     ion = uid mod 1000 ;
     up  = uid / 1000 mod 10000 ;
@@ -1167,6 +1218,12 @@ private define xstar_find_line( grid, ll )
 %
 define xstar_line_prop( grid, ll, field )
 {
+    if ( _NARGS == 0 or _NARGS > 3 )
+    {
+	message("USAGE: line_ew = xstar_line_prop( g, l, field )");
+	return;
+    }
+
     variable i, fl_list;
     variable temp, result = Double_Type[length(grid.db)];
 
@@ -1193,6 +1250,12 @@ define xstar_line_prop( grid, ll, field )
 %
 define xstar_line_ratios( grid, l1, l2, field )
 {
+    if ( _NARGS == 0 or _NARGS > 4 )
+    {
+	message("USAGE: lr = xstar_line_ratios( grid, l1, l2, field )");
+	return;
+    }
+
     variable val1 = 0.0;
     variable val2 = 0.0;
 

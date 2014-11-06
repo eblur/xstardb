@@ -51,7 +51,7 @@ xstar_wl
    Search for transitions within a specified wavelength range.
 
  USAGE
-   bool_array = xstar_wl( db, wlo, whi[; redshift] );
+   bool_array = xstar_wl( db, wlo, whi[; redshift] )
 
  DESCRIPTION
    Returns boolean array of characters for transitions in db matching
@@ -100,7 +100,7 @@ xstar_trans
   Search for transitions by lower and upper energy level index.
 
  USAGE
-  bool_array = xstar_trans( db, el_list, ion_list[, lower_list[, upper_list]] );
+  bool_array = xstar_trans( db, el_list, ion_list[, lower_list[, upper_list]] )
 
  DESCRIPTION
   Returns boolean array of characters for transitions in db matching
@@ -123,7 +123,7 @@ xstar_strong
   Search for strong transitions.
 
  USAGE
-  indices = xstar_strong( n, db [; type, wmin, wmax, elem, ion, redshift] );
+  indices = xstar_strong( n, db [; type, wmin, wmax, elem, ion, redshift] )
 
  DESCRIPTION
   Returns the indices in db structure for the n strongest features.
@@ -196,7 +196,7 @@ xstar_page_group
   Prints a table of transition information
 
  USAGE
-  xstar_page_group( db, l[; sort, redshift, file] );
+  xstar_page_group( db, l[; sort, redshift, file] )
 
  DESCRIPTION
   Prints a table of features in db, selected by array index list l
@@ -229,7 +229,7 @@ xstar_plot_group
   Marks line features in the current plot
 
  QUALIFIERS
-  xstar_plot_group( db, l[, color[, style[, redshift]]] );
+  xstar_plot_group( db, l[, color[, style[, redshift]]] )
 
  DESCRIPTION
   Marks features from db selected by index list l
@@ -255,7 +255,7 @@ xstar_merge
   Loads an XSTAR db structure from two or more files
 
  USAGE
-  db = xstar_merge( file_list );
+  db = xstar_merge( file_list )
 
  DESCRIPTION
   Merges two or more databases from an array of file names.
@@ -276,7 +276,7 @@ xstar_run_model_grid
   Runs a series of XSTAR models from ISIS
 
  USAGE
-  xstar_run_model_grid( model_info, root_dir[; nstart] );
+  xstar_run_model_grid( model_info, root_dir[; nstart] )
 
  DESCRIPTION
   Runs a series of XSTAR models specified by the model_info structure.
@@ -382,7 +382,7 @@ xstar_page_grid
   Prints a table of transitions from a XSTAR model grid
 
  USAGE
-  xstar_page_grid( g, l[; sort, file] );
+  xstar_page_grid( g, l[; sort, file] )
 
  DESCRIPTION
   Print a table of transitions in g (a grid structure from xstar_load_tables) 
@@ -411,7 +411,7 @@ xstar_unpack_uid
   Returns values for ind_ion, ind_lo, and ind_up from unique id value
 
  USAGE
-  (ion, lo, up) = xstar_unpack_uid( uid );
+  (ion, lo, up) = xstar_unpack_uid( uid )
 
  DESCRIPTION
   Returns the values for ion (ind_ion), lower level (ind_lo),
