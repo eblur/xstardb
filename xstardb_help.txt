@@ -38,7 +38,7 @@ rd_xstar_output
      filename        : (string) name of file(s) the database was read from
 
    merged databases only (see xstar_merge)
-     origin_file     : (int) index of s.filename from which transition was read
+     origin_file     : (int) index of db.filename from which transition was read
 
  SEE ALSO
    xstar_merge, xstar_load_tables
@@ -51,12 +51,12 @@ xstar_wl
    Search for transitions within a specified wavelength range.
 
  USAGE
-   bool_array = xstar_wl( s, wlo, whi[; redshift] );
+   bool_array = xstar_wl( db, wlo, whi[; redshift] );
 
  DESCRIPTION
-   Returns boolean array of characters for transitions matching:
+   Returns boolean array of characters for transitions in db matching
   
-         wlo < s.wavelength*(1+redshift) <= whi
+         wlo < db.wavelength*(1+redshift) <= whi
   
    where wavelength is in units of angstroms.
 
@@ -68,43 +68,71 @@ xstar_wl
 
 ------------------------------------------------------------------------
 
-bool_array = xstar_el_ion( s, el_list[, ion_list] )
+xstar_el_ion
 
-  Return boolean array of characters for transitions in s matching
+ SYNOPSIS
+  Search for transitions from a particular element and ion.
 
-	ismember( s.Z, el_list ) and
-	ismember( s.q, ion_list )
+ USAGE
+  bool_array = xstar_el_ion( db, el_list[, ion_list] )
+
+ DESCRIPTION
+  Returns boolean array of characters for transitions in db matching
+
+	ismember( db.Z, el_list ) and
+	ismember( db.q, ion_list )
 
   where Z is an array of integers specifying atomic number (e.g. 6 for oxygen)
   and q is an array of integers specifying charge (e.g. 1 for neutral)
 
   Examples:
-    o_all = where( xstar_el_ion( s, 8 ) );
-    o_vii = where( xstar_el_ion( s, 8, 7 ) );
+    o_all = where( xstar_el_ion( db, 8 ) );
+    o_vii = where( xstar_el_ion( db, 8, 7 ) );
 
+ SEE ALSO
+  xstar_wl, xstar_trans, xstar_strong
 
-bool_array = xstar_trans( s, el_list, ion_list[, lower_list[, upper_list]] );
+------------------------------------------------------------------------
 
-  Return boolean array of characters for transitions in s matching
+xstar_trans
+
+ SYNOPSIS
+  Search for transitions by lower and upper energy level index.
+
+ USAGE
+  bool_array = xstar_trans( db, el_list, ion_list[, lower_list[, upper_list]] );
+
+ DESCRIPTION
+  Returns boolean array of characters for transitions in db matching
   
-        xstar_el_ion( s, el_list, ion_list ) and
-	ismember( s.ind_lo, lower_list ) and
-	ismember( s.ind_up, upper_list )
+        xstar_el_ion( db, el_list, ion_list ) and
+	ismember( db.ind_lo, lower_list ) and
+	ismember( db.ind_up, upper_list )
 
   Examples:
-    o_vii_triplet = where( xstar_trans( s, 8, 7, 1, [2:7] ) );
+    o_vii_triplet = where( xstar_trans( db, 8, 7, 1, [2:7] ) );
 
----
+ SEE ALSO
+  xstar_wl, xstar_el_ion, xstar_strong
 
-indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion, redshift] );
+------------------------------------------------------------------------
 
-  Return the indices in warmabs_db structure s for the n strongest
-  features.  Depending on the feature type, "strongest" can mean the
-  most negative (e.g., emission equivalent widths) or the most positive
-  (e.g., line luminosity or optical depth).
+xstar_strong
 
-  The features may be specified by qualifiers.  Defaults are
-  determined from the model type (defined by s.model_name) as:
+ SYNOPSIS
+  Search for strong transitions.
+
+ USAGE
+  indices = xstar_strong( n, db [; type, wmin, wmax, elem, ion, redshift] );
+
+ DESCRIPTION
+  Returns the indices in db structure for the n strongest features.
+  Depending on the feature type, "strongest" is defined by the most
+  luminous (e.g. photemis models) or the largest equivalent width
+  (e.g. warmabs models).
+
+  The search may be modified by several qualifiers.  Defaults are
+  determined from by model type.
 
   Qualifiers:
 
@@ -137,9 +165,9 @@ indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion, redshift] );
      ion   : Ion state (integer); output will be limited to this ion.
 
      limit : Lower limit for the field of interest. Only transitions
-     	     with s.field >= limit will be returned.
+     	     with db.field >= limit will be returned.
 
-     redshift : Will adjust search to wmin < s.wavelength * (1+redshift) <= wmax
+     redshift : Will adjust search to wmin < db.wavelength * (1+redshift) <= wmax
 
   Examples:
 
@@ -149,20 +177,29 @@ indices = xstar_strong( n, s [; type, wmin, wmax, elem, ion, redshift] );
     (w1, w2) = linear_grid( 1.0, 40.0, 8192 );
     y = eval_fun( w1, w2 );
 
-    s = rd_xstar_output( "warmabs_1.fits" ) ;
-    l = xstar_strong( 10, s; elem=O, wmin=10, wmax=20, type="edge" ) ; 
+    db = rd_xstar_output( "warmabs_1.fits" ) ;
+    l = xstar_strong( 10, db; elem=O, wmin=10, wmax=20, type="edge" ) ; 
 
-    xstar_page_group( s, l );
+    xstar_page_group( db, l );
     #     id       ion   lambda    A[s^-1]          f  gl  gu      tau_0       W(A) L[10^38 cgs]       type                    label
         3543   O  VIII  14.2281  0.000e+00  0.000e+00   2   0  2.317e-01  0.000e+00    0.000e+00   edge/rrc   1s1.2S_1/2 -     continuu
         3363   O   VII  16.7705  0.000e+00  0.000e+00   1   0  1.261e+00  0.000e+00    0.000e+00   edge/rrc     1s2.1S_0 -    continuum
 
+ SEE ALSO
+  xstar_wl, xstar_el_ion, xstar_trans
 
----
+------------------------------------------------------------------------
 
-xstar_page_group( s, l[; sort, redshift] );
+xstar_page_group
 
-  Print a table of features of s selected by indices l
+ SYNOPSIS
+  Prints a table of transition information
+
+ USAGE
+  xstar_page_group( db, l[; sort, redshift] );
+
+ DESCRIPTION
+  Prints a table of features in db, selected by array index list l
 
   Qualifiers:
     sort : "wavelength" | "tau0" | "none" | field name
@@ -171,18 +208,28 @@ xstar_page_group( s, l[; sort, redshift] );
 	   name value in these fields, except in a few special cases:
     	   = "wavelength" by default, sorts in ascending order
 	   = "none" will print the data in the same order as l
-	   = "tau0" sorts according to tau0grid field in s
+	   = "tau0" sorts according to tau0grid field in db
 
     redshift : Will print the observer-frame wavelengths in the table.
                In the case of a merged database, the user should
                supply an array containing the redshift for each origin
-               file, in the same order as s.filename
+               file, in the same order as db.filename
 	       (see xstar_merge and rd_xstar_output)
+ SEE ALSO
+  xstar_page_grid, xstar_plot_group
 
+------------------------------------------------------------------------
 
-xstar_plot_group( s, l[, color[, style[, redshift]]] );
+xstar_plot_group
 
-  mark features in s selected by l on the current plot.
+ SYNOPSIS
+  Marks line features in the current plot
+
+ QUALIFIERS
+  xstar_plot_group( db, l[, color[, style[, redshift]]] );
+
+ DESCRIPTION
+  Marks features from db selected by index list l
 
   Qualifiers:
     color    : optional integer specifying label color
@@ -194,27 +241,45 @@ xstar_plot_group( s, l[, color[, style[, redshift]]] );
     redshift : redshift for marker placement
    	       default = 0
 
----
----
+ SEE ALSO
+  xstar_page_group, xstar_page_grid
 
-Functions for handling multiple databases
----
+------------------------------------------------------------------------
 
-s = xstar_merge( file_list );
+xstar_merge
 
+ SYNOPSIS
+  Loads an XSTAR db structure from two or more files
+
+ USAGE
+  db = xstar_merge( file_list );
+
+ DESCRIPTION
   Merges two or more databases from an array of file names.
+  
   The resulting database structure includes an additional field
-    origin_file : (int) index of s.filename from which transition was read
+    origin_file : (int) index of db.filename from which transition was read
+  
+  See rd_xstar_output for full list of structure fields.
 
-  (see rd_xstar_output for other fields)
+ SEE ALSO
+  rd_xstar_output, xstar_load_table
 
+------------------------------------------------------------------------
 
-xstar_run_model_grid( model_info, root_dir[; nstart] );
+xstar_run_model_grid
 
-  Runs a series of xstar models set by the model_info structure.
+ SYNOPSIS
+  Runs a series of XSTAR models from ISIS
+
+ USAGE
+  xstar_run_model_grid( model_info, root_dir[; nstart] );
+
+ DESCRIPTION
+  Runs a series of XSTAR models specified by the model_info structure.
   All output is stored in the location specified by root_dir.
 
-  model_info is a structure containing the fields:
+  model_info is a structure containing the following fields
     mname   : model name, e.g., "warmabs" or "photemis"
     pname   : parameter of interest to vary, e.g., "column"
     min	    : minimal value for parameter of interest
@@ -228,41 +293,52 @@ xstar_run_model_grid( model_info, root_dir[; nstart] );
     _default_model_info : initializes structure with the above fields
     _default_binning    : (bin_lo, bin_hi) = linear_grid(1.0, 40.0, 8192);
 
+ SEE ALSO
+  xstar_load_tables, xstar_page_grid
 
-g = xstar_load_tables( fnames );
+------------------------------------------------------------------------
 
+xstar_load_tables
+
+ SYNOPSIS
+  Loads a grid of XSTAR db models from a list of files.
+
+ USAGE
+  g = xstar_load_tables( fnames )
+
+ DESCRIPTION
   Loads a series of xstar models, defined by sorted array of strings
   containing the database file names (fnames).
 
-  Output is a grid structure containing the following fields:
+  Output is a grid structure containing the following fields
    db        : An array of database structures loaded from each file
    	       (See results of rd_xstar_output)
-	       Each structure in db contains an additional field
 
-     uid : (long int) the "unique id" assigned to each transition
-     according to ion index, ind_lo, and ind_hi
-     (see xstarlevels.text)
+      Each structure in db contains an additional field
+      uid     : (long int) the "unique id" assigned to each transition
+                according to ion index, ind_lo, and ind_hi;
+                see xstarlevels.text on XSTAR website
 
-   mdb : The "master database" sub-structure containing the union set
-   	 of all transitions in db array.
-    type        : (string) "line" or "edge/rrc"
-    ion	    	: (string) describing ion, e.g. "si_iv"
-    wavelength  : (double) transition wavelength in Angs
-    lower_level : (string) lower level of transition
-    upper_level : (string) upper level of transition
-    Z	        : (int) atomic number; e.g., Ne = 10
-    q	        : (int) ion state (arabic; e.g., 9 for IX)
-    a_ij	: (float) A_ij rate coefficient
-    f_ij	: (float) f_ij rate coefficient
-    g_lo	: (float) g value for lower level of transition
-    g_up	: (float) g value for upper level of transition
-    ind_lo	: (int) index for transition lower level, 
-		  see xstarlevels.text
-    ind_up	: (int) index for transition upper level,
-		  see xstarlevels.text
-    ind_ion	: (int) index for ion
-    transition_name : (string) description of other fields 
-		      "<Element> <ion> <upper_level> <lower_level> <type>"
+   mdb : The "master database" sub-structure containing the union 
+   	 of all transitions in db array. It contains:
+      type        : (string) "line" or "edge/rrc"
+      ion	    	: (string) describing ion, e.g. "si_iv"
+      wavelength  : (double) transition wavelength in Angs
+      lower_level : (string) lower level of transition
+      upper_level : (string) upper level of transition
+      Z           : (int) atomic number; e.g., Ne = 10
+      q	          : (int) ion state (arabic; e.g., 9 for IX)
+      a_ij        : (float) A_ij rate coefficient
+      f_ij        : (float) f_ij rate coefficient
+      g_lo        : (float) g value for lower level of transition
+      g_up        : (float) g value for upper level of transition
+      ind_lo      : (int) index for transition lower level, 
+		    see xstarlevels.text on XSTAR manual
+      ind_up      : (int) index for transition upper level,
+		    see xstarlevels.text on XSTAR website
+      ind_ion     : (int) index for ion
+      transition_name : (string) description of other fields 
+		        "<Element> <ion> <upper_level> <lower_level> <type>"
 
    uids      : (long int) Union of all uid values in db array
    uid_flags : An array of character arrays containing boolean information.
@@ -270,21 +346,44 @@ g = xstar_load_tables( fnames );
    	       length(g.uid_flags[i]) = length(g.uids)
                g.uid_flags[i][j] = '1' if g.uids[j] is in g.db[i]
 
+ SEE ALSO
+  rd_xstar_output, xstar_run_model_grid, xstar_page_grid
 
-par_values = xstar_get_grid_par( g, param )
+------------------------------------------------------------------------
 
-  Returns an array containing a parameter of interest over the grid of
-  models.
+xstar_get_grid_par
+
+ SYNOPSIS
+  Returns the array for parameter of interest over an XSTAR grid
+
+ USAGE
+  par_values = xstar_get_grid_par( g, param )
+
+ DESCRIPTION
+  Returns an array containing the parameter of interest from the grid
+  of XSTAR models.
 
   Input:
-    g     : a grid structure (see xstar_load_tables)
-    param : (string) name of interesting parameter from the XSTAR model
+    g     : grid structure from xstar_load_tables
+    param : (string) name of interesting parameter from the XSTAR
+            model, e.g. "rlogxi"
 
+ SEE ALSO
+  xstar_run_model_grid, xstar_load_tables, xstar_line_prop
 
-xstar_page_grid( g, l );
+------------------------------------------------------------------------
 
-  Print a table of transitions in g (a grid of xstar models) 
-  selected by indices l
+xstar_page_grid
+
+ SYNOPSIS
+  Prints a table of transitions from a XSTAR model grid
+
+ USAGE
+  xstar_page_grid( g, l );
+
+ DESCRIPTION
+  Print a table of transitions in g (a grid structure from xstar_load_tables) 
+  selected by a list if index values, l
 
   Qualifiers:
     sort : "wavelength" | "none" | "uid" | field name
@@ -296,17 +395,40 @@ xstar_page_grid( g, l );
 	   = "uid" will print the data in order of ascending uid,
 	     this is the equivalent of ascending ion species
 
+ SEE ALSO
+  xstar_run_model_grid, xstar_load_tables
 
-(ion, lo, up) = xstar_unpack_uid( uid );
+------------------------------------------------------------------------
 
-  Returns the index values for ion (ind_ion), lower level (ind_lo),
-  and upper level (ind_up) associated with a unique id.
+xstar_unpack_uid
 
+ SYNOPSIS
+  Returns values for ind_ion, ind_lo, and ind_up from unique id value
 
-xstar_line_prop( g, l, field );
+ USAGE
+  (ion, lo, up) = xstar_unpack_uid( uid );
 
+ DESCRIPTION
+  Returns the values for ion (ind_ion), lower level (ind_lo),
+  and upper level (ind_up) associated with a unique id (Llong)
+  - see xstarlevels.text from XSTAR db
+
+ SEE ALSO
+  xstar_load_tables
+
+------------------------------------------------------------------------
+
+xstar_line_prop
+
+ SYNOPSIS
+  Returns field values for a transition of interest over a grid of XSTAR models.
+
+ USAGE
+  line_ew = xstar_line_prop( g, l, field )
+
+ DESCRIPTION
   Returns an array containing the values of "field" for the transition
-  of interest over the grid of models.
+  of interest over a grid of XSTAR models.
 
   Inputs:
     g     : grid structure containing all model databases (see xstar_load_tables)
@@ -319,13 +441,24 @@ xstar_line_prop( g, l, field );
     fgrid = fgrid[ array_sort(fgrid) ];
     wa_grid = xstar_load_tables(fgrid);
 
-    line_ew = xstar_line_prop( wa_grid, 980040015L, "ew" );
+    line_ew = xstar_line_prop( wa_grid, 980040015LL, "ew" );
 
+ SEE ALSO
+  xstar_run_model_grid, xstar_load_tables, xstar_get_grid_par
 
-xstar_line_ratios( grid, l1, l2, field );
+------------------------------------------------------------------------
 
+xstar_line_ratios
+
+ SYNOPSIS
+  Returns line ratios from a grid of XSTAR models
+
+ USAGE
+  lr = xstar_line_ratios( grid, l1, l2, field )
+
+ DESCRIPTION
   Returns an array containing the ratio l2 to l1 for the field of
-  interest, over the grid of models.
+  interest, over grid of XSTAR models.
 
   Inputs:
     g     : grid structure containing all model databases (see xstar_load_tables)
@@ -340,20 +473,8 @@ xstar_line_ratios( grid, l1, l2, field );
     o_vii_I = where( xstar_trans(g.mdb, O, 7, 1, [3:5]) );
     ratio_IR = xstar_line_ratios( g, o_vii_R, o_vii_I, "ew" );
 
+ SEE ALSO
+  xstar_run_model_grid, xstar_load_tables, xstar_get_grid_par, xstar_line_prop 
 
----
----
-
-Function wish list
----
-
-index = xstar_db_index( s, id_list );
-
-  return indices acoording to transition or unique id in a database or
-  grid structure
-
-
-Something that deals with line blending
--- For plotting?
--- For finding line features?
+------------------------------------------------------------------------
 
