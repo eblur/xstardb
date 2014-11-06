@@ -462,13 +462,16 @@ private define form_z_array( s, redshift )
 %
 % boolean array for transitions within a wavelength range
 %
-define xstar_wl( s, wlo, whi )
+define xstar_wl()
 {
     if ( _NARGS == 0 or _NARGS > 3 )
     {
 	message("USAGE: bool_array = xstar_wl( db, wlo, whi[; redshift] )");
 	return;
     }
+
+    variable s, wlo, whi;  
+    (s, wlo, whi) = ();
 
     variable rs0 = 0.0;
     if (struct_field_exists(s,"filename")) rs0 = Double_Type[length(s.filename)];
@@ -574,16 +577,18 @@ define xstar_trans()
 %             ion  = n     ion state ( 1 => neutral )
 %             type = "line" | "edge" | "rrc" 
 %
-define xstar_strong( n, s )
+define xstar_strong()
 {
-    % n = number of strongest features
-    % s = structure returned by reading FITS table
-
     if ( _NARGS == 0 or _NARGS > 2 )
     {
 	message("USAGE: indices = xstar_strong( n, db [; type, wmin, wmax, elem, ion, redshift] )");
 	return;
     }
+
+    % n = number of strongest features
+    % s = structure returned by reading FITS table
+    variable n, s;
+    (n, s) = ();
 
     variable field, emis; 
 
@@ -681,11 +686,9 @@ private variable warmabs_db_model_type =
 
 
 %
-% s is the structure from reading output FITS files;
-% l is an index array (filter)
 % qualifier: Redshift - for altering the wavelengths of the lines
 %
-define xstar_page_group( s, l )
+define xstar_page_group()
 {
 
     if ( _NARGS == 0 or _NARGS > 2 )
@@ -693,6 +696,11 @@ define xstar_page_group( s, l )
 	message("USAGE: xstar_page_group( db, l[; sort, redshift, file] )");
 	return;
     }
+
+    % s is the structure from reading output FITS files;
+    % l is an index array (filter)
+    variable s, l;
+    (s, l) = ();
 
     variable hdr =    [
     "id",      % transition
@@ -823,12 +831,12 @@ define xstar_plot_group()
     variable s, l, ci=2, style = line_label_default_style(), z = 0.0;
 
     switch(_NARGS)
-    { case 2: l = (); s = (); }
-    { case 3: ci = (); l = (); s = (); }
-    { case 4: style = (); ci = (); l = (); s = (); }
-    { case 5: z = (); style = (); ci = (); l = (); s = (); }
+    { case 2: (s, l) = (); }
+    { case 3: (s, l, ci) = (); }
+    { case 4: (s, l, ci, style) = (); }
+    { case 5: (s, l, ci, style, z) = (); }
     { 
-	message("USAAGE: xstar_page_group( db, l[; sort, redshift, file] )");
+	message("USAGE: xstar_plot_group( db, l[, color[, style[, redshift]]] )");
 	return;
     }
 
@@ -846,6 +854,7 @@ define xstar_plot_group()
     plot_linelist(wl, labels, ci, style, z);
 }
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 2014.10.06 - Dealing with multiple XSTAR runs
@@ -857,13 +866,15 @@ define xstar_plot_group()
 % USAGE: xstar_merge(["file1.fits","file2.fits"])
 % RETURNS: A database structure with an extra column, db_fname
 %
-define xstar_merge( file_list )
+define xstar_merge()
 {
     if ( _NARGS == 0 or _NARGS > 1 )
     {
 	message("USAGE: db = xstar_merge( file_list )");
 	return;
     }
+
+    variable file_list = ();
 
     variable fname, db_list = Struct_Type[0];
     foreach fname (file_list) db_list = [db_list, rd_xstar_output(fname)];
@@ -914,13 +925,16 @@ variable _default_model_info = struct{ mname, pname, min, max, step, bins };
 % info.bins = struct{ bin_lo, bin_hi }
 % rootdir   = string describing the root directory to dump all the files into
 
-define xstar_run_model_grid( info, rootdir )
+define xstar_run_model_grid()
 {
     if ( _NARGS == 0 or _NARGS > 2 )
     {
 	message("USAGE: xstar_run_model_grid( model_info, root_dir[; nstart] )");
 	return;
     }
+
+    variable info, rootdir;
+    (info, rootdir) = ();
 
     % starting numbering index for model output
     variable n0 = qualifier( "nstart", 0 );
@@ -1027,7 +1041,7 @@ private define xstar_get_table_param( t, s )
 
 % collect a parameter of interest into an array
 %
-define xstar_get_grid_par( g, p )
+define xstar_get_grid_par()
 {
     if ( _NARGS == 0 or _NARGS > 2 )
     {
@@ -1035,18 +1049,23 @@ define xstar_get_grid_par( g, p )
 	return;
     }
 
+    variable g, p;
+    (g, p) = ();
+
     variable r = array_map( Double_Type, &xstar_get_table_param, g.db, p );
     return( r );
 }
 
 
-define xstar_load_tables( fnames )
+define xstar_load_tables()
 {
     if ( _NARGS == 0 or _NARGS > 1 )
     {
 	message("USAGE: g = xstar_load_tables( fnames )");
 	return;
     }
+
+    variable fnames = ();
 
     variable result = struct{ db, mdb, uids, uid_flags };
     result.db = array_map( Struct_Type, &rd_xstar_output, fnames );
@@ -1079,7 +1098,7 @@ define xstar_load_tables( fnames )
 % g: a grid structure
 % l: indices for g.uids array
 %
-define xstar_page_grid( g, l )
+define xstar_page_grid()
 {
 
     if ( _NARGS == 0 or _NARGS > 2 )
@@ -1087,6 +1106,9 @@ define xstar_page_grid( g, l )
 	message("USAGE: xstar_page_grid( g, l[; sort, file] )");
 	return;
     }
+
+    variable g, l;
+    (g, l) = ();
     
     variable hdr =    [
     "uid",     % unique LLong integer for line
@@ -1178,13 +1200,15 @@ define xstar_page_grid( g, l )
 
 %%% Utilities for navigating the grid structure
 
-define xstar_unpack_uid( uid )
+define xstar_unpack_uid()
 {
     if ( _NARGS == 0 or _NARGS > 1 )
     {
 	message("USAGE: (ion, lo, up) = xstar_unpack_uid( uid )");
 	return;
     }
+
+    variable uid = ();
 
     variable ion, lo, up ;
     ion = uid mod 1000 ;
@@ -1216,13 +1240,16 @@ private define xstar_find_line( grid, ll )
 % RETURNS: An Double_Type array containing the value of the field of interest.
 % NOTE: Will break if used on a field that contains a string
 %
-define xstar_line_prop( grid, ll, field )
+define xstar_line_prop()
 {
     if ( _NARGS == 0 or _NARGS > 3 )
     {
 	message("USAGE: line_ew = xstar_line_prop( g, l, field )");
 	return;
     }
+
+    variable grid, ll, field;
+    (grid, ll, field) = ();
 
     variable i, fl_list;
     variable temp, result = Double_Type[length(grid.db)];
@@ -1248,13 +1275,16 @@ define xstar_line_prop( grid, ll, field )
 % lines).  This will be done without regard to field type or ion
 % species.
 %
-define xstar_line_ratios( grid, l1, l2, field )
+define xstar_line_ratios()
 {
     if ( _NARGS == 0 or _NARGS > 4 )
     {
 	message("USAGE: lr = xstar_line_ratios( grid, l1, l2, field )");
 	return;
     }
+
+    variable grid, l1, l2, field;
+    (grid, l1, l2, field) = ();
 
     variable val1 = 0.0;
     variable val2 = 0.0;
