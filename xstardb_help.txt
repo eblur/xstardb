@@ -196,7 +196,7 @@ xstar_page_group
   Prints a table of transition information
 
  USAGE
-  xstar_page_group( db, l[; sort, redshift] );
+  xstar_page_group( db, l[; sort, redshift, file] );
 
  DESCRIPTION
   Prints a table of features in db, selected by array index list l
@@ -215,6 +215,9 @@ xstar_page_group
                supply an array containing the redshift for each origin
                file, in the same order as db.filename
 	       (see xstar_merge and rd_xstar_output)
+
+    file     : (string) Save the output to a text file
+
  SEE ALSO
   xstar_page_grid, xstar_plot_group
 
@@ -379,7 +382,7 @@ xstar_page_grid
   Prints a table of transitions from a XSTAR model grid
 
  USAGE
-  xstar_page_grid( g, l );
+  xstar_page_grid( g, l[; sort, file] );
 
  DESCRIPTION
   Print a table of transitions in g (a grid structure from xstar_load_tables) 
@@ -394,6 +397,8 @@ xstar_page_grid
 	   = "none" will print the data in the same order as l
 	   = "uid" will print the data in order of ascending uid,
 	     this is the equivalent of ascending ion species
+
+   file : (string) Save the output to a text file
 
  SEE ALSO
   xstar_run_model_grid, xstar_load_tables

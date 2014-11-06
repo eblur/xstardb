@@ -65,6 +65,9 @@ xstar_page_grid( wa_grid, o_vii; sort="a_ij" );
 variable o_vii_triplet = where( xstar_trans(wa_grid.mdb, O, 7, 1, [2:7]) );
 xstar_page_grid( wa_grid, o_vii_triplet; sort="a_ij");
 
+% Print it to a file
+xstar_page_grid( wa_grid, o_vii_triplet; sort="a_ij", file="grid_warmabs_tutorial_ovii.txt" );
+
 % Pick out the resonance line
 variable o_vii_R = where( xstar_trans(wa_grid.mdb, O, 7, 1, 7) );
 xstar_page_grid( wa_grid, o_vii_R );
@@ -106,6 +109,7 @@ variable IR_ratio = xstar_line_ratios( wa_grid, o_vii_R, o_vii_I, "ew" );
 
 title( "O VII I/R ratio" );
 plot(log_col, IR_ratio, 2);
+
 
 
 
