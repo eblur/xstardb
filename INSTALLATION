@@ -1,0 +1,66 @@
+
+XSTARDB INSTALLATION INSTRUCTIONS
+
+Created 2014.11.13 : Lia Corrales <lia@space.mit.edu>
+
+Version 0.4.0 (beta)
+
+============
+DEPENDENCIES
+============
+
+ - ISIS version ??
+ - XSTAR version ??
+
+ To download and install the latest version of XSTAR, go to:
+   http://heasarc.gsfc.nasa.gov/docs/software/xstar/xstar.html
+
+============
+INSTRUCTIONS
+============
+
+I. Retrieve the XSTARDB package
+----
+ Method 1: Download tar ball from ??
+
+    tar -xvf xstardb_install.tar
+
+ Method 2: Clone the developer version from the git repository
+
+    git clone ??? .
+
+
+II. Set environment to XSTAR installation
+----
+
+ e.g., in .bashrc file:
+
+    export LMODDIR=/path/to/heasoft_warmabs_nnbit
+
+ e.g., in .cshrc file:
+
+    setenv LMODDIR /path/to/heasoft_warmabs_nnbit
+
+
+III. Point .isisrc to XSTARDB installation
+----
+
+ In .isisrc file:
+
+    add_to_isis_load_path("/path/to/my/xstardb");
+
+ This is not necessary if you have installed xstardb in a place that
+ is already in your isis load path.
+
+
+======================
+QUESTIONS / BUG REPORT
+======================
+
+If you have questions or a bug to report, please email 
+
+  Lia Corrales (lia@space.mit.edu)
+
+  or 
+
+  Dave Huenemoerder (dph@space.mit.edu)
