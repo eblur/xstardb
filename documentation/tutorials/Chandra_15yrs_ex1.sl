@@ -35,7 +35,7 @@ xrange(18, 24);
 hplot( x1, x2, y, 1 );
 
 % Find the strongest lines by luminosity
-variable strongest = xstar_strong(8, db; wmin=18.0, wmax=24.0, field="luminosity" );
+variable strongest = xstar_strong( 8, db; wmin=18.0, wmax=24.0 );
 
 % Print a table of the strongest lines
 xstar_page_group( db, strongest; sort="luminosity" );

@@ -593,21 +593,20 @@ define xstar_strong()
     variable field, emis; 
 
     %% Read from structure, not global variable
-
-    switch( s.model_name )    % use model type to guess defaults:
+    switch( model_map[s.model_name] )    % use model type to guess defaults:
     {
 	case T_HOTABS or case T_WARMABS:  
+	message( "XSTAR_STRONG: Absorption model found, sorting by equivalent width" );
 	field = "ew" ;  % equivalent width
-	emis = 0 ; 
     }
     {
 	case T_HOTEMIS or case T_PHOTEMIS:  
+	message( "XSTAR_STRONG: Emission model found, sorting by luminosity" );
 	field = "luminosity" ;  % line luminosity;
-	emis  = 1 ; 
     }
     {
+	message( "XSTAR_STRONG: Model type not recognized, sorting by equivalent width" );
 	field = "ew" ;  % wild guess
-	emis = 0 ; 
     }
 
     variable ftype = strlow( qualifier( "type", "any" ) );
@@ -648,7 +647,12 @@ define xstar_strong()
     if ( qualifier_exists( "wmin" ) ) wmin =  qualifier( "wmin" );
     if ( qualifier_exists( "wmax" ) ) wmax =  qualifier( "wmax" );
 
-    if ( qualifier_exists( "field") ) field = qualifier( "field" );
+    if ( qualifier_exists( "field") )
+    {
+	field = qualifier( "field" );
+	message( "XSTAR_STRONG: User override, sorting by " + field );
+    }
+
     variable v = get_struct_field( s, field ) ;
 
     variable lw = NULL ;
