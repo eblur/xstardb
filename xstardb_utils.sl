@@ -63,8 +63,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 private variable _version = [0,4,0];
 
-variable xstardb_version = sum( _version * [ 10000, 100, 1 ] ) ; 
-variable xstardb_version_string =
+private variable _xstardb_version_num = sum( _version * [ 10000, 100, 1 ] ) ; 
+variable _xstardb_version =
             sprintf("%d.%d.%d", _version[0], _version[1], _version[2] ) ; 
 
 
@@ -1305,7 +1305,7 @@ define xstar_line_ratios()
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 provide( "xstardb_utils" );
-message( "\nxstardb_utils $xstardb_version_string loaded\n"$);
+message( "\nxstardb_utils $_xstardb_version loaded\n"$);
 
 
 
