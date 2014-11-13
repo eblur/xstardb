@@ -1,43 +1,44 @@
 % -*- mode: SLang; mode: fold -*-
-%; Date: 2014.11.12
+%; Date:       2014.11.13
 %; Directory:  /vex/d1/lia/wadb_repo.git
 %; File:       xstardb_utils.sl
-%; Author:     David P. Huenemoerder <dph@space.mit.edu>, Lia Corrales <lia@space.mit.edu>
-%; Orig. version: 2015.08.15 - See ~/dph/h3/Analysis/ADP_2010_atomic_data/packages/warmabs_db-0.3/
+%; Author:     David P. Huenemoerder <dph@space.mit.edu>
+%;             John Houck <jhouck@cfa.harvard.edu>
+%;             Lia Corrales <lia@space.mit.edu>
 %;========================================
+
+%% Version history
 %
-
 % 0.4.0 lia changed package name to xstardb
-
+%
 % 0.3.4 lia changed most function names to use xstar_ prefix,
 %           xstar_el_ion behavior updated to emulate el_ion
 %           xstar_plot_group behavior updated to emulate plot_group
 %           xstar_page_group updated to handle merged lists
-
+%
 % 0.3.3 dph added units to the warmabs2 wrappers - copied over from 
 %           the xstar models (even though the units of column is [cm^-2] 
 %           when it is really dex([cm^-2])).
-
-
+%
 % 0.3.2 - revise reading of warmabs output - generalize function, 
 %         and save model name in the structure.
-
+%
 % 0.3.1 - test "_fit" on warmabs2 function, to debug namespace issues...
 %         --- yes, need _fit on model definitions (misunderstood the
 %             isis help when using a function reference)
-
+%
 % version:  0.3.0
 %   2014.05.08  - change el/ion handling, using j.houck code
 
-%%%
-%          
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         
 % purpose: utilities for working with the warmabs model output files.
 %          
 % NOTE: this wrapper should work with any of the xspec local model
 % warmabs class function (warmabs, photemis, hotabs, hotemis, multabs,
 % windabs)
 %          
-
 % The warmabs models have 2 parameters and one env variable to control
 % the way it can write output FITS files containing atomic data:
 %
@@ -59,7 +60,7 @@
 % index method.  This can be mitigated by using the warmabs wrapper
 % functions, warmabs2, photemis2, etc, which introduce an auto-naming
 % feature and control parameter (see below).
-
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 private variable _version = [0,4,0];
 
@@ -90,7 +91,6 @@ define warmabs_unset_outfile()
    xstar_set_outfile("");
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Re-define the warmabs model suite so that we can include a parameter
@@ -289,17 +289,11 @@ foreach k ( warmabs_models )
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Utilities for working with the FITS tables
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % From J.Houck:
 %
 private variable Elements = Assoc_Type[];
@@ -393,14 +387,14 @@ private define load_warmabs_file (file)
 }
 %
 % (end of j.houck code)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Start of joint dph, lia code
+%
+% Utilities for navigating the database table structures
 %
 
 private variable T_HOTABS   = 1, 
@@ -421,8 +415,11 @@ model_map[ "windabs"  ] = T_WINDABS  ;
 model_map[ "scatemis" ] = T_SCATEMIS ; 
 
 
+%
+% db = rd_xstar_output( filename );
+%
 % Read the FITS table; re-structure by adding element,ion fields, and
-% sorting on wavelength:
+% sort on wavelength:
 %
 define rd_xstar_output()
 {
@@ -440,7 +437,12 @@ define rd_xstar_output()
 }
 
 
-% Manage redshift values 
+%
+% z = form_z_array( s, redshift );
+%
+% A helper function for managing redshifts from multicomponent
+% databases
+%
 private define form_z_array( s, redshift )
 {
     variable z = Double_Type[length(s.Z)];
@@ -462,7 +464,9 @@ private define form_z_array( s, redshift )
 }
 
 %
-% boolean array for transitions within a wavelength range
+% bl = xstar_wl( s, wlo, whi[; redshift=0.0] );
+%
+% Return boolean array for transitions within a wavelength range
 %
 define xstar_wl()
 {
@@ -487,7 +491,10 @@ define xstar_wl()
 
 
 %
-% boolean array for transitions from a particular element and/or ion
+% bl = xstar_el_ion( s, el_list[, ion_list] );
+%
+% Returns boolean array for transitions from a particular element
+% and/or ion
 %
 define xstar_el_ion()
 {
@@ -517,10 +524,12 @@ define xstar_el_ion()
     return result;
 }
 
+
 %
-% boolean array containing transitions based on lower and/or upper level index
+% bl = xstar_trans( s, el, ion[, lower[, upper]] );
 %
-% USAGE: index = xstar_trans( s, el, ion[, lower[, upper]] );
+% Returns boolean array containing transitions based on lower and/or
+% upper level index
 %
 define xstar_trans()
 {
@@ -555,19 +564,19 @@ define xstar_trans()
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% s is structure from  read of warmabs output FITS table
-%      (which adds element, ion fields to the structure)
+% l = xstar_strong( n, s[; qualifiers] );
 %
-% n is number of strong features to return
+% Returns array of index values for strong transitions, sorted by
+% the various qualifiers
 %
-% qualifiers: field = name for other fields of c (such as luminosity, tau0grid, tau02ewo)
+% qualifiers: field = name for other fields (such as luminosity, tau0grid, tau02ewo)
 %             wmin = value minimum wavelength
 %             wmax = value maximum wavelength
 %             elem = Z     element atomic number
 %             ion  = n     ion state ( 1 => neutral )
 %             type = "line" | "edge" | "rrc" 
+%             redshift = 0.0   search on observed wavelengths, not rest wl
 %
 define xstar_strong()
 {
@@ -687,7 +696,12 @@ private variable warmabs_db_model_type =
 
 
 %
-% qualifier: Redshift - for altering the wavelengths of the lines
+% xstar_page_group( s, l[; qualifiers] );
+%
+% Prints a table of transitions indexed by l, from database s
+%
+% qualifier: file = stdout   name of file to print text
+%            redshift = 0.0  prints observed (not rest) wavelength
 %
 define xstar_page_group()
 {
@@ -777,7 +791,7 @@ define xstar_page_group()
     {
 	hdr = [hdr, "origin"];
 	hfmt = [hfmt, " %24s\n"];
-	dfmt = [dfmt, " %12s\n"];
+	dfmt = [dfmt, "    %12s\n"];
 	fields = [fields, "origin"];
     }
     else
@@ -825,7 +839,8 @@ define xstar_page_group()
 
 
 
-% Usage: xstar_plot_group( xstardb_file, line_list[, color_index[, line_style]] );
+%
+% xstar_plot_group( xstardb_struct, line_list[, color_index[, line_style]] );
 %
 define xstar_plot_group()
 {
@@ -856,16 +871,16 @@ define xstar_plot_group()
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 2014.10.06 - Dealing with multiple XSTAR runs
-% Updates from lia, using examples/warmabs_vs_xi_test.sl
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Merge two XSTAR models into a single database structure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2014.10.06 : Utilities for managing multiple XSTAR runs
+
 %
-% USAGE: xstar_merge(["file1.fits","file2.fits"])
-% RETURNS: A database structure with an extra column, db_fname
+% merged_db = xstar_merge(["file1.fits","file2.fits"]);
+%
+% Merge two XSTAR models into a single database structure.
+% The returned database structure will have an extra column, origin_file
 %
 define xstar_merge()
 {
@@ -909,8 +924,9 @@ define xstar_merge()
 }
 
 
-%-----------------------------------------------------------------------
-% Run a set of models
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Utilities for running a grid of models
+%
 
 private variable x1, x2;
 (x1, x2) = linear_grid( 1.0, 40.0, 8192 );
@@ -920,12 +936,13 @@ set_struct_fields( _default_binning, x1, x2 );
 
 variable _default_model_info = struct{ mname, pname, min, max, step, bins };
 
-% USAGE: xstar_run_model_grid( info, rootdir[; nstart]);
-
+%
+% xstar_run_model_grid( info, rootdir[; nstart]);
+%
 % info = struct{ bins, mname, pname, min, max, step }
 % info.bins = struct{ bin_lo, bin_hi }
 % rootdir   = string describing the root directory to dump all the files into
-
+%
 define xstar_run_model_grid()
 {
     if ( _NARGS == 0 or _NARGS > 2 )
@@ -989,12 +1006,13 @@ define xstar_run_model_grid()
 }
 
 
-%-----------------------------------------------------------------------
+%
 % Load a set of models into a model grid structure
-
+%
 % mdb : master db for grid structure
 % db  : db to merge with master db (mdb)
 % ii  : indices pointing to unique array values
+%
 private define merge_master_db( mdb, db, ii )
 {
     variable field_list = get_struct_field_names( mdb );
@@ -1040,7 +1058,11 @@ private define xstar_get_table_param( t, s )
     return( t.params.value[ l ] );
 }
 
-% collect a parameter of interest into an array
+%
+% rlogxi = xstar_get_grid_par( l, "rlogxi" );
+%
+% Collect a parameter of interest from a grid database structure into
+% an array
 %
 define xstar_get_grid_par()
 {
@@ -1058,6 +1080,11 @@ define xstar_get_grid_par()
 }
 
 
+%
+% db_grid = xstar_load_tables( filename_array );
+%
+% Loads a series of arrays into a grid a databases
+%
 define xstar_load_tables()
 {
     if ( _NARGS == 0 or _NARGS > 1 )
@@ -1096,6 +1123,12 @@ define xstar_load_tables()
 }
 
 
+%
+% xstar_page_grid( db_grid, l );
+%
+% Prints a table of information for unique transitions in the grid,
+% indexed by the values in l
+%
 % g: a grid structure
 % l: indices for g.uids array
 %
@@ -1199,8 +1232,12 @@ define xstar_page_grid()
 }
 
 
-%%% Utilities for navigating the grid structure
-
+%
+% ( ind_ion, ind_lo, ind_up) = xstar_unpack_uid( ten_digit_llong );
+%
+% Separates a unique idea LLong into the index values for ion, lower
+% level, and upper level
+%
 define xstar_unpack_uid()
 {
     if ( _NARGS == 0 or _NARGS > 1 )
@@ -1220,9 +1257,8 @@ define xstar_unpack_uid()
 
 
 
-%% Returns lists of booleans, for use with where function
-% USE: find_line(wa_grid, ll)
-% RETURNS: An array of character arrays containing boolean flags for use with where function
+%
+% Helper function returning boolean flags for location of particular lines in the grid
 %
 private define xstar_find_line( grid, ll )
 {
@@ -1236,9 +1272,12 @@ private define xstar_find_line( grid, ll )
 }
 
 
-%% Get the property of a given line, using the "field" entry
-% USE: xstar_line_prop( wa_grid, ll, "ew" )
-% RETURNS: An Double_Type array containing the value of the field of interest.
+%
+% ew = xstar_line_prop( grid_db, l, field );
+%
+% Returns an array containing the property (e.g. field="ew" above) for
+% a line indexed by l, for the entire grid
+%
 % NOTE: Will break if used on a field that contains a string
 %
 define xstar_line_prop()
@@ -1267,12 +1306,13 @@ define xstar_line_prop()
 }
 
 
-%% Get line ratios accross the entire grid
-% USE: xstar_line_ratios( grid, l1, l2, field )
-% RETURNS: A Double_Type array contianing the ratio l2/l1 over the
-%          field of interest
-% INPUT: Both l1 and l2 may be lists of indices.  In this case the
-% line properties will be summed (presumably because they are blended
+%
+% ratios = xstar_line_ratios( grid, l1, l2, field )
+%
+% Get line ratios (l2/l1) accross the entire grid, for the field of interest
+%
+% Both l1 and l2 may be lists of indices.  In this case the line
+% properties will be summed (presumably because they are blended
 % lines).  This will be done without regard to field type or ion
 % species.
 %
@@ -1299,9 +1339,7 @@ define xstar_line_ratios()
 
 
 
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 provide( "xstardb_utils" );
