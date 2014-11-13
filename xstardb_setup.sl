@@ -1,3 +1,5 @@
+%
+% 2014.11.13 lia - Reworked for public use
 % 2014.01.10 dph
 %
 % setup the environment:
@@ -19,17 +21,6 @@ define warmabs_print_setup()
     message("%% WARMABS_DATA = " + getenv( "WARMABS_DATA" ) );
     message("%% WARMABS_POP = "  + getenv( "WARMABS_POP" ) ) ;
     message("");
-}
-
-% the env might be set, so just read it:
-%
-define get_current_env()
-{
-    lmoddir      = getenv( "LMODDIR" ) ; 
-    warmabs_data = getenv( "WARMABS_DATA" )  ; 
-    warmabs_pops = getenv( "WARMABS_POP" ) ; 
-
-    if ( warmabs_pops == NULL ) warmabs_pops = "pops.fits" ; 
 }
 
 define get_local_defaults()
@@ -54,6 +45,26 @@ define get_local_defaults()
 }
 
 
+% the env might be set, so just read it.
+% 2014.11.13 - if it's not set, use get_local_defaults
+%
+define get_current_env()
+{
+    if ( getenv("LMODDIR") == NULL )
+    {
+	message("Environment variable LMODDIR is not set, switching to xstardb_setup defaults");
+	get_local_defaults();
+	return;
+    }
+
+    lmoddir      = getenv( "LMODDIR" ) ; 
+    warmabs_data = getenv( "WARMABS_DATA" )  ; 
+    warmabs_pops = getenv( "WARMABS_POP" ) ; 
+
+    if ( warmabs_pops == NULL ) warmabs_pops = "pops.fits" ; 
+}
+
+
 define put_to_env()
 {
     putenv ( "LMODDIR=$lmoddir"$ ) ;
@@ -69,7 +80,7 @@ define load_help_text()
 }
 
 
-define warmabs_setup()
+define xstardb_setup()
 {
     if ( qualifier_exists( "guess" ) )
     {
@@ -85,8 +96,8 @@ define warmabs_setup()
     warmabs_data = qualifier( "warmabs_data", lmoddir ) ;
     warmabs_pops = qualifier( "warmabs_pops", warmabs_pops ) ;
 
-    put_to_env ; 
-    warmabs_print_setup ;
+    put_to_env; 
+    warmabs_print_setup;
     load_help_text;
 
     if ( qualifier_exists( "help" ) )

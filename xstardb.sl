@@ -1,6 +1,6 @@
 require( "xstardb_setup" );
+xstardb_setup( ; use_current );
 
-warmabs_setup( ; guess );
 require ("xspec");
 require( "xstardb_utils" );
 
