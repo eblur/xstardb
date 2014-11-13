@@ -5,7 +5,7 @@
 %% Created 2014.11.11   : lia@space.mit.edu
 %%
 
-require("warmabs_db");
+require("xstardb");
 
 %%----------------------------------------------------------------
 %% Example 1: A single photemis model

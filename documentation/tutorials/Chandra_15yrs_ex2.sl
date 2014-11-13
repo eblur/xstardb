@@ -5,7 +5,7 @@
 %% Created 2014.11.11   : lia@space.mit.edu
 %%
 
-require("warmabs_db");
+require("xstardb");
 
 %%----------------------------------------------------------------
 %% Example 2: Multiple warmabs components at different redshifts
