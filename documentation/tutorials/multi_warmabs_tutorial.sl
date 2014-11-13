@@ -9,7 +9,7 @@
 
 _traceback = 1;  % helpful for debugging
 
-require("warmabs_db");
+require("xstardb");
 
 %%----------------------------------------------------------------%%
 %% 1. Simulate a multi-component warm absorption model

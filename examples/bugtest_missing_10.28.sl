@@ -8,7 +8,7 @@
 %% Duplicate here for further study.  Which of the two component
 %% models is the culprit?
 
-require("warmabs_db");
+require("xstardb");
 variable x1, x2;
 (x1, x2) = linear_grid( 1.0, 40.0, 8192 ); 
 
@@ -132,4 +132,16 @@ hplot(x1, x2, y4, 1); %nothing
 xrange(1.0,40.0);
 hplot(x1, x2, y4, 1); % N only
 ohplot(x1, x2, y3, 2); % O only
+
+
+%%--
+%% Write the contents of the O-only spectrum to an ascii table
+
+writecol("O-only.text", x1, x2, y3);
+
+%% Make an example plot
+
+xrange(16, 22);
+hplot(x1, x2, y3, 1);
+xstar_plot_group( db_o, where(xstar_wl(db_o, 16, 22)), 2, lstyle );
 

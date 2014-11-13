@@ -8,8 +8,8 @@
 %% This documents explains how to navigate and plot information from
 %% the datasets.
 
-%% O. Load the wadb utilities
-require("warmabs_db");
+%% O. Load the XSTAR database utilities
+require("xstardb");
 
 % An easy way to discover all of the wadb commands available:
 apropos("xstar");

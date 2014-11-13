@@ -1,6 +1,6 @@
 % 2014.01.10 dph
 %
-% setup the warmabs environment:
+% setup the environment:
 
 % local default path; change these as per your installation:
 %
@@ -91,7 +91,7 @@ define warmabs_setup()
 
     if ( qualifier_exists( "help" ) )
     {
-	message( "%% USAGE: warmabs_setup( ; qualifiers );" );
+	message( "%% USAGE: xstardb_setup( ; qualifiers );" );
 	message(" %% " );
 	message( "%%   qualifiers:" );
 	message(" %% " );
@@ -104,9 +104,9 @@ define warmabs_setup()
 	message(" %% " );
 	message(" %%  Setup up the warmabs env variables required by xspec/warmabs models.");
 	message(" %% " );
-	message(" %% EXAMPLE: warmabs_setup( ; guess );" );
-	message(" %%          warmabs_print_setup()" ) ;
+	message(" %% EXAMPLE: xstardb_setup( ; guess );" );
+	message(" %%          xstardb_print_setup()" ) ;
     }
 }
 
-provide( "warmabs_setup" );
+provide( "xstardb_setup" );

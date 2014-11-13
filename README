@@ -1,6 +1,9 @@
 
-README : S-Lang atomic database interface for XSTAR : wadb
-This file last updated : 2014.11.02 - lia@space.mit.edu
+README for ISIS interface to XSTAR output -- xstardb
+
+2014.11.13 : lia@space.mit.edu, dph@space.mit.edu
+
+Version 0.4.0
 
 ====================
  DIRECTORY CONTENTS
@@ -10,9 +13,9 @@ This file last updated : 2014.11.02 - lia@space.mit.edu
 ----
 Do not touch!
 
-- warmabs_db.sl
-- warmabs_setup.sl
-- warmabs_utils.sl
+- xstardb.sl
+- xstardb_setup.sl
+- xstardb_utils.sl
 
 
 examples/
@@ -37,7 +40,7 @@ documentation/tutorials/
 - atomdb_tutorial.sl : Shows how ISIS interacts with AtomDB, setting a
   few guiding principles for this library.
 
-- warmabsdb_tutorial.sl : Basic outline for interacting with XSTAR
+- xstardb_tutorial.sl : Basic outline for interacting with XSTAR
   databases and plotting.
 
 - multi_warmabs_tutorial.sl : How to work with multi-component models
@@ -45,3 +48,4 @@ documentation/tutorials/
 
 - grid_warmabs_tutorial.sl : An example of running a grid of XSTAR
   models over some interesting parameter and plotting the results.
+

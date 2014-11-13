@@ -10,7 +10,7 @@
 %%
 %%%%
 
-require("warmabs_db");
+require("xstardb");
 
 %%----------------------------------------------------------------%%
 %% 1. Create a model grid by looping over an interesting parameter

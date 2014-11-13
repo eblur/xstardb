@@ -8,7 +8,7 @@
 
 _traceback = 1;
 
-require("warmabs_db");
+require("xstardb");
 
 %%---------------------------------------%%
 %% Test of autoname outfile
