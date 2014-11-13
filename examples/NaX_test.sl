@@ -9,7 +9,7 @@
 %% We want to understand what's going on with the strange duplicate
 %% lines Na X (transition # 11515 and 11519)
 
-require("warmabs_db");
+require("xstardb");
 
 %%%--- Set up and run the model ---%%%
 
