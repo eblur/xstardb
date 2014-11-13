@@ -16,27 +16,22 @@ Do not touch!
 - xstardb.sl
 - xstardb_setup.sl
 - xstardb_utils.sl
+- xstardb_help.txt : Help pages describing functions and database structures
 
-
-examples/
+tests/
 ----
-Contains some scripts used to bug test and decide on code
-functionality. Contains a lot of old pieces of code that may not work.
+Contains a few scripts for testing general functionality.
 
 - basic_functions_test.sl : Tests basic functionality of some of the
   code.
 
-- example_presentation.sl : Compares our library functionality to the
-  ISIS navigation of atomdb (old,may not work)
+- NaX_test.sl : Examine he-like triplet from O VII, Ne IX, and Na X
 
 
 documentation/
 ----
-- wadb_function_specs.txt : Describes function descriptions and usage
+This folder contains tutorials for learning xstardb functionality
 
-
-documentation/tutorials/
-----
 - atomdb_tutorial.sl : Shows how ISIS interacts with AtomDB, setting a
   few guiding principles for this library.
 
@@ -49,3 +44,7 @@ documentation/tutorials/
 - grid_warmabs_tutorial.sl : An example of running a grid of XSTAR
   models over some interesting parameter and plotting the results.
 
+
+documentation/examples/
+----
+Contains more example scripts
