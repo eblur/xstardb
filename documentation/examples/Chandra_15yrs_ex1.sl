@@ -44,7 +44,7 @@ xstar_page_group( db, strongest; sort="luminosity" );
 variable lstyle = line_label_default_style();
 lstyle.top_frac = 0.85;
 lstyle.bottom_frac = 0.7;
-xstar_plot_group( db, strongest, 2, lstyle );
+xstar_plot_group( db, strongest, 3, lstyle );
 
 
 

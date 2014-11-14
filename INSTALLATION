@@ -9,11 +9,9 @@ Version 0.4.0 (beta)
 DEPENDENCIES
 ============
 
- - ISIS version ??
- - XSTAR version ??
-
- To download and install the latest version of XSTAR, go to:
-   http://heasarc.gsfc.nasa.gov/docs/software/xstar/xstar.html
+ - ISIS version 1.6
+ - XSTAR version 2.22 or higher
+   ftp://legacy.gsfc.nasa.gov/software/plasma_codes/xstar/warmabs22dev.tar.gz
 
 ============
 INSTRUCTIONS
@@ -21,13 +19,14 @@ INSTRUCTIONS
 
 I. Retrieve the XSTARDB package
 ----
- Method 1: Download tar ball from ??
 
-    tar -xvf xstardb_install.tar
+ Method 1: Download tar ball from http://space.mit.edu/ASC/analysis/xstardb/xstardb.tar
 
- Method 2: Clone the developer version from the git repository
+    tar -xvf xstardb.tar
 
-    git clone ??? .
+ Method 2: Clone the git repository
+
+    git clone http://space.mit.edu/ASC/analysis/xstarbd/xstardb_repo.git .
 
 
 II. Set environment to XSTAR installation

@@ -51,7 +51,7 @@ variable rlogxi  = xstar_get_grid_par( pe_grid, "rlogxi" );
 xlabel( latex2pg( "rlog\\xi" ) );
 ylabel( latex2pg( "Luminosity [10^{38} cgs]" ) );
 title( pe_grid.mdb.transition_name[o_vii_F][0] );
-plot( rlogxi, o_vii_F_lum, 2 );
+plot( rlogxi, o_vii_F_lum, 3 );
 
 
 

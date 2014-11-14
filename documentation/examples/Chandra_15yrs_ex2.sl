@@ -43,7 +43,7 @@ variable y2 = eval_fun( x1, x2 );
 variable db_m = xstar_merge( ["warmabs_1.fits", "warmabs_2.fits"] );
 variable z    = [ get_par("warmabs2(1).Redshift"), get_par("warmabs2(2).Redshift") ];
 
-% Find all lines within 18 - 24 Angs
+% Find strong lines within 18 - 24 Angs
 plot_bin_density;
 xlabel( latex2pg( "Wavelength [\\A]" ) );
 ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
