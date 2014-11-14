@@ -52,6 +52,20 @@ III. Point .isisrc to XSTARDB installation
  This is not necessary if you have installed xstardb in a place that
  is already in your isis load path.
 
+==================================
+CUSTOMIZING XSTAR LIBRARY AND POPS
+==================================
+
+ If you would like to use a custom warmabs library or pops.fits file,
+ you can point to their locations within the xstardb.sl script without
+ having to change your system environment or default configuration.
+
+ To do so, change line 2 of xstardb.sl:
+
+    xstardb_setup( ; lmoddir="/path/to/my/warmabs/installation", 
+    		     warmabs_data="/path/to/my/warmabs/data",
+		     warmabs_pops="/path/to/my/warmabs/pops" );
+
 
 ======================
 QUESTIONS / BUG REPORT
