@@ -49,6 +49,8 @@ xlabel( latex2pg( "Wavelength [\\A]" ) );
 ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
 yrange( 0.05, 0.2 ); ylog;
 xrange( 18, 24 );
+
+set_line_width(5);
 hplot( x1, x2, y2, 1 );
 
 variable lines = xstar_strong( 50, db_m; wmin=18.0, wmax=24.0, redshift=z );
@@ -82,7 +84,7 @@ variable l2 = lines[ where(db_m.origin_file[lines] == 1) ];
 xstar_page_group( db_m, lines; redshift=z );
 
 xstar_plot_group( db_m, l1, 2, lstyle, z[0] );
-xstar_plot_group( db_m, l2, 3, lstyle, z[1] );
+xstar_plot_group( db_m, l2, 11, lstyle, z[1] );
 
 
 

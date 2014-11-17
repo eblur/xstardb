@@ -32,6 +32,8 @@ xlabel( latex2pg( "Wavelength [\\A]" ) );
 ylabel( latex2pg( "Flux [phot/cm^2/s/A]" ) );
 yrange(1.e-13, 1); ylog;
 xrange(18, 24);
+
+set_line_width(5);
 hplot( x1, x2, y, 1 );
 
 % Find the strongest lines by luminosity
@@ -44,7 +46,7 @@ xstar_page_group( db, strongest; sort="luminosity" );
 variable lstyle = line_label_default_style();
 lstyle.top_frac = 0.85;
 lstyle.bottom_frac = 0.7;
-xstar_plot_group( db, strongest, 3, lstyle );
+xstar_plot_group( db, strongest, 2, lstyle );
 
 
 

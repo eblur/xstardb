@@ -18,7 +18,7 @@ variable x1, x2;
 variable model_info    = @_default_model_info;
 variable model_binning = struct{ bin_lo=x1, bin_hi=x2 };
 
-set_struct_fields( model_info, "photemis", "rlogxi", -2.0, 2.0, 0.1, model_binning );
+set_struct_fields( model_info, "photemis", "rlogxi", -2.0, 2.0, 0.05, model_binning );
 
 %% WARNING: This will take awhile (~20 minutes on my machine)
 %% Comment out the line below if you have already run the model grid
@@ -51,7 +51,10 @@ variable rlogxi  = xstar_get_grid_par( pe_grid, "rlogxi" );
 xlabel( latex2pg( "rlog\\xi" ) );
 ylabel( latex2pg( "Luminosity [10^{38} cgs]" ) );
 title( pe_grid.mdb.transition_name[o_vii_F][0] );
-plot( rlogxi, o_vii_F_lum, 3 );
+ylin;
+
+set_line_width(5);
+plot( rlogxi, o_vii_F_lum, 11 );
 
 
 
