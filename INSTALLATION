@@ -26,7 +26,7 @@ I. Retrieve the XSTARDB package
 
  Method 2: Clone the git repository
 
-    git clone http://space.mit.edu/ASC/analysis/xstarbd/xstardb_repo.git .
+    git clone http://space.mit.edu/ASC/analysis/xstardb/xstardb_repo.git .
 
 
 II. Set environment to XSTAR installation
