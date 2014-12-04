@@ -2,6 +2,7 @@
 XSTARDB INSTALLATION INSTRUCTIONS
 
 Created 2014.11.13 : Lia Corrales <lia@space.mit.edu>
+2014.12.04  Minor edits <dph@space.mit.edu>
 
 Version 0.4.0 (beta)
 
@@ -9,42 +10,70 @@ Version 0.4.0 (beta)
 DEPENDENCIES
 ============
 
- - ISIS version 1.6
+ - ISIS version 1.6 or higher (<http://space.mit.edu/cxc/isis/>)
+
  - XSTAR version 2.22 or higher
    ftp://legacy.gsfc.nasa.gov/software/plasma_codes/xstar/warmabs22dev.tar.gz
+
+   The HEASOFT package, with local models must be installed on your
+   system, and then the xspec module must be built for isis.  See the
+   ISIS and HEASOFT installation instructions.  Further information on
+   various software components can be found at the first or second "SCHOOL ON
+   MULTIWAVELENGTH ASTRONOMY" sites.  In particular this link for
+   local models:
+
+    <http://www.black-hole.eu/index.php/schools-workshops-and-conferences/1st-school-on-multiwavelength-astronomy/course-materials/105-heasoft-and-isis-installation-guide-building-xspec-local-models>
+
+   or this for general software installation instructions:
+
+    <http://www.black-hole.eu/index.php/schools-workshops-and-conferences/2nd-school-on-multiwavelength-astronomy/course-materials>
+
 
 ============
 INSTRUCTIONS
 ============
 
-I. Retrieve the XSTARDB package
+I. Retrieve the XSTARDB ISIS package
 ----
 
- Method 1: Download tar ball from http://space.mit.edu/ASC/analysis/xstardb/xstardb.tar
+ Method 1: Download tar ball from <http://space.mit.edu/cxc/analysis/xstardb/xstardb.tar>
 
     tar -xvf xstardb.tar
 
  Method 2: Clone the git repository
 
-    git clone http://space.mit.edu/ASC/analysis/xstardb/xstardb_repo.git .
+    git clone http://space.mit.edu/cxc/analysis/xstardb/xstardb_repo.git xstardb
 
 
 II. Set environment to XSTAR installation
 ----
 
+ This is the local model directory, and is the default root for the
+ warmabs data and populations files:
+
  e.g., in .bashrc file:
 
-    export LMODDIR=/path/to/heasoft_warmabs_nnbit
+    export LMODDIR=/path/to/heasoft_warmabs_<nnbit>
 
  e.g., in .cshrc file:
 
-    setenv LMODDIR /path/to/heasoft_warmabs_nnbit
+    setenv LMODDIR /path/to/heasoft_warmabs_<nnbit>
+
+ (where "<nnbit>" refers to the build version and architecture string)
+
+ If you have non-standard data or populations, you should also set the
+ WARMABS_DATA and WARMABS_POP environment variables.
+
+ The default initialization is to use the current paths defined in
+ your environment.  These can be overridden in the ISIS code (see
+ below).
+
 
 
 III. Point .isisrc to XSTARDB installation
 ----
 
- In .isisrc file:
+ In your .isisrc file:
 
     add_to_isis_load_path("/path/to/my/xstardb");
 
@@ -59,12 +88,17 @@ CUSTOMIZING XSTAR LIBRARY AND POPS
  you can point to their locations within the xstardb.sl script without
  having to change your system environment or default configuration.
 
- To do so, change line 2 of xstardb.sl:
+ To do so, invoke xstardb_setup after loading xstardb but before
+ evaluating any XSTAR models:
 
+    require("xstardb");
     xstardb_setup( ; lmoddir="/path/to/my/warmabs/installation", 
     		     warmabs_data="/path/to/my/warmabs/data",
 		     warmabs_pops="/path/to/my/warmabs/pops" );
 
+ WARNING: Once the xstar module has initialized during the first model
+ evaluation, the configuration cannot be changed without exiting the
+ session.
 
 ======================
 QUESTIONS / BUG REPORT
@@ -72,8 +106,8 @@ QUESTIONS / BUG REPORT
 
 If you have questions or a bug to report, please email 
 
-  Lia Corrales (lia@space.mit.edu)
+  Lia Corrales <lia@space.mit.edu>
 
   or 
 
-  Dave Huenemoerder (dph@space.mit.edu)
+  Dave Huenemoerder <dph@space.mit.edu>
