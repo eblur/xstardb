@@ -11,9 +11,10 @@ Version 0.4.0
 
 ./
 ----
-Do not touch!
 
-- xstardb.sl
+- xstardb.sl : may be customized by experienced user
+
+DO NOT TOUCH
 - xstardb_setup.sl
 - xstardb_utils.sl
 - xstardb_help.txt : Help pages describing functions and database structures
