@@ -44,8 +44,3 @@ This folder contains tutorials for learning xstardb functionality
 
 - grid_warmabs_tutorial.sl : An example of running a grid of XSTAR
   models over some interesting parameter and plotting the results.
-
-
-documentation/examples/
-----
-Contains more example scripts
