@@ -1271,10 +1271,100 @@ define xstar_unpack_uid()
     variable uid = ();
 
     variable ion, lo, up ;
-    ion = uid mod 1000 ;
-    up  = uid / 1000 mod 10000 ;
-    lo  = uid / 10000000 ;
+    up  = uid mod 10000;
+    lo  = uid / 10000 mod 1000;
+    ion  = uid / 10000000;
     return( ion, lo, up );
+}
+
+
+%
+% xstar_page_id( db, l[; file] );
+%
+% Prints the ion index, lower level index, and upper level index to a table.
+% The INPUT db may be a grid structure or a database structure.
+%
+define xstar_page_id()
+{
+
+    if ( _NARGS == 0 or _NARGS > 2 )
+    {
+	message("USAGE: xstar_page_id( db, ll[; file] )");
+	return;
+    }
+
+    variable db, l;
+    (db, l) = ();
+
+    % Ascerain whether it is a grid or a databse structure
+    variable g;
+    if ( struct_field_exists(db, "uids") ) g = db.mdb;
+    else g = db;
+	
+    
+    variable hdr =    [
+    "ion",     % elem ion
+    "lambda",  % wavelength
+    "label",    % lower_level - upper_level
+    "ind_ion", 
+    "ind_lo",
+    "ind_up"
+    ] ;
+    
+    variable hfmt = [
+    "#%8s",
+    " %8s",
+    " %32s",
+    " %10s", 
+    " %10s", 
+    " %10s\n"
+    ] ; 
+
+    variable dfmt = [
+    "%5s",
+    " %3s", 
+    " %8.4f",
+    " %16s",
+    " - %16s", 
+    " %9d", 
+    " %9d", 
+    " %9d\n"
+    ] ; 
+    
+    variable fields = [
+    "Z",
+    "q",
+    "wavelength",
+    "lower_level",
+    "upper_level",
+    "ind_ion", 
+    "ind_lo", 
+    "ind_up"
+    ];
+
+    % Sort by wavelength
+    variable sorted_l = l[ array_sort(g.wavelength[l]) ];
+
+    % set up output area
+    variable fp = qualifier( "file", stdout ) ;
+    if ( typeof(fp) == String_Type ) fp = fopen( fp, "w" );
+
+    % print header
+    () = array_map( Integer_Type, &fprintf, fp, hfmt, hdr ) ;
+
+    % print everything
+    variable i, j, k, n = length( l );
+    for (i=0; i<n; i++)
+    {
+	k = sorted_l[ i ] ; 
+	for (j=0; j<length(fields); j++)
+	{
+	    switch( fields[j] )
+	    { case "Z": () = fprintf( fp, dfmt[j], Upcase_Elements[g.Z[k]-1] ); }
+	    { case "q": () = fprintf( fp, dfmt[j], Roman_Numerals[g.q[k]-1] ); }
+	    { () = fprintf( fp, dfmt[j], get_struct_field(g, fields[j])[k] ); }
+	}
+    }
 }
 
 
