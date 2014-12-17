@@ -6,7 +6,7 @@ Version 0.5.0
 
 ## Contents
 
-** ./ **
+**./**
 
 - xstardb.sl : may be customized by experienced user
 
@@ -15,9 +15,9 @@ Version 0.5.0
 - xstardb_utils.sl
 - xstardb_help.txt : Help pages describing functions and database structures
 
-----
+--
 
-** tests/ **
+**tests/**
 
 Contains a few scripts for testing general functionality.
 
@@ -26,9 +26,9 @@ Contains a few scripts for testing general functionality.
 
 - NaX_test.sl : Examine he-like triplet from O VII, Ne IX, and Na X
 
-----
+--
 
-** documentation/ **
+**documentation/**
 
 This folder contains tutorials for learning xstardb functionality
 
