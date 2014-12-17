@@ -36,10 +36,15 @@ INSTRUCTIONS
 I. Retrieve the XSTARDB ISIS package
 ----
 
+ Method 1:
  Download tar ball from <http://space.mit.edu/cxc/analysis/xstardb/xstardb.tar>
 
     tar -xvf xstardb.tar
 
+ Method 2:
+ Clone the repository from github
+
+    git clone https://github.com/eblur/xstardb.git /path/to/xstardb/
 
 II. Set environment to XSTAR installation
 ----
