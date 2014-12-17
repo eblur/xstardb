@@ -1,26 +1,24 @@
 
-README for ISIS interface to XSTAR output -- xstardb
-
+README.md file for github front page
 2014.12.17 : lia@space.mit.edu, dph@space.mit.edu
 
 Version 0.5.0
 
-====================
- DIRECTORY CONTENTS
-====================
+## Contents
 
 ./
 ----
 
 - xstardb.sl : may be customized by experienced user
 
-DO NOT TOUCH
+**DO NOT TOUCH**
 - xstardb_setup.sl
 - xstardb_utils.sl
 - xstardb_help.txt : Help pages describing functions and database structures
 
 tests/
 ----
+
 Contains a few scripts for testing general functionality.
 
 - basic_functions_test.sl : Tests basic functionality of some of the
