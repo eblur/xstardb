@@ -31,6 +31,8 @@
 
 %% Version history
 %
+% 0.5.0 lia created xstar_page_id
+%
 % 0.4.0 lia changed package name to xstardb
 %
 % 0.3.4 lia changed most function names to use xstar_ prefix,
@@ -84,7 +86,7 @@
 % feature and control parameter (see below).
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-private variable _version = [0,4,0];
+private variable _version = [0,5,0];
 
 private variable _xstardb_version_num = sum( _version * [ 10000, 100, 1 ] ) ; 
 variable _xstardb_version =
