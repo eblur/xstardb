@@ -440,7 +440,26 @@ xstar_unpack_uid
   - see xstarlevels.text from XSTAR db
 
  SEE ALSO
-  xstar_load_tables
+  xstar_load_tables, xstar_page_id
+
+------------------------------------------------------------------------
+
+xstar_page_id
+
+ SYNOPSIS
+  Prints a table containing the transition name, ion index value,
+  lower level index, and upper level index for a list of transitions
+
+ USAGE
+  xstar_page_id( db, l[; file] )
+
+ DESCRIPTION
+  Prints a table, sorted by wavelength, showing the index values for ion (ind_ion), lower level (ind_lo),
+  and upper level (ind_up) associated with a list of transitions
+  - see xstarlevels.text from XSTAR db
+
+ SEE ALSO
+  xstar_unpack_uid, rd_xstar_output
 
 ------------------------------------------------------------------------
 
