@@ -134,7 +134,7 @@ define warmabs_unset_outfile()
 % Initialize the warmabs etc parameter sets, and cache them:
 %
 private variable warmabs_models =
-   [ "warmabs", "photemis", "hotabs", "hotemis", "multabs", "windabs", "scatemis"]; 
+   [ "warmabs", "photemis", "hotabs", "hotemis", "multabs"]; 
 
 private variable warmabs_mdl_par_names = Assoc_Type[ Array_Type ];
 private variable warmabs_mdl_par       = Assoc_Type[ Array_Type ];
@@ -225,17 +225,10 @@ define multabs2_fit( lo, hi, par )
 {
     return( _warmabs2( _function_name[[:-6]], lo, hi, par ) ) ;
 }
-define windabs2_fit( lo, hi, par )
-{
-    return( _warmabs2( _function_name[[:-6]], lo, hi, par ) ) ;
-}
-define scatemis2_fit( lo, hi, par )
-{
-    return( _warmabs2( _function_name[[:-6]], lo, hi, par ) ) ;
-}
+
 
 private variable fptr =
-  [&warmabs2_fit, &photemis2_fit, &hotabs2_fit, &hotemis2_fit, &multabs2_fit, &windabs2_fit, &scatemis2_fit ] ; 
+  [&warmabs2_fit, &photemis2_fit, &hotabs2_fit, &hotemis2_fit, &multabs2_fit ] ; 
 
 private variable fnorms = { NULL, 0, NULL, 0, NULL, NULL, 0 };
 
@@ -258,8 +251,6 @@ add_slang_function( "photemis2", &photemis2_fit, [ warmabs_mdl_par_names[ "phote
 add_slang_function( "hotabs2",   &hotabs2_fit,   [ warmabs_mdl_par_names[ "hotabs"  ], "autoname_outfile" ] );
 add_slang_function( "hotemis2",  &hotemis2_fit,  [ warmabs_mdl_par_names[ "hotemis" ], "autoname_outfile" ], [0] );
 add_slang_function( "multabs2",  &multabs2_fit,  [ warmabs_mdl_par_names[ "multabs" ], "autoname_outfile" ] );
-add_slang_function( "windabs2",  &windabs2_fit,  [ warmabs_mdl_par_names[ "windabs" ], "autoname_outfile" ] );
-add_slang_function( "scatemis2", &scatemis2_fit, [ warmabs_mdl_par_names[ "scatemis"], "autoname_outfile" ], [0] );
 #endif
 
 %%% parameter defaults, using those saved from the basic warmabs models:
@@ -300,10 +291,7 @@ define multabs2_defaults( i )
 {
     return( _warmabs2_defaults( _function_name[[:-11]], i ) );
 }
-define windabs2_defaults( i )
-{
-    return( _warmabs2_defaults( _function_name[[:-11]], i ) );
-}
+
 
 private variable k ; 
 foreach k ( warmabs_models )
@@ -425,9 +413,7 @@ private variable T_HOTABS   = 1,
 		 T_HOTEMIS  = 2,
 		 T_WARMABS  = 3,
 		 T_PHOTEMIS = 4,
-		 T_MULTABS  = 5,
-		 T_WINDABS  = 6,
-		 T_SCATEMIS = 7; 
+		 T_MULTABS  = 5;
 
 private variable model_map = Assoc_Type[ Integer_Type ] ;
 model_map[ "hotabs"   ] = T_HOTABS ; 
@@ -435,8 +421,6 @@ model_map[ "hotemis"  ] = T_HOTEMIS  ;
 model_map[ "warmabs"  ] = T_WARMABS  ; 
 model_map[ "photemis" ] = T_PHOTEMIS ; 
 model_map[ "multabs"  ] = T_MULTABS  ; 
-model_map[ "windabs"  ] = T_WINDABS  ; 
-model_map[ "scatemis" ] = T_SCATEMIS ; 
 
 
 %
@@ -716,7 +700,7 @@ define xstar_strong()
 }
 
 private variable warmabs_db_model_type =
-  ["", "hotabs", "hotemis", "warmabs", "photemis", "multabs", "windabs", "scatemis" ];
+  ["", "hotabs", "hotemis", "warmabs", "photemis", "multabs"];
 
 
 %
